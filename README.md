@@ -1,13 +1,13 @@
 # About
-**rules++** is just simply **rules** on steroids. It lets you create complex automappers. **rules++** was written in C++.
+**rules++** is a simple language written in C++, which allows you to create the most complex automappers.
 
 ## Getting started
-To start using **rules++**, you will need 3 files, which you can grab from [here](https://github.com/Aerll/rpp):
-  - **rules++.exe** - an executable, that parses **rules++** code and translates it into **rules**
-  - **base.r** - an implementation of all basic functions
+To start using **rules++**, you need 3 files, which you can grab from [here](https://github.com/Aerll/rpp):
+  - an executable, which translates **rules++** code to **rules**
+  - **base.r** - an implementation of the most common functions
   - **base.p** - a collection of useful presets
   
-You can learn more about the language, follow a tutorial on [wiki](https://github.com/Aerll/rpp/wiki).
+A tutorial, explaining every feature in detail, is available on the [wiki](https://github.com/Aerll/rpp/wiki).
 
 ## Utilities for notepad++
 Utilities include syntax highlighting and auto completion. Preferable theme can be found [here](https://github.com/cydh/VS2015-Dark-Npp).<br/>
