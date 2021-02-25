@@ -113,7 +113,6 @@ void RulesGen::exec(std::vector<AutoMapper>& automappers, const std::filesystem:
             }
         }
     }
-    rulesFile << "#----- generated with rules++'\n";
 }
 
 void RulesGen::optimize(Rule& rule)

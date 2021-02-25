@@ -50,10 +50,17 @@ void Preprocessor::run(const std::filesystem::path& path)
         if (!line.empty()) {
             if (line.at(1).value == ID::Path) {
                 m_path = getPath(line.at(3).value);
+                if (!std::filesystem::exists(m_path))
+                    pushError(std::make_unique<ErrInvalidOutPath>(line.at(3)));
+
                 m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
             }
             else if (line.at(1).value == ID::Tileset) {
                 m_tileset = line.at(3).value;
+                m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
+            }
+            else if (line.at(1).value == ID::Stack) {
+                m_stack = std::stoi(line.at(3).value) * 1024 * 1024;
                 m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
             }
             else if (line.at(1).value == ID::Include) {

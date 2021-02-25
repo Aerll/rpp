@@ -118,6 +118,11 @@ std::string Error::strFileNotFound(const std::string& s)
     return "File not found: '" + s + "'.";
 }
 
+std::string Error::strInvalidOutPath(const std::string& s)
+{
+    return "Invalid output path: '" + s + "'.";
+}
+
 std::string Error::strMissingExpression(const std::string& s)
 {
     return "Missing expression: '" + s + "'.";
@@ -311,6 +316,15 @@ ErrFileNotFound::ErrFileNotFound(const Token& t)
         m_err = strFileNotFound(t.value);
     else
         m_err = strIncorrectPath(t.value);
+}
+
+/*
+    ErrInvalidOutPath
+*/
+ErrInvalidOutPath::ErrInvalidOutPath(const Token& t)
+{
+    m_line = t.line;
+    m_err = strInvalidOutPath(t.value);
 }
 
 /*

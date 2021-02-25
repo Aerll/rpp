@@ -41,6 +41,7 @@ protected:
     static std::string strIncorrectLiteralType(const std::string& s, ValueType expected);
     static std::string strIncorrectPath(const std::string& s);
     static std::string strFileNotFound(const std::string& s);
+    static std::string strInvalidOutPath(const std::string& s);
     static std::string strMissingExpression(const std::string& s);
     static std::string strMissingToken(std::string_view missing);
     static std::string strInvalidExpression(const std::string& s);
@@ -105,6 +106,11 @@ public:
 class ErrFileNotFound final : public Error {
 public:
     ErrFileNotFound(const Token& t);
+};
+
+class ErrInvalidOutPath final : public Error {
+public:
+    ErrInvalidOutPath(const Token& t);
 };
 
 class ErrPreprocNotIdentifier final : public Error {

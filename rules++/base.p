@@ -34,7 +34,7 @@ preset FillObjects(array object aObjects)
         for (j = 0 to aArray[i].last)
             coord cRelativePos = util:RelativePos(cAnchor, aArray[i][j]);
             
-            Insert(aArray[i][j]).If(IndexAt([cRelativePos.x * -1, cRelativePos.y * -1]).Is(cAnchor));
+            Insert(aArray[i][j]).If(IndexAt([cRelativePos.x * -1, cRelativePos.y * -1]).Is(cAnchor)).NoDefaultPosRule();
         end
     end
 end
@@ -61,8 +61,7 @@ preset Randomize(array int aIndices)
     
     array int aArray = aIndices.unique();
     Insert(aArray[0]);
-    Insert(aArray).Config(s:insertAllRotations).Chance(aArray.count * 4);
-    Insert(aArray).Config(s:insertAllRotations).Chance(aArray.count * 8);
+    Insert(aArray).Config(s:insertAllRotations).Roll();
 end
 
 
@@ -178,6 +177,8 @@ preset ReplaceEachRotation(int iFrom, int iTo)
         end
     end
 //
+
+    OverrideLayer();
 
     Insert(iTo).If(IndexAt([0, 0]).Is(iFrom.N));
     Insert(iTo.V).If(IndexAt([0, 0]).Is(iFrom.V));

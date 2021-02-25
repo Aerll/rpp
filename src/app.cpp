@@ -40,19 +40,19 @@
 
 namespace {
     long long memory = 0;
-    long long max_capacity = 1024 * 1024 * 100;
+    long long max_memory = 0;
 }
 
 void* operator new(std::size_t size) {
     memory += size;
-    if (memory > max_capacity)
+    if (max_memory != 0 && memory > max_memory)
         throw std::overflow_error("Memory overflow");
     return std::malloc(size);
 }
 
 void* operator new[](std::size_t size) {
     memory += size;
-    if (memory > max_capacity)
+    if (max_memory != 0 && memory > max_memory)
         throw std::overflow_error("Memory overflow");
     return std::malloc(size);
 }
@@ -73,52 +73,67 @@ void operator delete[](void* data, std::size_t size) {
     App
 */
 int App::exec(int argc, char** argv) {
-    using namespace std::chrono;
-    auto beg = high_resolution_clock::now();
-    
-    for (int i = 1; i < argc; ++i) {
-        std::filesystem::path path = argv[i];
+    try {
+        using namespace std::chrono;
+        auto beg = high_resolution_clock::now();
 
-        InputStream inputStream(FileR::read(path));
+        for (int i = 1; i < argc; ++i) {
+            max_memory = 0;
 
-        Tokenizer tokenizer;
-        tokenizer.run(inputStream);
+            std::filesystem::path path = argv[i];
 
-        Preprocessor preprocessor(tokenizer.data());
-        preprocessor.run(path);
+            InputStream inputStream(FileR::read(path));
 
-        TokenStream tokenStream(preprocessor.data());
+            Tokenizer tokenizer;
+            tokenizer.run(inputStream);
 
-        ParseTree parseTree;
-        parseTree.create(tokenStream);
+            Preprocessor preprocessor(tokenizer.data());
+            preprocessor.run(path);
+            if (preprocessor.failed())
+                continue;
 
-        Parser parser;
-        parser.parse(parseTree, tokenStream);
-        if (parser.failed())
-            continue;
+            max_memory = preprocessor.stack(); // in megabytes
 
-        AbstractSyntaxTree abstractSyntaxTree;
-        abstractSyntaxTree.create(parseTree);
-        parser.parse(abstractSyntaxTree);
-        if (parser.failed())
-            continue;
+            AbstractSyntaxTree abstractSyntaxTree;
+            {
+                TokenStream tokenStream(preprocessor.data());
 
-        Translator translator;
-        translator.run(abstractSyntaxTree);
-        if (translator.failed())
-            continue;
+                ParseTree parseTree;
+                parseTree.create(tokenStream);
 
-        RulesGen::exec(translator.automappers(), preprocessor.path(), preprocessor.tileset());
+                Parser parser;
+                parser.parse(parseTree, tokenStream);
+                if (parser.failed())
+                    continue;
+
+                abstractSyntaxTree.create(parseTree);
+                parser.parse(abstractSyntaxTree);
+                if (parser.failed())
+                    continue;
+            }
+
+            Translator translator;
+            translator.run(abstractSyntaxTree);
+            if (translator.failed())
+                continue;
+
+            RulesGen::exec(translator.automappers(), preprocessor.path(), preprocessor.tileset());
+        }
+
+        auto end = high_resolution_clock::now();
+        auto time = duration_cast<duration<double>>(end - beg).count();
+
+        std::cout << "\n\n";
+        std::cout << "Finished in: " << time << "s\n";
+
+        pause();
+        return 0;
     }
-
-    auto end = high_resolution_clock::now();
-    auto time = duration_cast<duration<double>>(end - beg).count();
-
-    std::cout << "\n\n";
-    std::cout << "Finished in: " << time << "s\n";
-    
-    pause();
-    return 0;
+    catch (const std::overflow_error& error) {
+        std::cout << error.what() << '\n';
+        pause();
+        return 0;
+    }
 }
 
 void App::pause()
