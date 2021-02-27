@@ -2766,6 +2766,10 @@ void ASTNodeEvaluator::evaluateArgumentsVariadic(const ptr_node_v& callArgs, AST
             auto value = arg->accept(*this); _BreakIfFailedVoid;
             if (value->type() == ValueType::Object)
                 array->value.push_back(*value->as<ObjectValue*>());
+            else if (value->type() == ValueType::Range)
+                array->value.push_back(value->as<RangeValue*>()->toObject());
+            else if (value->type() == ValueType::ArrayInt)
+                array->value.push_back(value->as<ArrayValue<IntValue>*>()->toObject());
             else {
                 for (const auto& elem : value->as<ArrayValue<ObjectValue>*>()->value)
                     array->value.push_back(elem);

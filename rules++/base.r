@@ -735,7 +735,9 @@ end
 
 function->null util:Chance(float fProbability)
 
-    insert.rule.random = fProbability;
+    if (fProbability > 1.001)
+        insert.rule.random = fProbability;
+    end
 end
 
 
@@ -850,6 +852,46 @@ function->coord util:Size(object oObject)
 
     array int aRect = util:Rect(oObject);    
     return [aRect[1] - aRect[3] + 1, aRect[2] - aRect[0] + 1];
+end
+
+
+
+function->float util:SumOf(array float aValues)
+
+//
+    if (s:debug)
+        if (aValues.count == 0)
+            error("util:SumOf(array float aValues) -> aValues cannot be empty.");
+        end
+    end
+//
+
+    float fSum = 0.0;
+    for (i = 0 to aValues.last)
+        fSum = fSum + aValues[i];
+    end
+    return fSum;
+end
+
+
+
+function->array float util:Normalize(array float aValues, float fBound)
+
+//
+    if (s:debug)
+        if (aValues.count == 0)
+            error("util:Normalize(array float aValues, float fBound) -> aValues cannot be empty.");
+        end
+    end
+//
+
+    float fFactor = fBound / util:SumOf(aValues);
+    
+    array float aResult;
+    for (i = 0 to aValues.last)
+        aResult.push(aValues[i] * fFactor);
+    end
+    return aResult;
 end
 
 
@@ -1062,6 +1104,39 @@ end
 
 
 
+function->array float Unbias(array float aProbabilities)
+
+//
+    if (s:debug)
+        if (aProbabilities.count == 0)
+            error("Unbias(array float aProbabilities) -> aProbabilities cannot be empty.");
+        end
+    end
+//
+
+    float fSum = util:SumOf(aProbabilities);
+    
+    array float aClamped;
+    if (fSum > 100.0)
+        aClamped = util:Normalize(aProbabilities, 100.0);
+    end
+    if (fSum <= 100.0)
+        aClamped = aProbabilities;
+    end
+    
+    float fRemaining = 100.0;
+    
+    array float aResult;
+    for (i = 0 to aClamped.last)
+        float fUnbiased = 100.0 / (aClamped[i] / fRemaining * 100.0);
+        fRemaining = fRemaining - aClamped[i];
+        aResult.push(fUnbiased);
+    end
+    return aResult;
+end
+
+
+
 ///////////////////////////////////////
 //
 bool g:runInsertTests = false;
@@ -1071,6 +1146,8 @@ bool g:callInsertConfig = true;
 
 bool g:runIndexAtNewruleCheck = false;
 bool g:createNewruleInsert = true;
+
+int g:argInsertChanceIndex = 0;
 /******************************************************************************
 
 */
@@ -1082,6 +1159,8 @@ function->null internal:InsertResetFlags()
 
     g:runIndexAtNewruleCheck = false;
     g:createNewruleInsert = true;
+    
+    g:argInsertChanceIndex = 0;
 end
 
 
@@ -1199,10 +1278,24 @@ end
 
 
 
-nested function->null Insert.Chance(float fProbability)
+nested function->null Insert.Chance(array float aProbabilities)
+    
+//
+    if (s:debug)
+        if (aProbabilities.count == 0)
+            warning("Insert.Chance(array float aProbabilities) -> aProbabilities was empty, function had no effect.");
+            return;
+        end
+    end
+//
 
     if (g:runInsertTests and g:callInsertNested and g:runInsertRoll == false)
-        util:Chance(fProbability);
+        util:Chance(aProbabilities[g:argInsertChanceIndex]);
+        
+        g:argInsertChanceIndex = g:argInsertChanceIndex + 1;
+        if (g:argInsertChanceIndex > aProbabilities.last)
+            g:argInsertChanceIndex = 0;
+        end
     end
 end
 

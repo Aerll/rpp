@@ -325,19 +325,20 @@ bool Token::isVariadic(ValueType type, ValueType variadic) noexcept
         case ValueType::Bool:
             return variadic == ValueType::ArrayBool;
         case ValueType::Int:
-            return variadic == ValueType::ArrayInt;
+            return variadic == ValueType::ArrayInt || variadic == ValueType::ArrayCoord || variadic == ValueType::ArrayFloat;
         case ValueType::Range:
-            return variadic == ValueType::ArrayRange || variadic == ValueType::ArrayInt;
+            return variadic == ValueType::ArrayRange || variadic == ValueType::ArrayInt || variadic == ValueType::ArrayObject;
         case ValueType::Coord:
             return variadic == ValueType::ArrayCoord || variadic == ValueType::ArrayInt;
         case ValueType::Float:
-            return variadic == ValueType::ArrayFloat;
+            return variadic == ValueType::ArrayFloat || variadic == ValueType::ArrayInt;
         case ValueType::String:
             return variadic == ValueType::ArrayString;
         case ValueType::Object:
             return variadic == ValueType::ArrayObject || variadic == ValueType::ArrayInt;
+        case ValueType::ArrayInt:
+            return variadic == ValueType::ArrayObject;
     }
-
     return false;
 }
 

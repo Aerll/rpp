@@ -416,6 +416,25 @@
         
         
         
+        <!-- util:SumOf -->
+        <KeyWord name="util:SumOf" func="yes">
+            <Overload retVal="float">
+                <Param name="array float aValues" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:Normalize -->
+        <KeyWord name="util:Normalize" func="yes">
+            <Overload retVal="array float">
+                <Param name="array float aValues" />
+                <Param name="float fBound" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
         
         
         <!-- ******************************************************************
@@ -492,6 +511,15 @@
             </Overload>
             <Overload retVal="coord">
                 <Param name="coord cValue" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- Unbias -->
+        <KeyWord name="Unbias" func="yes">
+            <Overload retVal="array float">
+                <Param name="array float aProbabilities" />
             </Overload>
         </KeyWord>
         
@@ -874,6 +902,9 @@
         <KeyWord name="Chance" func="yes">
             <Overload retVal="null">
                 <Param name="float fProbability" />
+            </Overload>
+            <Overload retVal="null">
+                <Param name="array float aProbabilities" />
             </Overload>
         </KeyWord>
         
