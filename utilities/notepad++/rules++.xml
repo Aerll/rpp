@@ -435,6 +435,15 @@
         
         
         
+        <!-- util:Unbias -->
+        <KeyWord name="util:Unbias" func="yes">
+            <Overload retVal="array float">
+                <Param name="array float aProbabilities" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
         
         
         <!-- ******************************************************************
@@ -511,15 +520,6 @@
             </Overload>
             <Overload retVal="coord">
                 <Param name="coord cValue" />
-            </Overload>
-        </KeyWord>
-        
-        
-        
-        <!-- Unbias -->
-        <KeyWord name="Unbias" func="yes">
-            <Overload retVal="array float">
-                <Param name="array float aProbabilities" />
             </Overload>
         </KeyWord>
         

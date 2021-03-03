@@ -45,6 +45,9 @@ void RulesGen::exec(std::vector<AutoMapper>& automappers, const std::filesystem:
             rulesFile << "[" << automapper.name << "]\n\n";
 
             for (auto& run : automapper.runs) {
+                if (run.rules.empty())
+                    continue;
+
                 run.rules.erase(util::removeDuplicates(run.rules.begin(), run.rules.end()), run.rules.end());
 
                 for (uint32_t i = 0; i < run.copies; ++i) {

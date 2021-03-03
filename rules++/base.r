@@ -2,6 +2,8 @@
 ///////////////////////////////////////
 // NYI
 // - InsertObject.At(coord)
+// - Insert.Chance working with Config
+// - Proper handling of mixed pos rules for objects
 
 ///////////////////////////////////////
 // global variables (internal)
@@ -896,6 +898,39 @@ end
 
 
 
+function->array float util:Unbias(array float aProbabilities)
+
+//
+    if (s:debug)
+        if (aProbabilities.count == 0)
+            error("Unbias(array float aProbabilities) -> aProbabilities cannot be empty.");
+        end
+    end
+//
+
+    float fSum = util:SumOf(aProbabilities);
+    
+    array float aClamped;
+    if (fSum > 100.0)
+        aClamped = util:Normalize(aProbabilities, 100.0);
+    end
+    if (fSum <= 100.0)
+        aClamped = aProbabilities;
+    end
+    
+    float fRemaining = 100.0;
+    
+    array float aResult;
+    for (i = 0 to aClamped.last)
+        float fUnbiased = 100.0 / (aClamped[i] / fRemaining * 100.0);
+        fRemaining = fRemaining - aClamped[i];
+        aResult.push(fUnbiased);
+    end
+    return aResult;
+end
+
+
+
 
 
 ///////////////////////////////////////
@@ -1079,6 +1114,14 @@ function->object Rect(int iTopLeft, int iBottomRight)
     coord cTopLeft = iTopLeft;
     coord cBottomRight = iBottomRight;
     
+//
+    if (s:debug)
+        if (cTopLeft.x > cBottomRight.x or cTopLeft.y > cBottomRight.y)
+            warning("Rect(int iTopLeft, int iBottomRight) -> iTopLeft is not a top left corner of the rectangle.");
+        end
+    end
+//
+    
     array int aResult;
     for (x = cTopLeft.x to cBottomRight.x)
         for (y = cTopLeft.y to cBottomRight.y)
@@ -1104,39 +1147,6 @@ end
 
 
 
-function->array float Unbias(array float aProbabilities)
-
-//
-    if (s:debug)
-        if (aProbabilities.count == 0)
-            error("Unbias(array float aProbabilities) -> aProbabilities cannot be empty.");
-        end
-    end
-//
-
-    float fSum = util:SumOf(aProbabilities);
-    
-    array float aClamped;
-    if (fSum > 100.0)
-        aClamped = util:Normalize(aProbabilities, 100.0);
-    end
-    if (fSum <= 100.0)
-        aClamped = aProbabilities;
-    end
-    
-    float fRemaining = 100.0;
-    
-    array float aResult;
-    for (i = 0 to aClamped.last)
-        float fUnbiased = 100.0 / (aClamped[i] / fRemaining * 100.0);
-        fRemaining = fRemaining - aClamped[i];
-        aResult.push(fUnbiased);
-    end
-    return aResult;
-end
-
-
-
 ///////////////////////////////////////
 //
 bool g:runInsertTests = false;
@@ -1147,7 +1157,12 @@ bool g:callInsertConfig = true;
 bool g:runIndexAtNewruleCheck = false;
 bool g:createNewruleInsert = true;
 
+bool g:hasThis = false;
+
+array float g:argInsertChance;
 int g:argInsertChanceIndex = 0;
+
+float g:totalChance = 1.0;
 /******************************************************************************
 
 */
@@ -1160,7 +1175,7 @@ function->null internal:InsertResetFlags()
     g:runIndexAtNewruleCheck = false;
     g:createNewruleInsert = true;
     
-    g:argInsertChanceIndex = 0;
+    g:hasThis = false;
 end
 
 
@@ -1186,8 +1201,8 @@ function->null Insert(array int aIndices)
             end
         end
     end
-//    
-    
+//
+
     g:runIndexAtNewruleCheck = true;
     util:ResetSettings(g:resetInsert);
     invoke(nested);
@@ -1196,9 +1211,47 @@ function->null Insert(array int aIndices)
     g:runInsertTests = true;
 
     array int aArray = util:ConfigUpdateIndices(aIndices, g:updateInsert);
-    for (i = 0 to aArray.last)
-        g:vInsertIndex = aArray[i];
     
+    array float aProbabilities;
+    if (g:argInsertChance.count > 0 and g:runInsertRoll == false)
+        for (i = 0 to aArray.last)
+            aProbabilities.push(g:argInsertChance[g:argInsertChanceIndex]);
+            
+            g:argInsertChanceIndex = g:argInsertChanceIndex + 1;
+            if (g:argInsertChanceIndex > g:argInsertChance.last)
+                g:argInsertChanceIndex = 0;
+            end
+        end
+        g:argInsertChance = util:Unbias(aProbabilities);
+        
+        float fSum = util:SumOf(aProbabilities);
+        if (fSum >= 100.0)
+            g:totalChance = 1.0;
+        end
+        if (fSum < 100.0)
+            g:totalChance = 100.0 / fSum;
+        end
+    end
+    if (g:argInsertChance.count == 0 and g:runInsertRoll == false)
+        for (i = 0 to aArray.last)
+            aProbabilities.push(1.0);
+        end
+        g:argInsertChance = aProbabilities;
+    end
+    if (g:runInsertRoll)
+        for (i = 0 to aArray.last)
+            aProbabilities.push(aArray.count - i);
+        end
+        g:argInsertChance = aProbabilities;
+    end
+    
+    if (g:hasThis == false)
+        if (aArray.count > 1)
+            g:vInsertIndex = g:mask;
+        end
+        if (aArray.count == 1)
+            g:vInsertIndex = aArray[0];
+        end
         if (g:insertUseEmpty)
             insert.newrule;
             util:InsertIndex(g:vInsertIndex);
@@ -1211,16 +1264,63 @@ function->null Insert(array int aIndices)
                 util:InsertIndex(g:vInsertIndex);
             end
         end
-        if (g:runInsertRoll)
-            util:Chance(aArray.count - i);
-        end
+        util:Chance(g:totalChance);
         
         invoke(nested);
     end
+    
+    g:totalChance = 1.0;
+    g:argInsertChanceIndex = 0;
+    
+    if (aArray.count > 1)
+        if (g:hasThis == false)
+            insert.newrun = 1;
+            insert.nocopy;
+        end
+        for (i = 0 to aArray.last)
+            g:vInsertIndex = aArray[i];
+            
+            if (g:hasThis == false)
+                insert.newrule;
+                util:InsertIndex(g:vInsertIndex);
+                insert.rule.pos = [0, 0];
+                util:Is(g:mask);                
+                
+                util:Chance(g:argInsertChance[g:argInsertChanceIndex]);
+            end
+            if (g:hasThis)
+                if (g:insertUseEmpty)
+                    insert.newrule;
+                    util:InsertIndex(g:vInsertIndex);
+                    insert.rule.pos = [0, 0];
+                    insert.rule.pos.type = empty;
+                end
+                if (g:insertUseEmpty == false)
+                    if (g:createNewruleInsert)
+                        insert.newrule;
+                        util:InsertIndex(g:vInsertIndex);
+                    end
+                end
+                
+                util:Chance(g:argInsertChance[g:argInsertChanceIndex]);                
+                invoke(nested);
+            end            
+            
+            g:argInsertChanceIndex = g:argInsertChanceIndex + 1;
+        end
+        NewRun();
+    end
     internal:InsertResetFlags();
     
-    array int aEmpty;
-    g:vTestIndices = aEmpty;
+    if (true)
+        array int aEmpty;
+        g:vTestIndices = aEmpty;
+    end
+    if (true)
+        array float aEmpty;
+        g:argInsertChance = aEmpty;
+    end
+    g:argInsertChanceIndex = 0;
 end
 
 
@@ -1288,14 +1388,9 @@ nested function->null Insert.Chance(array float aProbabilities)
         end
     end
 //
-
-    if (g:runInsertTests and g:callInsertNested and g:runInsertRoll == false)
-        util:Chance(aProbabilities[g:argInsertChanceIndex]);
-        
-        g:argInsertChanceIndex = g:argInsertChanceIndex + 1;
-        if (g:argInsertChanceIndex > aProbabilities.last)
-            g:argInsertChanceIndex = 0;
-        end
+    
+    if (g:runInsertTests == false and g:callInsertNested and g:runInsertRoll == false)
+        g:argInsertChance = aProbabilities;
     end
 end
 
@@ -1356,14 +1451,14 @@ bool g:callIndexAtIsOut            = false;
 bool g:callIndexAtIsNotOut         = false;
 bool g:callIndexAtIsEdge           = false;
 bool g:callIndexAtIsNotEdge        = false;
+bool g:callIndexAtIsNextTo         = false;
 bool g:callIndexAtIsNotNextTo      = false;
 bool g:callIndexAtIsWall           = false;
 bool g:callIndexAtIsOuterCorner    = false;
 bool g:callIndexAtIsInnerCorner    = false;
 bool g:callIndexAtHasSpaceFor      = false;
-bool g:callIndexAtIsNotOverlapping = false;
-bool g:callIndexAtIsNextTo         = false;
 bool g:callIndexAtIsOverlapping    = false;
+bool g:callIndexAtIsNotOverlapping = false;
 
 bool g:updateArgIndexAtIs = true;
 array int g:argIndexAtIs;
@@ -1432,8 +1527,8 @@ function->null internal:IndexAtResetFlags()
     g:callIndexAtIsOuterCorner    = false;
     g:callIndexAtIsInnerCorner    = false;
     g:callIndexAtHasSpaceFor      = false;
-    g:callIndexAtIsNotOverlapping = false;
     g:callIndexAtIsOverlapping    = false;
+    g:callIndexAtIsNotOverlapping = false;
 
     g:updateArgIndexAtIs               = true;
     g:updateArgIndexAtIsNot            = true;
@@ -1496,7 +1591,7 @@ function->bool IndexAt(array coord aCoords)
         IsNextTo, IsNotNextTo,
         IsWall, IsOuterCorner, IsInnerCorner,
         HasSpaceFor,
-        IsNotOverlapping, IsOverlapping
+        IsOverlapping, IsNotOverlapping
     )
     
 //
@@ -1634,10 +1729,6 @@ end
 
 nested function->bool IndexAt.IsNot(array int aIndices)
 
-    if (g:runIndexAtNewruleCheck)
-        return false;
-    end
-
 //
     if (s:debug)
         if (aIndices.count == 0)
@@ -1652,6 +1743,13 @@ nested function->bool IndexAt.IsNot(array int aIndices)
         end
     end
 //
+
+    if (g:runIndexAtNewruleCheck)
+        if (aIndices.has(this))
+            g:hasThis = true;
+        end
+        return false;
+    end
     
     if (g:runIndexAtTests == false)
         g:callIndexAtIsNot = true;
@@ -2411,10 +2509,6 @@ end
 
 nested function->bool IndexAt.IsNotNextTo(array int aIndices)
 
-    if (g:runIndexAtNewruleCheck)
-        return false;
-    end
-
 //
     if (s:debug)
         if (aIndices.count == 0)
@@ -2429,6 +2523,13 @@ nested function->bool IndexAt.IsNotNextTo(array int aIndices)
         end
     end
 //
+
+    if (g:runIndexAtNewruleCheck)
+        if (aIndices.has(this))
+            g:hasThis = true;
+        end
+        return false;
+    end
     
     if (g:runIndexAtTests == false)
         g:callIndexAtIsNotNextTo = true;
@@ -2533,6 +2634,7 @@ function->null internal:IndexAtIsNextTo()
         util:InsertIndex(g:vInsertIndex);
         insert.rule.pos = [-1, 0];
         util:Is(iIndex);
+        util:Chance(g:argInsertChance[g:argInsertChanceIndex]);
         
         internal:IndexAtExecuteCalls();
         
@@ -2540,6 +2642,7 @@ function->null internal:IndexAtIsNextTo()
         util:InsertIndex(g:vInsertIndex);
         insert.rule.pos = [0, -1];
         util:Is(iIndex);
+        util:Chance(g:argInsertChance[g:argInsertChanceIndex]);
         
         internal:IndexAtExecuteCalls();
         
@@ -2547,6 +2650,7 @@ function->null internal:IndexAtIsNextTo()
         util:InsertIndex(g:vInsertIndex);
         insert.rule.pos = [1, 0];
         util:Is(iIndex);
+        util:Chance(g:argInsertChance[g:argInsertChanceIndex]);
         
         internal:IndexAtExecuteCalls();
         
@@ -2554,6 +2658,7 @@ function->null internal:IndexAtIsNextTo()
         util:InsertIndex(g:vInsertIndex);
         insert.rule.pos = [0, 1];
         util:Is(iIndex);
+        util:Chance(g:argInsertChance[g:argInsertChanceIndex]);
         
         internal:IndexAtExecuteCalls();
     end
@@ -2588,6 +2693,23 @@ nested function->bool IndexAt.IsNextTo(array int aIndices)
         
         g:argIndexAtIsNextTo = aIndices;
         return false;
+    end
+    
+    if (g:updateArgIndexAtIs and g:callIndexAtIs)
+        g:argIndexAtIs = util:ConfigUpdateIndices(g:argIndexAtIs, g:updateCheck);
+        g:updateArgIndexAtIs = false;
+    end
+    if (g:updateArgIndexAtIsNot and g:callIndexAtIsNot)
+        g:argIndexAtIsNot = util:ConfigUpdateIndices(g:argIndexAtIsNot, g:updateCheck);
+        g:updateArgIndexAtIsNot = false;
+    end
+    if (g:updateArgIndexAtIsNotNextTo and g:callIndexAtIsNotNextTo)
+        g:argIndexAtIsNotNextTo = util:ConfigUpdateIndices(g:argIndexAtIsNotNextTo, g:updateCheck);
+        g:updateArgIndexAtIsNotNextTo = false;
+    end
+    if (g:updateArgIndexAtIsNotOverlapping and g:callIndexAtIsNotOverlapping)
+        g:argIndexAtIsNotOverlapping = util:ConfigUpdateObjects(g:argIndexAtIsNotOverlapping, g:updateCheck);
+        g:updateArgIndexAtIsNotOverlapping = false;
     end
     
     if (g:updateArgIndexAtIsNextTo and g:callIndexAtIsNextTo)
@@ -2655,6 +2777,7 @@ nested function->bool IndexAt.IsOverlapping(array object aObjects)
             util:InsertIndex(g:vInsertIndex);
             insert.rule.pos = cPos;
             util:Is(cAnchor);
+            util:Chance(g:argInsertChance[g:argInsertChanceIndex]);
             
             internal:IndexAtExecuteCalls();
             
@@ -2959,7 +3082,7 @@ function->bool Object()
         HasSpace, Fits, IsOver,
         IsEdge, IsNotEdge,
         IsNextTo, IsNotNextTo,
-        IsNotOverlapping, IsOverlapping
+        IsOverlapping, IsNotOverlapping
     )
 
     if (g:runInsertObjectTests == false)
