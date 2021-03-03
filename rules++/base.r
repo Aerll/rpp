@@ -1222,7 +1222,6 @@ function->null Insert(array int aIndices)
                 g:argInsertChanceIndex = 0;
             end
         end
-        g:argInsertChance = util:Unbias(aProbabilities);
         
         float fSum = util:SumOf(aProbabilities);
         if (fSum >= 100.0)
@@ -1231,6 +1230,8 @@ function->null Insert(array int aIndices)
         if (fSum < 100.0)
             g:totalChance = 100.0 / fSum;
         end
+        
+        g:argInsertChance = util:Unbias(util:Normalize(aProbabilities, 100.0));
     end
     if (g:argInsertChance.count == 0 and g:runInsertRoll == false)
         for (i = 0 to aArray.last)
