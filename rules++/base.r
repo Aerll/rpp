@@ -1175,9 +1175,10 @@ end
 
 
 
-function->null internal:UpdateProbabilities(int iLast)
+function->null internal:UpdateProbabilities(int iLast, bool bNormalize)
 
     array float aProbabilities;
+    
     if (g:roll == false)
         if (g:randomize)
             for (i = 0 to iLast)
@@ -1190,14 +1191,14 @@ function->null internal:UpdateProbabilities(int iLast)
             end
             
             float fSum = util:SumOf(aProbabilities);
-            if (fSum >= 100.0)
-                g:totalChance = 1.0;
-            end
             if (fSum < 100.0)
                 g:totalChance = 100.0 / fSum;
             end
             
-            g:argInsertChance = util:Unbias(util:Normalize(aProbabilities, 100.0));
+            if (bNormalize)
+                aProbabilities = util:Normalize(aProbabilities, 100.0);
+            end
+            g:argInsertChance = util:Unbias(aProbabilities);
         end
         if (g:randomize == false)
             for (i = 0 to iLast)
@@ -1246,7 +1247,7 @@ function->null Insert(array int aIndices)
     
     array int aArray = util:ConfigUpdateIndices(aIndices, g:updateInsert);
     
-    internal:UpdateProbabilities(aArray.last);
+    internal:UpdateProbabilities(aArray.last, true);
     
     if (g:hasThis == false)
         if (aArray.count > 1)
@@ -2425,7 +2426,7 @@ function->null InsertObject(array object aObjects)
     
     array object aArray = util:ConfigUpdateObjects(aObjects, g:updateInsert);
     
-    internal:UpdateProbabilities(aArray.last);
+    internal:UpdateProbabilities(aArray.last, false);
     
     g:totalChance = 1.0;
     g:argInsertChanceIndex = 0;
