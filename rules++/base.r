@@ -1,9 +1,7 @@
 
 ///////////////////////////////////////
 // NYI
-// - InsertObject.At(coord)
 // - Insert.Chance working with Config
-// - Proper handling of mixed pos rules for objects
 
 ///////////////////////////////////////
 // global variables (internal)
@@ -1159,6 +1157,7 @@ end
 //
 bool g:initInsert = true;
 bool g:hasThis = false;
+bool g:hasAt = false;
 
 array float g:argInsertChance;
 int g:argInsertChanceIndex = 0;
@@ -1286,6 +1285,7 @@ end
 nested function->null Insert.At(coord cPos)
     
     if (g:initInsert)
+        g:hasAt = true;
         return;
     end
     
@@ -1491,7 +1491,7 @@ function->bool IndexAt(array coord aCoords)
     end
 //
 
-    if (g:initInsert)
+    if (g:initInsert or g:hasAt)
         return false;
     end
 
@@ -2361,6 +2361,7 @@ end
 function->null InsertObject(array object aObjects)
     nested(
         Config,
+        At,
         NoDefaultPosRule, Chance, Roll, If,
         TestIndices
     )
@@ -2422,6 +2423,45 @@ nested function->null InsertObject.Config(array int aSettings)
     if (g:initInsert)
         util:ConfigUpdate(aSettings, g:updateInsert);
     end
+end
+
+
+
+nested function->null InsertObject.At(coord cPos)
+    
+    if (g:initInsert)
+        g:hasAt = true;
+        return;
+    end
+    
+//
+    if (s:debug)
+        if (cPos.x < 0)
+            warning("InsertObject.At(coord cPos) -> cPos.x was negative, function had no effect.");
+            return;
+        end
+        if (cPos.y < 0)
+            warning("InsertObject.At(coord cPos) -> cPos.y was negative, function had no effect.");
+            return;
+        end
+    end
+//
+
+    coord cPosNegated = Negate(cPos);
+
+    insert.rule.pos = cPosNegated;
+    insert.rule.pos.type = notindex;
+    insert.rule.pos.index = -1;
+    
+    insert.rule.pos = [cPosNegated.x - 1, 0];
+    insert.rule.pos.type = index;
+    insert.rule.pos.index = -1;
+    
+    insert.rule.pos = [0, cPosNegated.y - 1];
+    insert.rule.pos.type = index;
+    insert.rule.pos.index = -1;
+    
+    insert.rule.nodefault;
 end
 
 
@@ -2523,7 +2563,7 @@ function->bool Object()
         IsOverlapping, IsNotOverlapping
     )
     
-    if (g:initInsert)
+    if (g:initInsert or g:hasAt)
         return false;
     end
 
