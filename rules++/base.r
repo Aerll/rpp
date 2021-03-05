@@ -1526,10 +1526,6 @@ end
 
 nested function->bool IndexAt.Is(array int aIndices)
 
-    if (g:initIndexAt)
-        return false;
-    end
-
 //
     if (s:debug)
         if (aIndices.count == 0)
@@ -1538,19 +1534,28 @@ nested function->bool IndexAt.Is(array int aIndices)
         end
 
         for (i = 0 to aIndices.last)
-            if (aIndices[i] < -1 or aIndices[i] > 255)
+            if ((aIndices[i] < -1 or aIndices[i] > 255) and aIndices[i] != this)
                 error("IndexAt.Is(array int aIndices) -> values need to be in range [-1-255].");
             end
         end
     end
 //
 
+    if (g:initIndexAt)
+        if (aIndices.has(this))
+            g:hasThis = true;
+        end
+        return false;
+    end
+
     array int aArray = util:ConfigUpdateIndices(aIndices, g:updateCheck);
 
     insert.rule.pos = g:posIndexAt;
     insert.rule.pos.type = index;
     for (i = 0 to aArray.last)
-        insert.rule.pos.index = aArray[i];
+        int iIndex = aArray[i];
+        if (iIndex != this) insert.rule.pos.index = iIndex; end
+        if (iIndex == this) insert.rule.pos.index = g:vInsertIndex; end
     end
     return true;
 end
@@ -1578,6 +1583,7 @@ nested function->bool IndexAt.IsNot(array int aIndices)
         if (aIndices.has(this))
             g:hasThis = true;
         end
+        return false;
     end
 
     array int aArray = util:ConfigUpdateIndices(aIndices, g:updateCheck);
@@ -1586,12 +1592,8 @@ nested function->bool IndexAt.IsNot(array int aIndices)
     insert.rule.pos.type = notindex;
     for (i = 0 to aArray.last)
         int iIndex = aArray[i];
-        if (iIndex != this)
-            insert.rule.pos.index = iIndex;
-        end
-        if (iIndex == this)
-            insert.rule.pos.index = g:vInsertIndex;
-        end
+        if (iIndex != this) insert.rule.pos.index = iIndex; end
+        if (iIndex == this) insert.rule.pos.index = g:vInsertIndex; end
     end
     return true;
 end
@@ -1887,10 +1889,6 @@ end
 
 nested function->bool IndexAt.IsNextTo(array int aIndices)
 
-    if (g:initIndexAt)
-        return false;
-    end
-
 //
     if (s:debug)
         if (aIndices.count == 0)
@@ -1899,12 +1897,19 @@ nested function->bool IndexAt.IsNextTo(array int aIndices)
         end
 
         for (i = 0 to aIndices.last)
-            if (aIndices[i] < -1 or aIndices[i] > 255)
+            if ((aIndices[i] < -1 or aIndices[i] > 255) and aIndices[i] != this)
                 error("IndexAt.IsNextTo(array int aIndices) -> values need to be in range [-1-255].");
             end
         end
     end
 //
+
+    if (g:initIndexAt)
+        if (aIndices.has(this))
+            g:hasThis = true;
+        end
+        return false;
+    end
 
     array int aArray = util:ConfigUpdateIndices(aIndices, g:updateCheck);
     
@@ -1916,25 +1921,29 @@ nested function->bool IndexAt.IsNextTo(array int aIndices)
     
         insert.rule.pos = [iX - 1, iY];
         insert.rule.pos.type = index;
-        insert.rule.pos.index = iIndex;
+        if (iIndex != this) insert.rule.pos.index = iIndex; end
+        if (iIndex == this) insert.rule.pos.index = g:vInsertIndex; end
         insert.rule.pos.operator = g:or;
         insert.rule.pos.group = g:group;
         
         insert.rule.pos = [iX, iY - 1];
         insert.rule.pos.type = index;
-        insert.rule.pos.index = iIndex;
+        if (iIndex != this) insert.rule.pos.index = iIndex; end
+        if (iIndex == this) insert.rule.pos.index = g:vInsertIndex; end
         insert.rule.pos.operator = g:or;
         insert.rule.pos.group = g:group;
         
         insert.rule.pos = [iX + 1, iY];
         insert.rule.pos.type = index;
-        insert.rule.pos.index = iIndex;
+        if (iIndex != this) insert.rule.pos.index = iIndex; end
+        if (iIndex == this) insert.rule.pos.index = g:vInsertIndex; end
         insert.rule.pos.operator = g:or;
         insert.rule.pos.group = g:group;
         
         insert.rule.pos = [iX, iY + 1];
         insert.rule.pos.type = index;
-        insert.rule.pos.index = iIndex;
+        if (iIndex != this) insert.rule.pos.index = iIndex; end
+        if (iIndex == this) insert.rule.pos.index = g:vInsertIndex; end
         insert.rule.pos.operator = g:or;
         insert.rule.pos.group = g:group;
     end
@@ -1977,40 +1986,25 @@ nested function->bool IndexAt.IsNotNextTo(array int aIndices)
     for (i = 0 to aArray.last)
         int iIndex = aArray[i];
     
-        if (iIndex != this)
-            insert.rule.pos = [iX - 1, iY];
-            insert.rule.pos.type = notindex;
-            insert.rule.pos.index = iIndex;
-            
-            insert.rule.pos = [iX, iY - 1];
-            insert.rule.pos.type = notindex;
-            insert.rule.pos.index = iIndex;
-            
-            insert.rule.pos = [iX + 1, iY];
-            insert.rule.pos.type = notindex;
-            insert.rule.pos.index = iIndex;
-            
-            insert.rule.pos = [iX, iY + 1];
-            insert.rule.pos.type = notindex;
-            insert.rule.pos.index = iIndex;
-        end
-        if (iIndex == this)
-            insert.rule.pos = [iX - 1, iY];
-            insert.rule.pos.type = notindex;
-            insert.rule.pos.index = g:vInsertIndex;
-            
-            insert.rule.pos = [iX, iY - 1];
-            insert.rule.pos.type = notindex;
-            insert.rule.pos.index = g:vInsertIndex;
-            
-            insert.rule.pos = [iX + 1, iY];
-            insert.rule.pos.type = notindex;
-            insert.rule.pos.index = g:vInsertIndex;
-            
-            insert.rule.pos = [iX, iY + 1];
-            insert.rule.pos.type = notindex;
-            insert.rule.pos.index = g:vInsertIndex;
-        end
+        insert.rule.pos = [iX - 1, iY];
+        insert.rule.pos.type = notindex;
+        if (iIndex != this) insert.rule.pos.index = iIndex; end
+        if (iIndex == this) insert.rule.pos.index = g:vInsertIndex; end
+        
+        insert.rule.pos = [iX, iY - 1];
+        insert.rule.pos.type = notindex;
+        if (iIndex != this) insert.rule.pos.index = iIndex; end
+        if (iIndex == this) insert.rule.pos.index = g:vInsertIndex; end
+        
+        insert.rule.pos = [iX + 1, iY];
+        insert.rule.pos.type = notindex;
+        if (iIndex != this) insert.rule.pos.index = iIndex; end
+        if (iIndex == this) insert.rule.pos.index = g:vInsertIndex; end
+        
+        insert.rule.pos = [iX, iY + 1];
+        insert.rule.pos.type = notindex;
+        if (iIndex != this) insert.rule.pos.index = iIndex; end
+        if (iIndex == this) insert.rule.pos.index = g:vInsertIndex; end
     end
     return true;
 end
