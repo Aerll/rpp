@@ -21,6 +21,7 @@
         <KeyWord name="for" />
         <KeyWord name="full" />
         <KeyWord name="function" />
+        <KeyWord name="group" />
         <KeyWord name="if" />
         <KeyWord name="index" />
         <KeyWord name="insert" />
@@ -35,6 +36,7 @@
         <KeyWord name="notindex" />
         <KeyWord name="null" />
         <KeyWord name="object" />
+        <KeyWord name="operator" />
         <KeyWord name="or" />
         <KeyWord name="pos" />
         <KeyWord name="preset" />
@@ -730,7 +732,7 @@
         <!-- InsertObject -->
         <KeyWord name="InsertObject" func="yes">
             <Overload retVal="null">
-                <Param name="object oObject" />
+                <Param name="array object aObjects" />
             </Overload>
         </KeyWord>
         

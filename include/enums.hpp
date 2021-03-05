@@ -38,6 +38,11 @@ enum class Order {
     RightToLeft,
 };
 
+enum class Op {
+    And = 0,
+    Or = 1,
+};
+
 enum class ValueType {
     Null    = 0,
     Bool    = 1 << 0,
@@ -213,6 +218,8 @@ enum class InsertC {
     Pos         = 1 << 8,
     Index       = 1 << 9,
     Type        = 1 << 10,
+    Operator    = 1 << 11,
+    Group       = 1 << 12,
 
     InsertAutomapper            = Insert | Automapper,
     InsertNewrun                = Insert | Newrun,
@@ -223,6 +230,8 @@ enum class InsertC {
     InsertRulePos               = Insert | Rule | Pos,
     InsertRulePosType           = Insert | Rule | Pos | Type,
     InsertRulePosIndex          = Insert | Rule | Pos | Index,
+    InsertRulePosOperator       = Insert | Rule | Pos | Operator,
+    InsertRulePosGroup          = Insert | Rule | Pos | Group,
     InsertRuleIndex             = Insert | Rule | Index,
 };
 

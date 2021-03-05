@@ -877,6 +877,10 @@ InsertC AbstractSyntaxTree::convertInsertControl(PTMemberAccessExpression& expre
             control |= InsertC::Index;
         else if (right->value == KW::Type)
             control |= InsertC::Type;
+        else if (right->value == KW::Operator)
+            control |= InsertC::Operator;
+        else if (right->value == KW::Group)
+            control |= InsertC::Group;
     }
     else
         control |= convertInsertControl(static_cast<PTMemberAccessExpression&>(*expression.get<3>()));

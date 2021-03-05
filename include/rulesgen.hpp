@@ -23,6 +23,7 @@
 #define RPP_RULESGEN_HPP
 
 #include <filesystem>
+#include <fstream>
 
 struct AutoMapper;
 struct Rule;
@@ -33,8 +34,25 @@ public:
     static void exec(std::vector<AutoMapper>& automappers, const std::filesystem::path& outputPath, const std::filesystem::path& tileset);
 
 private:
+    static void generatePosRule(PosRule& rule, bool runOptimize, std::ofstream& rulesFile);
     static void optimize(Rule& rule);
     static void optimize(PosRule& rule);
+    static std::vector<std::vector<PosRule>> getOrPosRules(Rule& rule);
+    static void removeOrPosRules(Rule& rule);
+};
+
+class Combinator final {
+public:
+    Combinator(std::vector<std::vector<PosRule>>& vectors);
+
+    bool next();
+
+    std::vector<std::vector<PosRule>::iterator> combination() const
+        { return m_combination; }
+
+private:
+    std::vector<std::vector<PosRule>>& m_vectors;
+    std::vector<std::vector<PosRule>::iterator> m_combination;
 };
 
 #endif // RPP_RULESGEN_HPP

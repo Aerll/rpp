@@ -71,6 +71,7 @@ bool Token::isKeyword(const std::string& s) noexcept
                 s == KW::Error ||
                 s == KW::False ||
                 s == KW::Float ||
+                s == KW::Group ||
                 s == KW::Index ||
                 s == KW::Range
                 ) return true;
@@ -97,7 +98,8 @@ bool Token::isKeyword(const std::string& s) noexcept
 
         case 8:
             if (s == KW::Function ||
-                s == KW::Notindex
+                s == KW::Notindex ||
+                s == KW::Operator
                 ) return true;
 
         case 9:

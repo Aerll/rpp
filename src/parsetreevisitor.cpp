@@ -69,6 +69,12 @@ std::unique_ptr<Error> PTStatementVisitor::parse(PTExprStatement& node)
                     (node.get<1>()->hasKW(KW::Pos) && (
                         node.get<1>()->hasKW(KW::Index)
                         )) ||
+                    (node.get<1>()->hasKW(KW::Pos) && (
+                        node.get<1>()->hasKW(KW::Operator)
+                        )) ||
+                    (node.get<1>()->hasKW(KW::Pos) && (
+                        node.get<1>()->hasKW(KW::Group)
+                        )) ||
                     node.get<1>()->hasKW(KW::Pos)
                     )) ||
                     node.get<1>()->hasKW(KW::Index)
@@ -585,8 +591,10 @@ std::unique_ptr<Error> PTExpressionVisitor::parse(PTAssignmentExpression& node)
     if ((leftLastToken->cat == TIdentifier) ||
         (leftLastToken->cat == TKeyword && (
             leftLastToken->value == KW::Automapper ||
+            leftLastToken->value == KW::Group ||
             leftLastToken->value == KW::Index ||
             leftLastToken->value == KW::Newrun ||
+            leftLastToken->value == KW::Operator ||
             leftLastToken->value == KW::Pos ||
             leftLastToken->value == KW::Random ||
             leftLastToken->value == KW::Type
@@ -1004,12 +1012,14 @@ std::unique_ptr<Error> PTExpressionVisitor::parse(PTMemberAccessExpression& node
             rightLastToken->value == KW::Automapper ||
             rightLastToken->value == KW::Count ||
             rightLastToken->value == KW::Index ||
+            rightLastToken->value == KW::Group ||
             rightLastToken->value == KW::Last ||
             rightLastToken->value == KW::Newrule ||
             rightLastToken->value == KW::Newrun ||
             rightLastToken->value == KW::Nocopy ||
             rightLastToken->value == KW::Nodefault ||
             rightLastToken->value == KW::Notindex ||
+            rightLastToken->value == KW::Operator ||
             rightLastToken->value == KW::Pos ||
             rightLastToken->value == KW::Random ||
             rightLastToken->value == KW::Rotate ||
@@ -1035,6 +1045,8 @@ std::unique_ptr<Error> PTExpressionVisitor::parse(PTMemberAccessExpression& node
                    -> index
                    -> pos -> type
                           -> index
+                          -> operator
+                          -> group
     */
     if (node.get<1>()->id() == ExpressionID::Keyword && leftLastToken->value == KW::Insert) {
         if ((node.get<3>()->id() == ExpressionID::Keyword && (
@@ -1081,7 +1093,9 @@ std::unique_ptr<Error> PTExpressionVisitor::parse(PTMemberAccessExpression& node
     else if (node.get<1>()->id() == ExpressionID::Keyword && leftLastToken->value == KW::Pos) {
         if ((node.get<3>()->id() == ExpressionID::Keyword && (
                 rightLastToken->value == KW::Type ||
-                rightLastToken->value == KW::Index
+                rightLastToken->value == KW::Index ||
+                rightLastToken->value == KW::Operator ||
+                rightLastToken->value == KW::Group
                 ))
             ) {} // valid
         else if (node.get<3>()->id() == ExpressionID::MemberAccess) {

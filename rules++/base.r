@@ -62,6 +62,9 @@ array int g:vTestIndices;
 int g:intMax = 2147483647;
 int g:intMin = -2147483648;
 
+int g:and = 0;
+int g:or = 1;
+int g:group = 0;
 int g:mask = 255;
 
 
@@ -737,9 +740,7 @@ end
 
 function->null util:Chance(float fProbability)
 
-    if (fProbability > 1.001)
-        insert.rule.random = fProbability;
-    end
+    insert.rule.random = fProbability;
 end
 
 
@@ -910,12 +911,9 @@ function->array float util:Unbias(array float aProbabilities)
 
     float fSum = util:SumOf(aProbabilities);
     
-    array float aClamped;
+    array float aClamped = aProbabilities;
     if (fSum > 100.0)
         aClamped = util:Normalize(aProbabilities, 100.0);
-    end
-    if (fSum <= 100.0)
-        aClamped = aProbabilities;
     end
     
     float fRemaining = 100.0;
@@ -931,14 +929,24 @@ end
 
 
 
-
-
+///////////////////////////////////////
+//
+bool g:randomize = false;
+bool g:roll      = false;
 ///////////////////////////////////////
 // internal utility functions
 ///////////////////////////////////////
 /******************************************************************************
 
 */
+function->null internal:ResetFlags()
+
+    g:randomize = false;
+    g:roll = false;
+end
+
+
+
 function->bool internal:TestIndicesEmpty()
 
     if (g:vTestIndices.count != 0)
@@ -1149,14 +1157,7 @@ end
 
 ///////////////////////////////////////
 //
-bool g:runInsertTests = false;
-bool g:runInsertRoll = false;
-bool g:callInsertNested = true;
-bool g:callInsertConfig = true;
-
-bool g:runIndexAtNewruleCheck = false;
-bool g:createNewruleInsert = true;
-
+bool g:initInsert = true;
 bool g:hasThis = false;
 
 array float g:argInsertChance;
@@ -1168,14 +1169,49 @@ float g:totalChance = 1.0;
 */
 function->null internal:InsertResetFlags()
 
-    g:runInsertTests = false;
-    g:runInsertRoll = false;
-    g:callInsertConfig = true;
+    g:initInsert = true;    
+    g:hasThis = false;  
+end
 
-    g:runIndexAtNewruleCheck = false;
-    g:createNewruleInsert = true;
-    
-    g:hasThis = false;
+
+
+function->null internal:UpdateProbabilities(int iLast)
+
+    array float aProbabilities;
+    if (g:roll == false)
+        if (g:randomize)
+            for (i = 0 to iLast)
+                aProbabilities.push(g:argInsertChance[g:argInsertChanceIndex]);
+                
+                g:argInsertChanceIndex = g:argInsertChanceIndex + 1;
+                if (g:argInsertChanceIndex > g:argInsertChance.last)
+                    g:argInsertChanceIndex = 0;
+                end
+            end
+            
+            float fSum = util:SumOf(aProbabilities);
+            if (fSum >= 100.0)
+                g:totalChance = 1.0;
+            end
+            if (fSum < 100.0)
+                g:totalChance = 100.0 / fSum;
+            end
+            
+            g:argInsertChance = util:Unbias(util:Normalize(aProbabilities, 100.0));
+        end
+        if (g:randomize == false)
+            for (i = 0 to iLast)
+                aProbabilities.push(1.0);
+            end
+            g:argInsertChance = aProbabilities;
+        end
+    end
+    if (g:roll)
+        for (i = 0 to iLast)
+            aProbabilities.push(iLast + 1 - i);
+        end
+        g:argInsertChance = aProbabilities;
+    end
 end
 
 
@@ -1203,48 +1239,14 @@ function->null Insert(array int aIndices)
     end
 //
 
-    g:runIndexAtNewruleCheck = true;
     util:ResetSettings(g:resetInsert);
-    invoke(nested);
-    g:runIndexAtNewruleCheck = false;
     
-    g:runInsertTests = true;
-
+    invoke(nested);
+    g:initInsert = false;
+    
     array int aArray = util:ConfigUpdateIndices(aIndices, g:updateInsert);
     
-    array float aProbabilities;
-    if (g:argInsertChance.count > 0 and g:runInsertRoll == false)
-        for (i = 0 to aArray.last)
-            aProbabilities.push(g:argInsertChance[g:argInsertChanceIndex]);
-            
-            g:argInsertChanceIndex = g:argInsertChanceIndex + 1;
-            if (g:argInsertChanceIndex > g:argInsertChance.last)
-                g:argInsertChanceIndex = 0;
-            end
-        end
-        
-        float fSum = util:SumOf(aProbabilities);
-        if (fSum >= 100.0)
-            g:totalChance = 1.0;
-        end
-        if (fSum < 100.0)
-            g:totalChance = 100.0 / fSum;
-        end
-        
-        g:argInsertChance = util:Unbias(util:Normalize(aProbabilities, 100.0));
-    end
-    if (g:argInsertChance.count == 0 and g:runInsertRoll == false)
-        for (i = 0 to aArray.last)
-            aProbabilities.push(1.0);
-        end
-        g:argInsertChance = aProbabilities;
-    end
-    if (g:runInsertRoll)
-        for (i = 0 to aArray.last)
-            aProbabilities.push(aArray.count - i);
-        end
-        g:argInsertChance = aProbabilities;
-    end
+    internal:UpdateProbabilities(aArray.last);
     
     if (g:hasThis == false)
         if (aArray.count > 1)
@@ -1253,17 +1255,12 @@ function->null Insert(array int aIndices)
         if (aArray.count == 1)
             g:vInsertIndex = aArray[0];
         end
+        
+        insert.newrule;
+        util:InsertIndex(g:vInsertIndex);
         if (g:insertUseEmpty)
-            insert.newrule;
-            util:InsertIndex(g:vInsertIndex);
             insert.rule.pos = [0, 0];
             insert.rule.pos.type = empty;
-        end
-        if (g:insertUseEmpty == false)
-            if (g:createNewruleInsert)
-                insert.newrule;
-                util:InsertIndex(g:vInsertIndex);
-            end
         end
         util:Chance(g:totalChance);
         
@@ -1281,37 +1278,29 @@ function->null Insert(array int aIndices)
         for (i = 0 to aArray.last)
             g:vInsertIndex = aArray[i];
             
+            insert.newrule;
+            util:InsertIndex(g:vInsertIndex);
+            
             if (g:hasThis == false)
-                insert.newrule;
-                util:InsertIndex(g:vInsertIndex);
                 insert.rule.pos = [0, 0];
-                util:Is(g:mask);                
-                
+                insert.rule.pos.type = index;
+                insert.rule.pos.index = g:mask;
                 util:Chance(g:argInsertChance[g:argInsertChanceIndex]);
             end
             if (g:hasThis)
                 if (g:insertUseEmpty)
-                    insert.newrule;
-                    util:InsertIndex(g:vInsertIndex);
                     insert.rule.pos = [0, 0];
                     insert.rule.pos.type = empty;
                 end
-                if (g:insertUseEmpty == false)
-                    if (g:createNewruleInsert)
-                        insert.newrule;
-                        util:InsertIndex(g:vInsertIndex);
-                    end
-                end
+                util:Chance(g:argInsertChance[g:argInsertChanceIndex]);    
                 
-                util:Chance(g:argInsertChance[g:argInsertChanceIndex]);                
                 invoke(nested);
             end            
             
             g:argInsertChanceIndex = g:argInsertChanceIndex + 1;
         end
-        NewRun();
+        insert.newrun = 1;
     end
-    internal:InsertResetFlags();
     
     if (true)
         array int aEmpty;
@@ -1322,16 +1311,17 @@ function->null Insert(array int aIndices)
         g:argInsertChance = aEmpty;
     end
     g:argInsertChanceIndex = 0;
+
+    internal:InsertResetFlags();
+    internal:ResetFlags();
 end
 
 
 
 nested function->null Insert.Config(array int aSettings)
 
-    if (g:callInsertConfig and g:callInsertNested)
+    if (g:initInsert)
         util:ConfigUpdate(aSettings, g:updateInsert);
-        
-        g:callInsertConfig = false;
     end
 end
 
@@ -1339,8 +1329,7 @@ end
 
 nested function->null Insert.At(coord cPos)
     
-    if (g:runInsertTests == false)
-        g:callInsertNested = false;
+    if (g:initInsert)
         return;
     end
     
@@ -1360,21 +1349,28 @@ nested function->null Insert.At(coord cPos)
     coord cPosNegated = Negate(cPos);
 
     insert.rule.pos = cPosNegated;
-    util:IsNotOut();
+    insert.rule.pos.type = notindex;
+    insert.rule.pos.index = -1;
+    
     insert.rule.pos = [cPosNegated.x - 1, 0];
-    util:IsOut();
+    insert.rule.pos.type = index;
+    insert.rule.pos.index = -1;
+    
     insert.rule.pos = [0, cPosNegated.y - 1];
-    util:IsOut();
-    util:NoDefaultPosRule();
+    insert.rule.pos.type = index;
+    insert.rule.pos.index = -1;
+    
+    insert.rule.nodefault;
 end
 
 
 
 nested function->null Insert.NoDefaultPosRule()
 
-    if (g:runInsertTests and g:callInsertNested)
-        util:NoDefaultPosRule();
+    if (g:initInsert)
+        return;
     end
+    insert.rule.nodefault;
 end
 
 
@@ -1390,8 +1386,10 @@ nested function->null Insert.Chance(array float aProbabilities)
     end
 //
     
-    if (g:runInsertTests == false and g:callInsertNested and g:runInsertRoll == false)
+    if (g:initInsert)
+        g:randomize = true;
         g:argInsertChance = aProbabilities;
+        return;
     end
 end
 
@@ -1399,7 +1397,10 @@ end
 
 nested function->null Insert.Roll()
 
-    g:runInsertRoll = true;
+    if (g:initInsert)
+        g:roll = true;
+        return;
+    end
 end
 
 
@@ -1410,10 +1411,6 @@ end
 
 
 nested function->null Insert.TestIndices(array int aIndices)
-
-    if (g:runInsertTests and g:callInsertNested)
-        return;
-    end
     
 //
     if (s:debug)
@@ -1430,61 +1427,19 @@ nested function->null Insert.TestIndices(array int aIndices)
     end
 //
 
-    g:vTestIndices = aIndices;
+    if (g:initInsert)
+        g:vTestIndices = aIndices;
+        return;
+    end
 end
 
 
 
 ///////////////////////////////////////
 //
+bool g:initIndexAt = true;
+
 coord g:posIndexAt = [0, 0];
-
-bool g:runIndexAtTests = false;
-bool g:callIndexAtConfig = true;
-
-bool g:callIndexAtIs               = false;
-bool g:callIndexAtIsNot            = false;
-bool g:callIndexAtIsEmpty          = false;
-bool g:callIndexAtIsEmptyAt        = false;
-bool g:callIndexAtIsFull           = false;
-bool g:callIndexAtIsFullAt         = false;
-bool g:callIndexAtIsOut            = false;
-bool g:callIndexAtIsNotOut         = false;
-bool g:callIndexAtIsEdge           = false;
-bool g:callIndexAtIsNotEdge        = false;
-bool g:callIndexAtIsNextTo         = false;
-bool g:callIndexAtIsNotNextTo      = false;
-bool g:callIndexAtIsWall           = false;
-bool g:callIndexAtIsOuterCorner    = false;
-bool g:callIndexAtIsInnerCorner    = false;
-bool g:callIndexAtHasSpaceFor      = false;
-bool g:callIndexAtIsOverlapping    = false;
-bool g:callIndexAtIsNotOverlapping = false;
-
-bool g:updateArgIndexAtIs = true;
-array int g:argIndexAtIs;
-
-bool g:updateArgIndexAtIsNot = true;
-array int g:argIndexAtIsNot;
-
-bool g:updateArgIndexAtIsNextTo = true;
-array int g:argIndexAtIsNextTo;
-
-bool g:updateArgIndexAtIsNotNextTo = true;
-array int g:argIndexAtIsNotNextTo;
-
-bool g:updateArgIndexAtIsNotOverlapping = true;
-array object g:argIndexAtIsNotOverlapping;
-
-array int g:argIndexAtIsEmptyAt;
-array int g:argIndexAtIsFullAt;
-array int g:argIndexAtIsNotEdge;
-array int g:argIndexAtIsWall;
-array int g:argIndexAtIsOuterCorner;
-array int g:argIndexAtIsInnerCorner;
-object g:argIndexAtHasSpaceFor;
-
-int g:argIndexAtIsEdge = 0;
 
 int g:borderTop         = 1;
 int g:borderRight       = 1;
@@ -1509,33 +1464,9 @@ int this        = 99999;
 */
 function->null internal:IndexAtResetFlags()
 
-    g:runIndexAtTests = false;
-    g:callIndexAtConfig = true;
-
-    g:callIndexAtIs               = false;
-    g:callIndexAtIsNot            = false;
-    g:callIndexAtIsEmpty          = false;
-    g:callIndexAtIsEmptyAt        = false;
-    g:callIndexAtIsFull           = false;
-    g:callIndexAtIsFullAt         = false;
-    g:callIndexAtIsOut            = false;
-    g:callIndexAtIsNotOut         = false;
-    g:callIndexAtIsEdge           = false;
-    g:callIndexAtIsNotEdge        = false;
-    g:callIndexAtIsNextTo         = false;
-    g:callIndexAtIsNotNextTo      = false;
-    g:callIndexAtIsWall           = false;
-    g:callIndexAtIsOuterCorner    = false;
-    g:callIndexAtIsInnerCorner    = false;
-    g:callIndexAtHasSpaceFor      = false;
-    g:callIndexAtIsOverlapping    = false;
-    g:callIndexAtIsNotOverlapping = false;
-
-    g:updateArgIndexAtIs               = true;
-    g:updateArgIndexAtIsNot            = true;
-    g:updateArgIndexAtIsNextTo         = true;
-    g:updateArgIndexAtIsNotNextTo      = true;
-    g:updateArgIndexAtIsNotOverlapping = true;
+    g:initIndexAt = true;
+    
+    g:posIndexAt = [0, 0];
 end
 
 
@@ -1604,25 +1535,15 @@ function->bool IndexAt(array coord aCoords)
     end
 //
 
-    if (g:runIndexAtNewruleCheck)
-        invoke(nested);
-        return true;
-    end
-    if (g:runInsertTests == false)
+    if (g:initInsert)
         return false;
     end
 
     util:ResetSettings(g:resetCheck);
     invoke(nested);
+    g:initIndexAt = false;
     
-    g:runInsertTests = true;
-    g:runIndexAtTests = true;
-    
-    for (i = 0 to aCoords.last)
-        if (g:callIndexAtIsNextTo == false and g:callIndexAtIsOverlapping == false)
-            insert.rule.pos = aCoords[i];
-        end
-        
+    for (i = 0 to aCoords.last)        
         g:posIndexAt = aCoords[i];
         invoke(nested);
         
@@ -1631,44 +1552,25 @@ function->bool IndexAt(array coord aCoords)
     end
     
     internal:IndexAtResetFlags();
+    internal:ResetFlags();
     return true;
 end
 
 
 
 nested function->bool IndexAt.Config(array int aSettings)
-
-    if (g:runIndexAtNewruleCheck)
-        return false;
-    end
     
-    if (g:callIndexAtConfig)
+    if (g:initIndexAt)
         util:ConfigUpdate(aSettings, g:updateCheck);
-        
-        g:callIndexAtConfig = false;
     end
     return true;
 end
 
 
 
-function->null internal:IndexAtIs()
-    
-    int iX = g:posIndexAt.x;
-    int iY = g:posIndexAt.y;
-
-    insert.rule.pos = [iX, iY];
-    insert.rule.pos.type = index;
-    for (i = 0 to g:argIndexAtIs.last)
-        insert.rule.pos.index = g:argIndexAtIs[i];
-    end
-end
-
-
-
 nested function->bool IndexAt.Is(array int aIndices)
 
-    if (g:runIndexAtNewruleCheck)
+    if (g:initIndexAt)
         return false;
     end
 
@@ -1686,44 +1588,15 @@ nested function->bool IndexAt.Is(array int aIndices)
         end
     end
 //
-    
-    if (g:runIndexAtTests == false)
-        g:callIndexAtIs = true;
-        
-        g:argIndexAtIs = aIndices;
-        return false;
+
+    array int aArray = util:ConfigUpdateIndices(aIndices, g:updateCheck);
+
+    insert.rule.pos = g:posIndexAt;
+    insert.rule.pos.type = index;
+    for (i = 0 to aArray.last)
+        insert.rule.pos.index = aArray[i];
     end
-    if (g:callIndexAtIsNextTo or g:callIndexAtIsOverlapping)
-        return false;
-    end
-    
-    if (g:updateArgIndexAtIs and g:callIndexAtIs)
-        g:argIndexAtIs = util:ConfigUpdateIndices(g:argIndexAtIs, g:updateCheck);
-        g:updateArgIndexAtIs = false;
-    end
-    
-    internal:IndexAtIs();
     return true;
-end
-
-
-
-function->null internal:IndexAtIsNot()
-    
-    int iX = g:posIndexAt.x;
-    int iY = g:posIndexAt.y;
-
-    insert.rule.pos = [iX, iY];
-    insert.rule.pos.type = notindex;
-    for (i = 0 to g:argIndexAtIsNot.last)
-        int iIndex = g:argIndexAtIsNot[i];
-        if (iIndex != this)
-            insert.rule.pos.index = g:argIndexAtIsNot[i];
-        end
-        if (iIndex == this)
-            insert.rule.pos.index = g:vInsertIndex;
-        end
-    end
 end
 
 
@@ -1745,111 +1618,46 @@ nested function->bool IndexAt.IsNot(array int aIndices)
     end
 //
 
-    if (g:runIndexAtNewruleCheck)
+    if (g:initIndexAt)
         if (aIndices.has(this))
             g:hasThis = true;
         end
-        return false;
     end
-    
-    if (g:runIndexAtTests == false)
-        g:callIndexAtIsNot = true;
-        
-        g:argIndexAtIsNot = aIndices;
-        return false;
+
+    array int aArray = util:ConfigUpdateIndices(aIndices, g:updateCheck);
+
+    insert.rule.pos = g:posIndexAt;
+    insert.rule.pos.type = notindex;
+    for (i = 0 to aArray.last)
+        int iIndex = aArray[i];
+        if (iIndex != this)
+            insert.rule.pos.index = iIndex;
+        end
+        if (iIndex == this)
+            insert.rule.pos.index = g:vInsertIndex;
+        end
     end
-    if (g:callIndexAtIsNextTo or g:callIndexAtIsOverlapping)
-        return false;
-    end
-    
-    if (g:updateArgIndexAtIsNot and g:callIndexAtIsNot)
-        g:argIndexAtIsNot = util:ConfigUpdateIndices(g:argIndexAtIsNot, g:updateCheck);
-        g:updateArgIndexAtIsNot = false;
-    end
-    
-    internal:IndexAtIsNot();
     return true;
-end
-
-
-
-function->null internal:IndexAtIsEmpty()
-
-    insert.rule.pos.type = empty;
 end
 
 
 
 nested function->bool IndexAt.IsEmpty()
 
-    if (g:runIndexAtNewruleCheck)
+    if (g:initIndexAt)
         return false;
     end
     
-    if (g:runIndexAtTests == false)
-        g:callIndexAtIsEmpty = true;
-        return false;
-    end
-    if (g:callIndexAtIsNextTo or g:callIndexAtIsOverlapping)
-        return false;
-    end
-    
-    internal:IndexAtIsEmpty();
+    insert.rule.pos = g:posIndexAt;
+    insert.rule.pos.type = empty;
     return true;
-end
-
-
-
-function->null internal:IndexAtIsEmptyAt()
-
-    array int aOrientations = g:argIndexAtIsEmptyAt;
-    
-    int iX = g:posIndexAt.x;
-    int iY = g:posIndexAt.y;
-    
-    for (i = 0 to aOrientations.last)
-        int iOrientation = aOrientations[i];
-    
-        if (iOrientation == top)
-            insert.rule.pos = [iX, iY - 1];
-            insert.rule.pos.type = empty;
-        end
-        if (iOrientation == right)
-            insert.rule.pos = [iX + 1, iY];
-            insert.rule.pos.type = empty;
-        end
-        if (iOrientation == bottom)
-            insert.rule.pos = [iX, iY + 1];
-            insert.rule.pos.type = empty;
-        end
-        if (iOrientation == left)
-            insert.rule.pos = [iX - 1, iY];
-            insert.rule.pos.type = empty;
-        end
-        if (iOrientation == topLeft)
-            insert.rule.pos = [iX - 1, iY - 1];
-            insert.rule.pos.type = empty;
-        end
-        if (iOrientation == topRight)
-            insert.rule.pos = [iX + 1, iY - 1];
-            insert.rule.pos.type = empty;
-        end
-        if (iOrientation == bottomLeft)
-            insert.rule.pos = [iX - 1, iY + 1];
-            insert.rule.pos.type = empty;
-        end
-        if (iOrientation == bottomRight)
-            insert.rule.pos = [iX + 1, iY + 1];
-            insert.rule.pos.type = empty;
-        end
-    end
 end
 
 
 
 nested function->bool IndexAt.IsEmptyAt(array int aOrientations)
 
-    if (g:runIndexAtNewruleCheck)
+    if (g:initIndexAt)
         return false;
     end
     
@@ -1862,52 +1670,77 @@ nested function->bool IndexAt.IsEmptyAt(array int aOrientations)
     end
 //
     
-    if (g:runIndexAtTests == false)
-        g:callIndexAtIsEmptyAt = true;
-        
-        g:argIndexAtIsEmptyAt = aOrientations;
-        return false;
+    int iX = g:posIndexAt.x;
+    int iY = g:posIndexAt.y;
+    
+    for (i = 0 to aOrientations.last)
+        int iOrientation = aOrientations[i];
+    
+        if (iOrientation == top)
+            insert.rule.pos = [iX, iY - 1];
+            insert.rule.pos.type = empty;
+        end
+        if (iOrientation == right)
+            insert.rule.pos = [iX + 1, iY];
+            insert.rule.pos.type = empty;
+        end
+        if (iOrientation == bottom)
+            insert.rule.pos = [iX, iY + 1];
+            insert.rule.pos.type = empty;
+        end
+        if (iOrientation == left)
+            insert.rule.pos = [iX - 1, iY];
+            insert.rule.pos.type = empty;
+        end
+        if (iOrientation == topLeft)
+            insert.rule.pos = [iX - 1, iY - 1];
+            insert.rule.pos.type = empty;
+        end
+        if (iOrientation == topRight)
+            insert.rule.pos = [iX + 1, iY - 1];
+            insert.rule.pos.type = empty;
+        end
+        if (iOrientation == bottomLeft)
+            insert.rule.pos = [iX - 1, iY + 1];
+            insert.rule.pos.type = empty;
+        end
+        if (iOrientation == bottomRight)
+            insert.rule.pos = [iX + 1, iY + 1];
+            insert.rule.pos.type = empty;
+        end
     end
-    if (g:callIndexAtIsNextTo or g:callIndexAtIsOverlapping)
-        return false;
-    end
-
-    internal:IndexAtIsEmptyAt();
     return true;
-end
-
-
-
-function->null internal:IndexAtIsFull()
-
-    insert.rule.pos.type = full;
 end
 
 
 
 nested function->bool IndexAt.IsFull()
 
-    if (g:runIndexAtNewruleCheck)
+    if (g:initIndexAt)
         return false;
     end
     
-    if (g:runIndexAtTests == false)
-        g:callIndexAtIsFull = true;
-        return false;
-    end
-    if (g:callIndexAtIsNextTo or g:callIndexAtIsOverlapping)
-        return false;
-    end
-    
-    internal:IndexAtIsFull();
+    insert.rule.pos = g:posIndexAt;
+    insert.rule.pos.type = full;
     return true;
 end
 
 
 
-function->null internal:IndexAtIsFullAt()
+nested function->bool IndexAt.IsFullAt(array int aOrientations)
 
-    array int aOrientations = g:argIndexAtIsFullAt;
+    if (g:initIndexAt)
+        return false;
+    end
+    
+//
+    if (s:debug)
+        if (aOrientations.count == 0)
+            warning("IndexAt.IsFullAt(array int aOrientations) -> aOrientations was empty, function had no effect.");
+            return false;
+        end
+    end
+//
 
     int iX = g:posIndexAt.x;
     int iY = g:posIndexAt.y;
@@ -1948,100 +1781,44 @@ function->null internal:IndexAtIsFullAt()
             insert.rule.pos.type = full;
         end
     end
-end
-
-
-
-nested function->bool IndexAt.IsFullAt(array int aOrientations)
-
-    if (g:runIndexAtNewruleCheck)
-        return false;
-    end
-    
-//
-    if (s:debug)
-        if (aOrientations.count == 0)
-            warning("IndexAt.IsFullAt(array int aOrientations) -> aOrientations was empty, function had no effect.");
-            return false;
-        end
-    end
-//
-    
-    if (g:runIndexAtTests == false)
-        g:callIndexAtIsFullAt = true;
-        
-        g:argIndexAtIsFullAt = aOrientations;
-        return false;
-    end
-    if (g:callIndexAtIsNextTo or g:callIndexAtIsOverlapping)
-        return false;
-    end
-
-    internal:IndexAtIsFullAt();
     return true;
-end
-
-
-
-function->null internal:IndexAtIsOut()
-
-    insert.rule.pos.type = index;
-    insert.rule.pos.index = -1;
 end
 
 
 
 nested function->bool IndexAt.IsOut()
 
-    if (g:runIndexAtNewruleCheck)
+    if (g:initIndexAt)
         return false;
     end
     
-    if (g:runIndexAtTests == false)
-        g:callIndexAtIsOut = true;
-        return false;
-    end
-    if (g:callIndexAtIsNextTo or g:callIndexAtIsOverlapping)
-        return false;
-    end
-    
-    internal:IndexAtIsOut();
-    return true;
-end
-
-
-
-function->null internal:IndexAtIsNotOut()
-
-    insert.rule.pos.type = notindex;
+    insert.rule.pos = g:posIndexAt;
+    insert.rule.pos.type = index;
     insert.rule.pos.index = -1;
+    return true;
 end
 
 
 
 nested function->bool IndexAt.IsNotOut()
 
-    if (g:runIndexAtNewruleCheck)
+    if (g:initIndexAt)
         return false;
     end
     
-    if (g:runIndexAtTests == false)
-        g:callIndexAtIsNotOut = true;
-        return false;
-    end
-    if (g:callIndexAtIsNextTo or g:callIndexAtIsOverlapping)
-        return false;
-    end
-    
-    internal:IndexAtIsNotOut();
+    insert.rule.pos = g:posIndexAt;
+    insert.rule.pos.type = notindex;
+    insert.rule.pos.index = -1;
     return true;
 end
 
 
 
-function->null internal:IndexAtIsEdge()
+nested function->bool IndexAt.IsEdge(int iOrientation)
 
-    int iOrientation = g:argIndexAtIsEdge;
+    if (g:initIndexAt)
+        return false;
+    end
     
     int iX = g:posIndexAt.x;
     int iY = g:posIndexAt.y;
@@ -2102,35 +1879,25 @@ function->null internal:IndexAtIsEdge()
         insert.rule.pos.type = index;
         insert.rule.pos.index = -1;
     end
-end
-
-
-
-nested function->bool IndexAt.IsEdge(int iOrientation)
-
-    if (g:runIndexAtNewruleCheck)
-        return false;
-    end
-    
-    if (g:runIndexAtTests == false)
-        g:callIndexAtIsEdge = true;
-        
-        g:argIndexAtIsEdge = iOrientation;
-        return false;
-    end
-    if (g:callIndexAtIsNextTo or g:callIndexAtIsOverlapping)
-        return false;
-    end
-
-    internal:IndexAtIsEdge();
     return true;
 end
 
 
 
-function->null internal:IndexAtIsNotEdge()
+nested function->bool IndexAt.IsNotEdge(array int aOrientations)
 
-    array int aOrientations = g:argIndexAtIsNotEdge;
+    if (g:initIndexAt)
+        return false;
+    end
+
+//
+    if (s:debug)
+        if (aOrientations.count == 0)
+            warning("IndexAt.IsNotEdge(array int aOrientations) -> aOrientations was empty, function had no effect.");
+            return false;
+        end
+    end
+//
 
     int iX = g:posIndexAt.x;
     int iY = g:posIndexAt.y;
@@ -2157,353 +1924,67 @@ function->null internal:IndexAtIsNotEdge()
             insert.rule.pos.index = -1;
         end
     end
-end
-
-
-
-nested function->bool IndexAt.IsNotEdge(array int aOrientations)
-
-    if (g:runIndexAtNewruleCheck)
-        return false;
-    end
-
-//
-    if (s:debug)
-        if (aOrientations.count == 0)
-            warning("IndexAt.IsNotEdge(array int aOrientations) -> aOrientations was empty, function had no effect.");
-            return false;
-        end
-    end
-//
-    
-    if (g:runIndexAtTests == false)
-        g:callIndexAtIsNotEdge = true;
-        
-        g:argIndexAtIsNotEdge = aOrientations;
-        return false;
-    end
-    if (g:callIndexAtIsNextTo or g:callIndexAtIsOverlapping)
-        return false;
-    end
-    
-    internal:IndexAtIsNotEdge();
     return true;
 end
 
 
 
-function->null internal:IndexAtIsWall()
+nested function->bool IndexAt.IsNextTo(array int aIndices)
 
-    array int aOrientations = g:argIndexAtIsWall;
-
-    if (aOrientations.has(top))
-        g:borderTop = 0;
-        g:borderTopLeft = -1;
-        g:borderTopRight = -1;
-    end
-    if (aOrientations.has(right))
-        g:borderRight = 0;
-        g:borderTopRight = -1;
-        g:borderBottomRight = -1;
-    end
-    if (aOrientations.has(bottom))
-        g:borderBottom = 0;
-        g:borderBottomLeft = -1;
-        g:borderBottomRight = -1;
-    end
-    if (aOrientations.has(left))
-        g:borderLeft = 0;
-        g:borderTopLeft = -1;
-        g:borderBottomLeft = -1;
-    end
-end
-
-
-
-nested function->bool IndexAt.IsWall(array int aOrientations)
-
-    if (g:runIndexAtNewruleCheck)
+    if (g:initIndexAt)
         return false;
     end
 
 //
     if (s:debug)
-        if (aOrientations.count == 0)
-            warning("IndexAt.IsWall(array int aOrientations) -> aOrientations was empty, function had no effect.");
+        if (aIndices.count == 0)
+            warning("IndexAt.IsNextTo(array int aIndices) -> aIndices was empty, function had no effect.");
             return false;
+        end
+
+        for (i = 0 to aIndices.last)
+            if (aIndices[i] < -1 or aIndices[i] > 255)
+                error("IndexAt.IsNextTo(array int aIndices) -> values need to be in range [-1-255].");
+            end
         end
     end
 //
-    
-    if (g:runIndexAtTests == false)
-        g:callIndexAtIsWall = true;
-        
-        g:argIndexAtIsWall = aOrientations;
-        return false;
-    end
-    if (g:callIndexAtIsNextTo or g:callIndexAtIsOverlapping)
-        return false;
-    end
 
-    internal:IndexAtIsWall();
-    return true;
-end
-
-
-
-function->null internal:IndexAtIsOuterCorner()
-
-    array int aOrientations = g:argIndexAtIsOuterCorner;
-    
-    if (aOrientations.has(topLeft))
-        g:borderTop = 0;
-        g:borderLeft = 0;
-        g:borderTopLeft = -1;
-        g:borderTopRight = -1;
-        g:borderBottomLeft = -1;
-    end
-    if (aOrientations.has(topRight))
-        g:borderTop = 0;
-        g:borderRight = 0;
-        g:borderTopLeft = -1;
-        g:borderTopRight = -1;
-        g:borderBottomRight = -1;
-    end
-    if (aOrientations.has(bottomLeft))
-        g:borderBottom = 0;
-        g:borderLeft = 0;
-        g:borderTopLeft = -1;
-        g:borderBottomLeft = -1;
-        g:borderBottomRight = -1;
-    end
-    if (aOrientations.has(bottomRight))
-        g:borderBottom = 0;
-        g:borderRight = 0;
-        g:borderTopRight = -1;
-        g:borderBottomLeft = -1;
-        g:borderBottomRight = -1;
-    end
-end
-
-
-
-nested function->bool IndexAt.IsOuterCorner(array int aOrientations)
-
-    if (g:runIndexAtNewruleCheck)
-        return false;
-    end
-
-//
-    if (s:debug)
-        if (aOrientations.count == 0)
-            warning("IndexAt.IsOuterCorner(array int aOrientations) -> aOrientations was empty, function had no effect.");
-            return false;
-        end
-    end
-//
-    
-    if (g:runIndexAtTests == false)
-        g:callIndexAtIsOuterCorner = true;
-        
-        g:argIndexAtIsOuterCorner = aOrientations;
-        return false;
-    end
-    if (g:callIndexAtIsNextTo or g:callIndexAtIsOverlapping)
-        return false;
-    end
-
-    internal:IndexAtIsOuterCorner();
-    return true;
-end
-
-
-
-function->null internal:IndexAtIsInnerCorner()
-
-    array int aOrientations = g:argIndexAtIsInnerCorner;
-    
-    if (aOrientations.has(topLeft))
-        g:borderTopLeft = 0;
-    end
-    if (aOrientations.has(topRight))
-        g:borderTopRight = 0;
-    end
-    if (aOrientations.has(bottomLeft))
-        g:borderBottomLeft = 0;
-    end
-    if (aOrientations.has(bottomRight))
-        g:borderBottomRight = 0;
-    end
-end
-
-
-
-nested function->bool IndexAt.IsInnerCorner(array int aOrientations)
-
-    if (g:runIndexAtNewruleCheck)
-        return false;
-    end
-
-//
-    if (s:debug)
-        if (aOrientations.count == 0)
-            warning("IndexAt.IsInnerCorner(array int aOrientations) -> aOrientations was empty, function had no effect.");
-            return false;
-        end
-    end
-//
-    
-    if (g:runIndexAtTests == false)
-        g:callIndexAtIsInnerCorner = true;
-        
-        g:argIndexAtIsInnerCorner = aOrientations;
-        return false;
-    end
-    if (g:callIndexAtIsNextTo or g:callIndexAtIsOverlapping)
-        return false;
-    end
-    
-    internal:IndexAtIsInnerCorner();
-    return true;
-end
-
-
-
-function->null internal:IndexAtHasSpaceFor()
+    array int aArray = util:ConfigUpdateIndices(aIndices, g:updateCheck);
     
     int iX = g:posIndexAt.x;
     int iY = g:posIndexAt.y;
     
-    for (i = 0 to g:argIndexAtHasSpaceFor.last)
-        coord cRelativePos = util:RelativePos(g:argIndexAtHasSpaceFor.anchor, g:argIndexAtHasSpaceFor[i]);
+    for (i = 0 to aArray.last)
+        int iIndex = aArray[i];
     
-        insert.rule.pos = [cRelativePos.x + iX, cRelativePos.y + iY];
-        internal:IsFullSwap();
-    end
-end
-
-
-
-nested function->bool IndexAt.HasSpaceFor(object oObject)
-    
-    if (g:runIndexAtNewruleCheck)
-        return false;
-    end
-
-//
-    if (s:debug)
-        if (oObject.count == 0)
-            warning("IndexAt.HasSpaceFor(object oObject) -> oObject was empty, function had no effect.");
-            return false;
-        end
-    end
-//
-    
-    if (g:runIndexAtTests == false)
-        g:callIndexAtHasSpaceFor = true;
+        insert.rule.pos = [iX - 1, iY];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = iIndex;
+        insert.rule.pos.operator = g:or;
+        insert.rule.pos.group = g:group;
         
-        g:argIndexAtHasSpaceFor = oObject;
-        return false;
+        insert.rule.pos = [iX, iY - 1];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = iIndex;
+        insert.rule.pos.operator = g:or;
+        insert.rule.pos.group = g:group;
+        
+        insert.rule.pos = [iX + 1, iY];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = iIndex;
+        insert.rule.pos.operator = g:or;
+        insert.rule.pos.group = g:group;
+        
+        insert.rule.pos = [iX, iY + 1];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = iIndex;
+        insert.rule.pos.operator = g:or;
+        insert.rule.pos.group = g:group;
     end
-    if (g:callIndexAtIsNextTo or g:callIndexAtIsOverlapping)
-        return false;
-    end
-
-    internal:IndexAtHasSpaceFor();
+    
+    g:group = g:group + 1;
     return true;
-end
-
-
-
-function->null internal:IndexAtIsNotOverlapping()
-    
-    int iX = g:posIndexAt.x;
-    int iY = g:posIndexAt.y;
-
-    for (i = 0 to g:argIndexAtIsNotOverlapping.last)
-        coord cAnchor = g:argIndexAtIsNotOverlapping[i].anchor;
-        
-        for (j = 0 to g:argIndexAtIsNotOverlapping[i].last)
-            coord cRelativePos = util:RelativePos(cAnchor, g:argIndexAtIsNotOverlapping[i][j]);
-            
-            insert.rule.pos = [iX + cRelativePos.x * -1, iY + cRelativePos.y * -1];
-            insert.rule.pos.type = notindex;
-            insert.rule.pos.index = cAnchor;
-        end
-    end
-    insert.nocopy;
-end
-
-
-
-nested function->bool IndexAt.IsNotOverlapping(array object aObjects)
-    
-    if (g:runIndexAtNewruleCheck)
-        return false;
-    end
-
-//
-    if (s:debug)
-        if (aObjects.count == 0)
-            warning("IndexAt.IsNotOverlapping(array object aObjects) -> aObjects was empty, function had no effect.");
-            return false;
-        end
-    end
-//
-    
-    if (g:runIndexAtTests == false)
-        g:callIndexAtIsNotOverlapping = true;
-        
-        g:argIndexAtIsNotOverlapping = aObjects;
-        return false;
-    end
-    if (g:callIndexAtIsNextTo or g:callIndexAtIsOverlapping)
-        return false;
-    end
-    
-    if (g:updateArgIndexAtIsNotOverlapping and g:callIndexAtIsNotOverlapping)
-        g:argIndexAtIsNotOverlapping = util:ConfigUpdateObjects(g:argIndexAtIsNotOverlapping, g:updateCheck);
-        g:updateArgIndexAtIsNotOverlapping = false;
-    end
-    
-    internal:IndexAtIsNotOverlapping();
-    return true;
-end
-
-
-
-function->null internal:IndexAtIsNotNextTo()
-
-    for (i = 0 to g:argIndexAtIsNotNextTo.last)
-        int iIndex = g:argIndexAtIsNotNextTo[i];
-    
-        if (iIndex != this)
-            insert.rule.pos = [-1, 0];
-            util:IsNot(iIndex);
-            
-            insert.rule.pos = [0, -1];
-            util:IsNot(iIndex);
-            
-            insert.rule.pos = [1, 0];
-            util:IsNot(iIndex);
-            
-            insert.rule.pos = [0, 1];
-            util:IsNot(iIndex);
-        end
-        if (iIndex == this)
-            insert.rule.pos = [-1, 0];
-            util:IsNot(g:vInsertIndex);
-            
-            insert.rule.pos = [0, -1];
-            util:IsNot(g:vInsertIndex);
-            
-            insert.rule.pos = [1, 0];
-            util:IsNot(g:vInsertIndex);
-            
-            insert.rule.pos = [0, 1];
-            util:IsNot(g:vInsertIndex);
-        end
-    end
 end
 
 
@@ -2525,200 +2006,205 @@ nested function->bool IndexAt.IsNotNextTo(array int aIndices)
     end
 //
 
-    if (g:runIndexAtNewruleCheck)
+    if (g:initIndexAt)
         if (aIndices.has(this))
             g:hasThis = true;
         end
         return false;
     end
     
-    if (g:runIndexAtTests == false)
-        g:callIndexAtIsNotNextTo = true;
-        
-        g:argIndexAtIsNotNextTo = aIndices;
-        return false;
-    end
-    if (g:callIndexAtIsNextTo or g:callIndexAtIsOverlapping)
-        return false;
-    end
+    array int aArray = util:ConfigUpdateIndices(aIndices, g:updateCheck);
     
-    if (g:updateArgIndexAtIsNotNextTo and g:callIndexAtIsNotNextTo)
-        g:argIndexAtIsNotNextTo = util:ConfigUpdateIndices(g:argIndexAtIsNotNextTo, g:updateCheck);
-        g:updateArgIndexAtIsNotNextTo = false;
-    end
+    int iX = g:posIndexAt.x;
+    int iY = g:posIndexAt.y;
+
+    for (i = 0 to aArray.last)
+        int iIndex = aArray[i];
     
-    internal:IndexAtIsNotNextTo();
+        if (iIndex != this)
+            insert.rule.pos = [iX - 1, iY];
+            insert.rule.pos.type = notindex;
+            insert.rule.pos.index = iIndex;
+            
+            insert.rule.pos = [iX, iY - 1];
+            insert.rule.pos.type = notindex;
+            insert.rule.pos.index = iIndex;
+            
+            insert.rule.pos = [iX + 1, iY];
+            insert.rule.pos.type = notindex;
+            insert.rule.pos.index = iIndex;
+            
+            insert.rule.pos = [iX, iY + 1];
+            insert.rule.pos.type = notindex;
+            insert.rule.pos.index = iIndex;
+        end
+        if (iIndex == this)
+            insert.rule.pos = [iX - 1, iY];
+            insert.rule.pos.type = notindex;
+            insert.rule.pos.index = g:vInsertIndex;
+            
+            insert.rule.pos = [iX, iY - 1];
+            insert.rule.pos.type = notindex;
+            insert.rule.pos.index = g:vInsertIndex;
+            
+            insert.rule.pos = [iX + 1, iY];
+            insert.rule.pos.type = notindex;
+            insert.rule.pos.index = g:vInsertIndex;
+            
+            insert.rule.pos = [iX, iY + 1];
+            insert.rule.pos.type = notindex;
+            insert.rule.pos.index = g:vInsertIndex;
+        end
+    end
     return true;
 end
 
 
 
-function->null internal:IndexAtExecuteCalls()
+nested function->bool IndexAt.IsWall(array int aOrientations)
 
-    int iX = g:posIndexAt.x;
-    int iY = g:posIndexAt.y;
-    
-    if (g:callIndexAtIs)
-        insert.rule.pos = [iX, iY];
-        internal:IndexAtIs();
-    end
-    if (g:callIndexAtIsNot)
-        insert.rule.pos = [iX, iY];
-        internal:IndexAtIsNot();
-    end
-    if (g:callIndexAtIsEmpty)
-        insert.rule.pos = [iX, iY];
-        internal:IndexAtIsEmpty();
-    end
-    if (g:callIndexAtIsEmptyAt)
-        insert.rule.pos = [iX, iY];
-        internal:IndexAtIsEmptyAt();
-    end
-    if (g:callIndexAtIsFull)
-        insert.rule.pos = [iX, iY];
-        internal:IndexAtIsFull();
-    end
-    if (g:callIndexAtIsFullAt)
-        insert.rule.pos = [iX, iY];
-        internal:IndexAtIsFullAt();
-    end
-    if (g:callIndexAtIsOut)
-        insert.rule.pos = [iX, iY];
-        internal:IndexAtIsOut();
-    end
-    if (g:callIndexAtIsNotOut)
-        insert.rule.pos = [iX, iY];
-        internal:IndexAtIsNotOut();
-    end
-    if (g:callIndexAtIsEdge)
-        insert.rule.pos = [iX, iY];
-        internal:IndexAtIsEdge();
-    end
-    if (g:callIndexAtIsNotEdge)
-        insert.rule.pos = [iX, iY];
-        internal:IndexAtIsNotEdge();
-    end
-    if (g:callIndexAtIsNotNextTo)
-        insert.rule.pos = [iX, iY];
-        internal:IndexAtIsNotNextTo();
-    end
-    if (g:callIndexAtIsWall)
-        insert.rule.pos = [iX, iY];
-        internal:IndexAtIsWall();
-    end
-    if (g:callIndexAtIsOuterCorner)
-        insert.rule.pos = [iX, iY];
-        internal:IndexAtIsOuterCorner();
-    end
-    if (g:callIndexAtIsInnerCorner)
-        insert.rule.pos = [iX, iY];
-        internal:IndexAtIsInnerCorner();
-    end
-    if (g:callIndexAtHasSpaceFor)
-        insert.rule.pos = [iX, iY];
-        internal:IndexAtHasSpaceFor();
-    end
-    if (g:callIndexAtIsNotOverlapping)
-        insert.rule.pos = [iX, iY];
-        internal:IndexAtIsNotOverlapping();
-    end
-end
-
-
-
-function->null internal:IndexAtIsNextTo()
-
-    for (i = 0 to g:argIndexAtIsNextTo.last)
-        int iIndex = g:argIndexAtIsNextTo[i];
-    
-        insert.newrule;
-        util:InsertIndex(g:vInsertIndex);
-        insert.rule.pos = [-1, 0];
-        util:Is(iIndex);
-        util:Chance(g:argInsertChance[g:argInsertChanceIndex]);
-        
-        internal:IndexAtExecuteCalls();
-        
-        insert.newrule;
-        util:InsertIndex(g:vInsertIndex);
-        insert.rule.pos = [0, -1];
-        util:Is(iIndex);
-        util:Chance(g:argInsertChance[g:argInsertChanceIndex]);
-        
-        internal:IndexAtExecuteCalls();
-        
-        insert.newrule;
-        util:InsertIndex(g:vInsertIndex);
-        insert.rule.pos = [1, 0];
-        util:Is(iIndex);
-        util:Chance(g:argInsertChance[g:argInsertChanceIndex]);
-        
-        internal:IndexAtExecuteCalls();
-        
-        insert.newrule;
-        util:InsertIndex(g:vInsertIndex);
-        insert.rule.pos = [0, 1];
-        util:Is(iIndex);
-        util:Chance(g:argInsertChance[g:argInsertChanceIndex]);
-        
-        internal:IndexAtExecuteCalls();
-    end
-end
-
-
-
-nested function->bool IndexAt.IsNextTo(array int aIndices)
-
-    if (g:runIndexAtNewruleCheck)
-        g:createNewruleInsert = false;
+    if (g:initIndexAt)
         return false;
     end
 
 //
     if (s:debug)
-        if (aIndices.count == 0)
-            warning("IndexAt.IsNextTo(array int aIndices) -> aIndices was empty, function had no effect.");
+        if (aOrientations.count == 0)
+            warning("IndexAt.IsWall(array int aOrientations) -> aOrientations was empty, function had no effect.");
             return false;
         end
+    end
+//
 
-        for (i = 0 to aIndices.last)
-            if (aIndices[i] < -1 or aIndices[i] > 255)
-                error("IndexAt.IsNextTo(array int aIndices) -> values need to be in range [-1-255].");
-            end
+    if (aOrientations.has(top))
+        g:borderTop = 0;
+        g:borderTopLeft = -1;
+        g:borderTopRight = -1;
+    end
+    if (aOrientations.has(right))
+        g:borderRight = 0;
+        g:borderTopRight = -1;
+        g:borderBottomRight = -1;
+    end
+    if (aOrientations.has(bottom))
+        g:borderBottom = 0;
+        g:borderBottomLeft = -1;
+        g:borderBottomRight = -1;
+    end
+    if (aOrientations.has(left))
+        g:borderLeft = 0;
+        g:borderTopLeft = -1;
+        g:borderBottomLeft = -1;
+    end
+    return true;
+end
+
+
+
+nested function->bool IndexAt.IsOuterCorner(array int aOrientations)
+
+    if (g:initIndexAt)
+        return false;
+    end
+
+//
+    if (s:debug)
+        if (aOrientations.count == 0)
+            warning("IndexAt.IsOuterCorner(array int aOrientations) -> aOrientations was empty, function had no effect.");
+            return false;
         end
     end
 //
     
-    if (g:runIndexAtTests == false)
-        g:callIndexAtIsNextTo = true;
-        
-        g:argIndexAtIsNextTo = aIndices;
+    if (aOrientations.has(topLeft))
+        g:borderTop = 0;
+        g:borderLeft = 0;
+        g:borderTopLeft = -1;
+        g:borderTopRight = -1;
+        g:borderBottomLeft = -1;
+    end
+    if (aOrientations.has(topRight))
+        g:borderTop = 0;
+        g:borderRight = 0;
+        g:borderTopLeft = -1;
+        g:borderTopRight = -1;
+        g:borderBottomRight = -1;
+    end
+    if (aOrientations.has(bottomLeft))
+        g:borderBottom = 0;
+        g:borderLeft = 0;
+        g:borderTopLeft = -1;
+        g:borderBottomLeft = -1;
+        g:borderBottomRight = -1;
+    end
+    if (aOrientations.has(bottomRight))
+        g:borderBottom = 0;
+        g:borderRight = 0;
+        g:borderTopRight = -1;
+        g:borderBottomLeft = -1;
+        g:borderBottomRight = -1;
+    end
+    return true;
+end
+
+
+
+nested function->bool IndexAt.IsInnerCorner(array int aOrientations)
+
+    if (g:initIndexAt)
         return false;
     end
+
+//
+    if (s:debug)
+        if (aOrientations.count == 0)
+            warning("IndexAt.IsInnerCorner(array int aOrientations) -> aOrientations was empty, function had no effect.");
+            return false;
+        end
+    end
+//
     
-    if (g:updateArgIndexAtIs and g:callIndexAtIs)
-        g:argIndexAtIs = util:ConfigUpdateIndices(g:argIndexAtIs, g:updateCheck);
-        g:updateArgIndexAtIs = false;
+    if (aOrientations.has(topLeft))
+        g:borderTopLeft = 0;
     end
-    if (g:updateArgIndexAtIsNot and g:callIndexAtIsNot)
-        g:argIndexAtIsNot = util:ConfigUpdateIndices(g:argIndexAtIsNot, g:updateCheck);
-        g:updateArgIndexAtIsNot = false;
+    if (aOrientations.has(topRight))
+        g:borderTopRight = 0;
     end
-    if (g:updateArgIndexAtIsNotNextTo and g:callIndexAtIsNotNextTo)
-        g:argIndexAtIsNotNextTo = util:ConfigUpdateIndices(g:argIndexAtIsNotNextTo, g:updateCheck);
-        g:updateArgIndexAtIsNotNextTo = false;
+    if (aOrientations.has(bottomLeft))
+        g:borderBottomLeft = 0;
     end
-    if (g:updateArgIndexAtIsNotOverlapping and g:callIndexAtIsNotOverlapping)
-        g:argIndexAtIsNotOverlapping = util:ConfigUpdateObjects(g:argIndexAtIsNotOverlapping, g:updateCheck);
-        g:updateArgIndexAtIsNotOverlapping = false;
+    if (aOrientations.has(bottomRight))
+        g:borderBottomRight = 0;
     end
+    return true;
+end
+
+
+
+nested function->bool IndexAt.HasSpaceFor(object oObject)
+
+    if (g:initIndexAt)
+        return false;
+    end
+
+//
+    if (s:debug)
+        if (oObject.count == 0)
+            warning("IndexAt.HasSpaceFor(object oObject) -> oObject was empty, function had no effect.");
+            return false;
+        end
+    end
+//
     
-    if (g:updateArgIndexAtIsNextTo and g:callIndexAtIsNextTo)
-        g:argIndexAtIsNextTo = util:ConfigUpdateIndices(g:argIndexAtIsNextTo, g:updateCheck);
-        g:updateArgIndexAtIsNextTo = false;
-    end
+    int iX = g:posIndexAt.x;
+    int iY = g:posIndexAt.y;
     
-    internal:IndexAtIsNextTo();
+    for (i = 0 to oObject.last)
+        coord cRelativePos = util:RelativePos(oObject.anchor, oObject[i]);
+    
+        insert.rule.pos = [cRelativePos.x + iX, cRelativePos.y + iY];
+        internal:IsFullSwap();
+    end
     return true;
 end
 
@@ -2726,13 +2212,7 @@ end
 
 nested function->bool IndexAt.IsOverlapping(array object aObjects)
 
-    if (g:runIndexAtNewruleCheck)
-        g:createNewruleInsert = false;
-        return false;
-    end
-    
-    if (g:runIndexAtTests == false)
-        g:callIndexAtIsOverlapping = true;
+    if (g:initIndexAt)
         return false;
     end
     
@@ -2745,48 +2225,63 @@ nested function->bool IndexAt.IsOverlapping(array object aObjects)
     end
 //
 
-    aObjects = util:ConfigUpdateObjects(aObjects, g:updateCheck);
-    
-    if (g:updateArgIndexAtIs and g:callIndexAtIs)
-        g:argIndexAtIs = util:ConfigUpdateIndices(g:argIndexAtIs, g:updateCheck);
-        g:updateArgIndexAtIs = false;
-    end
-    if (g:updateArgIndexAtIsNot and g:callIndexAtIsNot)
-        g:argIndexAtIsNot = util:ConfigUpdateIndices(g:argIndexAtIsNot, g:updateCheck);
-        g:updateArgIndexAtIsNot = false;
-    end
-    if (g:updateArgIndexAtIsNotNextTo and g:callIndexAtIsNotNextTo)
-        g:argIndexAtIsNotNextTo = util:ConfigUpdateIndices(g:argIndexAtIsNotNextTo, g:updateCheck);
-        g:updateArgIndexAtIsNotNextTo = false;
-    end
-    if (g:updateArgIndexAtIsNotOverlapping and g:callIndexAtIsNotOverlapping)
-        g:argIndexAtIsNotOverlapping = util:ConfigUpdateObjects(g:argIndexAtIsNotOverlapping, g:updateCheck);
-        g:updateArgIndexAtIsNotOverlapping = false;
-    end
+    array object aArray = util:ConfigUpdateObjects(aObjects, g:updateCheck);
     
     int iX = g:posIndexAt.x;
     int iY = g:posIndexAt.y;
 
-    for (i = 0 to aObjects.last)
-        coord cAnchor = aObjects[i].anchor;
+    for (i = 0 to aArray.last)
+        coord cAnchor = aArray[i].anchor;
         
-        for (j = 0 to aObjects[i].last)
-            coord cRelativePos = util:RelativePos(cAnchor, aObjects[i][j]);
-            coord cPos = [iX + cRelativePos.x * -1, iY + cRelativePos.y * -1];
+        for (j = 0 to aArray[i].last)
+            coord cRelativePos = util:RelativePos(cAnchor, aArray[i][j]);
          
-            insert.newrule;
-            util:InsertIndex(g:vInsertIndex);
-            insert.rule.pos = cPos;
-            util:Is(cAnchor);
-            util:Chance(g:argInsertChance[g:argInsertChanceIndex]);
-            
-            internal:IndexAtExecuteCalls();
-            
-            internal:BorderRule();
-            internal:ResetBorderFlags();
+            insert.rule.pos = [iX + cRelativePos.x * -1, iY + cRelativePos.y * -1];
+            insert.rule.pos.type = index;
+            insert.rule.pos.index = cAnchor;
+            insert.rule.pos.operator = g:or;
+            insert.rule.pos.group = g:group;
         end
     end
     
+    g:group = g:group + 1;
+    return true;
+end
+
+
+
+nested function->bool IndexAt.IsNotOverlapping(array object aObjects)
+
+    if (g:initIndexAt)
+        return false;
+    end
+
+//
+    if (s:debug)
+        if (aObjects.count == 0)
+            warning("IndexAt.IsNotOverlapping(array object aObjects) -> aObjects was empty, function had no effect.");
+            return false;
+        end
+    end
+//
+    
+    int iX = g:posIndexAt.x;
+    int iY = g:posIndexAt.y;
+    
+    array object aArray = util:ConfigUpdateObjects(aObjects, g:updateCheck);
+
+    for (i = 0 to aArray.last)
+        coord cAnchor = aArray[i].anchor;
+        
+        for (j = 0 to aArray[i].last)
+            coord cRelativePos = util:RelativePos(cAnchor, aArray[i][j]);
+            
+            insert.rule.pos = [iX + cRelativePos.x * -1, iY + cRelativePos.y * -1];
+            insert.rule.pos.type = notindex;
+            insert.rule.pos.index = cAnchor;
+        end
+    end
+    insert.nocopy;
     return true;
 end
 
@@ -2904,65 +2399,75 @@ end
 
 ///////////////////////////////////////
 //
-bool g:runInsertObjectTests = false;
-bool g:callInsertObjectConfig = true;
-
-bool g:callObjectIsOverlapping = false;
 /******************************************************************************
 
 */
-function->null internal:InsertObjectResetFlags()
-
-    g:runInsertObjectTests = false;
-    g:runInsertTests = false;
-    g:callInsertObjectConfig = true;
-end
-
-
-
-function->null InsertObject(object oObject)
+function->null InsertObject(array object aObjects)
     nested(
         Config,
-        NoDefaultPosRule, Chance, If,
+        NoDefaultPosRule, Chance, Roll, If,
         TestIndices
     )
 
 //
     if (s:debug)
-        if (oObject.count == 0)
-            warning("InsertObject(object oObject) -> oObject was empty, function had no effect.");
+        if (aObjects.count == 0)
+            warning("InsertObject(array object aObjects) -> aObjects was empty, function had no effect.");
             return;
         end
     end
 //
 
     util:ResetSettings(g:resetInsert);
-    invoke(nested);
     
-    g:runInsertObjectTests = true;
-    g:runInsertTests = true;
-
-    array object aArray = util:ConfigUpdateObjects(oObject, g:updateInsert);
+    invoke(nested);
+    g:initInsert = false;
+    
+    array object aArray = util:ConfigUpdateObjects(aObjects, g:updateInsert);
+    
+    internal:UpdateProbabilities(aArray.last);
+    
+    g:totalChance = 1.0;
+    g:argInsertChanceIndex = 0;
+    
     for (i = 0 to aArray.last)
         g:vInsertObject = aArray[i];
         g:vInsertIndex = aArray[i].anchor;
         
-        invoke(nested);
+        insert.newrule;
+        util:InsertIndex(g:vInsertIndex);
+        
+        if (g:insertUseEmpty)
+            insert.rule.pos = [0, 0];
+            insert.rule.pos.type = empty;
+        end
+        util:Chance(g:argInsertChance[g:argInsertChanceIndex]);    
+        
+        invoke(nested); 
+        
+        g:argInsertChanceIndex = g:argInsertChanceIndex + 1;
     end
-    internal:InsertObjectResetFlags();
     
-    array int aEmpty;
-    g:vTestIndices = aEmpty;
+    if (true)
+        array int aEmpty;
+        g:vTestIndices = aEmpty;
+    end
+    if (true)
+        array float aEmpty;
+        g:argInsertChance = aEmpty;
+    end
+    g:argInsertChanceIndex = 0;
+    
+    internal:InsertResetFlags();
+    internal:ResetFlags();
 end
 
 
 
 nested function->null InsertObject.Config(array int aSettings)
 
-    if (g:callInsertObjectConfig)
+    if (g:initInsert)
         util:ConfigUpdate(aSettings, g:updateInsert);
-        
-        g:callInsertObjectConfig = false;
     end
 end
 
@@ -2970,17 +2475,39 @@ end
 
 nested function->null InsertObject.NoDefaultPosRule()
 
-    if (g:runInsertObjectTests)
-        util:NoDefaultPosRule();
+    if (g:initInsert)
+        return;
+    end
+    insert.rule.nodefault;
+end
+
+
+
+nested function->null InsertObject.Chance(array float aProbabilities)
+    
+//
+    if (s:debug)
+        if (aProbabilities.count == 0)
+            warning("InsertObject.Chance(array float aProbabilities) -> aProbabilities was empty, function had no effect.");
+            return;
+        end
+    end
+//
+    
+    if (g:initInsert)
+        g:randomize = true;
+        g:argInsertChance = aProbabilities;
+        return;
     end
 end
 
 
 
-nested function->null InsertObject.Chance(float fProbability)
+nested function->null InsertObject.Roll()
 
-    if (g:runInsertObjectTests)
-        util:Chance(fProbability);
+    if (g:initInsert)
+        g:roll = true;
+        return;
     end
 end
 
@@ -2992,10 +2519,6 @@ end
 
 
 nested function->null InsertObject.TestIndices(array int aIndices)
-
-    if (g:runInsertObjectTests)
-        return;
-    end
 
 //
     if (s:debug)
@@ -3012,40 +2535,17 @@ nested function->null InsertObject.TestIndices(array int aIndices)
     end
 //
 
-    g:vTestIndices = aIndices;
+    if (g:initInsert)
+        g:vTestIndices = aIndices;
+        return;
+    end
 end
 
 
 
 ///////////////////////////////////////
 //
-bool g:runObjectTests = false;
-bool g:callObjectConfig = true;
-
-bool g:callObjectIsNotOverlapping = false;
-bool g:callObjectHasSpace         = false;
-bool g:callObjectFits             = false;
-bool g:callObjectIsOver           = false;
-bool g:callObjectIsEdge           = false;
-bool g:callObjectIsNotEdge        = false;
-bool g:callObjectIsNextTo         = false;
-bool g:callObjectIsNotNextTo      = false;
-
-bool g:updateArgObjectIsNotOverlapping = true;
-array object g:argObjectIsNotOverlapping;
-
-bool g:updateArgObjectIsOver = true;
-array object g:argObjectIsOver;
-
-bool g:updateArgObjectIsNotNextTo = true;
-array object g:argObjectIsNotNextTo;
-
-bool g:updateArgObjectIsNextTo = true;
-array object g:argObjectIsNextTo;
-
-int g:argObjectIsEdge = 0;
-
-array int g:argObjectIsNotEdge;
+bool g:initObject = true;
 
 int g:vObjectTop    = 0;
 int g:vObjectRight  = 0;
@@ -3056,23 +2556,7 @@ int g:vObjectLeft   = 0;
 */
 function->null internal:ObjectResetFlags()
     
-    g:runObjectTests = false;
-    g:callObjectConfig = true;
-
-    g:callObjectIsNotOverlapping = false;
-    g:callObjectHasSpace         = false;
-    g:callObjectFits             = false;
-    g:callObjectIsOver           = false;
-    g:callObjectIsEdge           = false;
-    g:callObjectIsNotEdge        = false;
-    g:callObjectIsNextTo         = false;
-    g:callObjectIsNotNextTo      = false;
-    g:callObjectIsOverlapping    = false;
-    
-    g:updateArgObjectIsNotOverlapping = true;
-    g:updateArgObjectIsOver           = true;
-    g:updateArgObjectIsNotNextTo      = true;
-    g:updateArgObjectIsNextTo         = true;
+    g:initObject = true;
 end
 
 
@@ -3085,33 +2569,26 @@ function->bool Object()
         IsNextTo, IsNotNextTo,
         IsOverlapping, IsNotOverlapping
     )
-
-    if (g:runInsertObjectTests == false)
+    
+    if (g:initInsert)
         return false;
     end
 
     insert.nocopy;
     util:ResetSettings(g:resetCheck);
     invoke(nested);
+    g:initObject = false;
     
-    g:runObjectTests = true;
-    g:callObjectConfig = false;
+    array int aRect = util:Rect(g:vInsertObject);
+    g:vObjectTop    = aRect[0];
+    g:vObjectRight  = aRect[1];
+    g:vObjectBottom = aRect[2];
+    g:vObjectLeft   = aRect[3];
     
-    if (g:callObjectIsNotEdge or g:callObjectIsEdge)
-        array int aRect = util:Rect(g:vInsertObject);
-        g:vObjectTop    = aRect[0];
-        g:vObjectRight  = aRect[1];
-        g:vObjectBottom = aRect[2];
-        g:vObjectLeft   = aRect[3];
-    end
-    
-    if (g:callObjectIsOverlapping == false and g:callObjectIsNextTo == false)
-        insert.newrule;
-        util:InsertIndex(g:vInsertIndex);
-    end
     invoke(nested);
     
     internal:ObjectResetFlags();
+    internal:ResetFlags();
     return true;
 end
 
@@ -3119,24 +2596,8 @@ end
 
 nested function->bool Object.Config(array int aSettings)
 
-    if (g:callObjectConfig)
+    if (g:initObject)
         util:ConfigUpdate(aSettings, g:updateCheck);
-        
-        g:callObjectConfig = false;
-    end
-    return true;
-end
-
-
-
-function->bool internal:ObjectHasSpace()
-
-    object oObject = g:vInsertObject;
-    coord cAnchor = g:vInsertIndex;
-    
-    for (i = 0 to oObject.last)        
-        insert.rule.pos = util:RelativePos(cAnchor, oObject[i]);
-        internal:IsFullSwap();
     end
     return true;
 end
@@ -3145,27 +2606,28 @@ end
 
 nested function->bool Object.HasSpace()
 
-    if (g:runObjectTests == false)
-        g:callObjectHasSpace = true;
+    if (g:initObject)
         return false;
     end
-    if (g:callObjectIsNextTo or g:callObjectIsOverlapping or g:callObjectFits)
-        return false;
+    
+    for (i = 0 to g:vInsertObject.last)        
+        insert.rule.pos = util:RelativePos(g:vInsertIndex, g:vInsertObject[i]);
+        internal:IsFullSwap();
     end
-
-    return internal:ObjectHasSpace();
+    return true;
 end
 
 
 
-function->bool internal:ObjectFits()
-        
-    object oObject = g:vInsertObject;
-    coord cAnchor = g:vInsertIndex;    
+nested function->bool Object.Fits()
+
+    if (g:initObject)
+        return false;
+    end 
     
     array coord aRelativePos;
-    for (i = 0 to oObject.last)
-        coord cRelativePos = util:RelativePos(cAnchor, oObject[i]);
+    for (i = 0 to g:vInsertObject.last)
+        coord cRelativePos = util:RelativePos(g:vInsertIndex, g:vInsertObject[i]);
         
         aRelativePos.push(cRelativePos);
         
@@ -3203,136 +2665,27 @@ end
 
 
 
-nested function->bool Object.Fits()
-
-    if (g:runObjectTests == false)
-        g:callObjectFits = true;
-        return false;
-    end
-    if (g:callObjectIsNextTo or g:callObjectIsOverlapping)
-        return false;
-    end
-        
-    return internal:ObjectFits();
-end
-
-
-
-function->bool internal:ObjectIsOver()
-
-    insert.rule.pos = [0, 0];
-    for (i = 0 to g:argObjectIsOver.last)
-        util:Is(g:argObjectIsOver[i].anchor);
-    end
-    return true;
-end
-
-
-
 nested function->bool Object.IsOver(array object aObjects)
+
+    if (g:initObject)
+        return false;
+    end 
 
 //
     if (s:debug)
         if (aObjects.count == 0)
-            warning("IsOver(array object aObjects) -> aObjects was empty, function had no effect.");
+            warning("Object.IsOver(array object aObjects) -> aObjects was empty, function had no effect.");
             return false;
         end
     end
 //
-
-    if (g:runObjectTests == false)
-        g:callObjectIsOver = true;
-        
-        g:argObjectIsOver = aObjects;
-        return false;
-    end
-    if (g:callObjectIsNextTo or g:callObjectIsOverlapping)
-        return false;
-    end
     
-    if (g:updateArgObjectIsOver and g:callObjectIsOver)
-        g:argObjectIsOver = util:ConfigUpdateObjects(g:argObjectIsOver, g:updateCheck);
-        g:updateArgObjectIsOver = false;
-    end
-    
-    return internal:ObjectIsOver();
-end
+    array object aArray = util:ConfigUpdateObjects(aObjects, g:updateCheck);
 
-
-
-function->bool internal:ObjectIsEdge()
-
-    if (g:argObjectIsEdge == top)
-        insert.rule.pos = [0, g:vObjectTop - 1];
+    insert.rule.pos = [0, 0];
+    for (i = 0 to aArray.last)
         insert.rule.pos.type = index;
-        insert.rule.pos.index = -1;
-        
-        return true;
-    end
-    if (g:argObjectIsEdge == right)
-        insert.rule.pos = [g:vObjectRight + 1, 0];
-        insert.rule.pos.type = index;
-        insert.rule.pos.index = -1;
-        
-        return true;
-    end
-    if (g:argObjectIsEdge == bottom)
-        insert.rule.pos = [0, g:vObjectBottom + 1];
-        insert.rule.pos.type = index;
-        insert.rule.pos.index = -1;
-        
-        return true;
-    end
-    if (g:argObjectIsEdge == left)
-        insert.rule.pos = [g:vObjectLeft - 1, 0];
-        insert.rule.pos.type = index;
-        insert.rule.pos.index = -1;
-        
-        return true;
-    end
-    if (g:argObjectIsEdge == topLeft)
-        insert.rule.pos = [0, g:vObjectTop - 1];
-        insert.rule.pos.type = index;
-        insert.rule.pos.index = -1;
-        
-        insert.rule.pos = [g:vObjectLeft - 1, 0];
-        insert.rule.pos.type = index;
-        insert.rule.pos.index = -1;
-        
-        return true;
-    end
-    if (g:argObjectIsEdge == topRight)
-        insert.rule.pos = [0, g:vObjectTop - 1];
-        insert.rule.pos.type = index;
-        insert.rule.pos.index = -1;
-        
-        insert.rule.pos = [g:vObjectRight + 1, 0];
-        insert.rule.pos.type = index;
-        insert.rule.pos.index = -1;
-        
-        return true;
-    end
-    if (g:argObjectIsEdge == bottomLeft)
-        insert.rule.pos = [0, g:vObjectBottom + 1];
-        insert.rule.pos.type = index;
-        insert.rule.pos.index = -1;
-        
-        insert.rule.pos = [g:vObjectLeft - 1, 0];
-        insert.rule.pos.type = index;
-        insert.rule.pos.index = -1;
-        
-        return true;
-    end
-    if (g:argObjectIsEdge == bottomRight)
-        insert.rule.pos = [0, g:vObjectBottom + 1];
-        insert.rule.pos.type = index;
-        insert.rule.pos.index = -1;
-        
-        insert.rule.pos = [g:vObjectRight + 1, 0];
-        insert.rule.pos.type = index;
-        insert.rule.pos.index = -1;
-        
-        return true;
+        insert.rule.pos.index = aArray[i].anchor;
     end
     return true;
 end
@@ -3341,40 +2694,119 @@ end
 
 nested function->bool Object.IsEdge(int iOrientation)
 
-    if (g:runObjectTests == false)
-        g:callObjectIsEdge = true;
+    if (g:initObject)
+        return false;
+    end 
+
+    if (iOrientation == top)
+        insert.rule.pos = [0, g:vObjectTop - 1];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = -1;
         
-        g:argObjectIsEdge = iOrientation;
-        return false;
+        return true;
     end
-    if (g:callObjectIsNextTo or g:callObjectIsOverlapping)
-        return false;
+    if (iOrientation == right)
+        insert.rule.pos = [g:vObjectRight + 1, 0];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = -1;
+        
+        return true;
     end
-    
-    return internal:ObjectIsEdge();
+    if (iOrientation == bottom)
+        insert.rule.pos = [0, g:vObjectBottom + 1];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = -1;
+        
+        return true;
+    end
+    if (iOrientation == left)
+        insert.rule.pos = [g:vObjectLeft - 1, 0];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = -1;
+        
+        return true;
+    end
+    if (iOrientation == topLeft)
+        insert.rule.pos = [0, g:vObjectTop - 1];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = -1;
+        
+        insert.rule.pos = [g:vObjectLeft - 1, 0];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = -1;
+        
+        return true;
+    end
+    if (iOrientation == topRight)
+        insert.rule.pos = [0, g:vObjectTop - 1];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = -1;
+        
+        insert.rule.pos = [g:vObjectRight + 1, 0];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = -1;
+        
+        return true;
+    end
+    if (iOrientation == bottomLeft)
+        insert.rule.pos = [0, g:vObjectBottom + 1];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = -1;
+        
+        insert.rule.pos = [g:vObjectLeft - 1, 0];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = -1;
+        
+        return true;
+    end
+    if (iOrientation == bottomRight)
+        insert.rule.pos = [0, g:vObjectBottom + 1];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = -1;
+        
+        insert.rule.pos = [g:vObjectRight + 1, 0];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = -1;
+        
+        return true;
+    end
+    return true;
 end
 
 
 
-function->bool internal:ObjectIsNotEdge()
+nested function->bool Object.IsNotEdge(array int aOrientations)
 
-    for (i = 0 to g:argObjectIsNotEdge.last)
-        if (g:argObjectIsNotEdge[i] == top)
+    if (g:initObject)
+        return false;
+    end 
+
+//
+    if (s:debug)
+        if (aOrientations.count == 0)
+            warning("Object.IsNotEdge(array int aOrientations) -> aOrientations was empty, function had no effect.");
+            return false;
+        end
+    end
+//
+
+    for (i = 0 to aOrientations.last)
+        if (aOrientations[i] == top)
             insert.rule.pos = [0, g:vObjectTop - 1];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
         end
-        if (g:argObjectIsNotEdge[i] == right)
+        if (aOrientations[i] == right)
             insert.rule.pos = [g:vObjectRight + 1, 0];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
         end
-        if (g:argObjectIsNotEdge[i] == bottom)
+        if (aOrientations[i] == bottom)
             insert.rule.pos = [0, g:vObjectBottom + 1];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
         end
-        if (g:argObjectIsNotEdge[i] == left)
+        if (aOrientations[i] == left)
             insert.rule.pos = [g:vObjectLeft - 1, 0];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
@@ -3385,205 +2817,33 @@ end
 
 
 
-nested function->bool Object.IsNotEdge(array int aOrientations)
+nested function->bool Object.IsNextTo(array object aObjects)
 
-//
-    if (s:debug)
-        if (aOrientations.count == 0)
-            warning("IsNotEdge(array int aOrientations) -> aOrientations was empty, function had no effect.");
-            return false;
-        end
-    end
-//
-
-    if (g:runObjectTests == false)
-        g:callObjectIsNotEdge = true;
-        
-        g:argObjectIsNotEdge = aOrientations;
+    if (g:initObject)
         return false;
     end
-    if (g:callObjectIsNextTo or g:callObjectIsOverlapping)
-        return false;
-    end
-    
-    return internal:ObjectIsNotEdge();
-end
-
-
-
-function->bool internal:ObjectIsNotNextTo()
-
-    object oObject = g:vInsertObject;
-    coord cAnchor = g:vInsertIndex;
-    
-    for (i = 0 to g:argObjectIsNotNextTo.last)
-        coord cOtherAnchor = g:argObjectIsNotNextTo[i].anchor;
-        
-        array coord aPos;
-        for (j = 0 to g:argObjectIsNotNextTo[i].last)
-            coord cOtherRelativePos = util:RelativePos(cOtherAnchor, g:argObjectIsNotNextTo[i][j]);
-            
-            for (k = 0 to oObject.last)
-                coord cRelativePos = util:RelativePos(cAnchor, oObject[k]);
-                
-                coord cPos = [cRelativePos.x - cOtherRelativePos.x, cRelativePos.y - cOtherRelativePos.y];
-                if (aPos.has(cPos) == false)
-                    aPos.push(cPos);
-                    
-                    insert.rule.pos = cPos;
-                    util:IsNot(cOtherAnchor);
-                end
-                
-                insert.rule.pos = [cRelativePos.x - cOtherRelativePos.x - 1, cRelativePos.y - cOtherRelativePos.y];
-                util:IsNot(cOtherAnchor);
-                
-                insert.rule.pos = [cRelativePos.x - cOtherRelativePos.x + 1, cRelativePos.y - cOtherRelativePos.y];
-                util:IsNot(cOtherAnchor);
-                
-                insert.rule.pos = [cRelativePos.x - cOtherRelativePos.x, cRelativePos.y - cOtherRelativePos.y - 1];
-                util:IsNot(cOtherAnchor);
-                
-                insert.rule.pos = [cRelativePos.x - cOtherRelativePos.x, cRelativePos.y - cOtherRelativePos.y + 1];
-                util:IsNot(cOtherAnchor);
-            end            
-        end
-    end
-    return true;
-end
-
-
-
-nested function->bool Object.IsNotNextTo(array object aObjects)
 
 //
     if (s:debug)
         if (aObjects.count == 0)
-            warning("IsNotNextTo(array object aObjects) -> aObjects was empty, function had no effect.");
+            warning("Object.IsNextTo(array object aObjects) -> aObjects was empty, function had no effect.");
             return false;
         end
     end
 //
 
-    if (g:runObjectTests == false)
-        g:callObjectIsNotNextTo = true;
-        
-        g:argObjectIsNotNextTo = aObjects;
-        return false;
-    end
-    if (g:callObjectIsNextTo or g:callObjectIsOverlapping)
-        return false;
-    end
-    
-    if (g:updateArgObjectIsNotNextTo and g:callObjectIsNotNextTo)
-        g:argObjectIsNotNextTo = util:ConfigUpdateObjects(g:argObjectIsNotNextTo, g:updateCheck);
-        g:updateArgObjectIsNotNextTo = false;
-    end
-    
-    return internal:ObjectIsNotNextTo();
-end
-
-
-
-function->bool internal:ObjectIsNotOverlapping()
-
-    object oObject = g:vInsertObject;
-    coord cAnchor = g:vInsertIndex;
-    
-    for (i = 0 to g:argObjectIsNotOverlapping.last)
-        coord cOtherAnchor = g:argObjectIsNotOverlapping[i].anchor;
-        
-        array coord aPos;
-        for (j = 0 to g:argObjectIsNotOverlapping[i].last)
-            coord cOtherRelativePos = util:RelativePos(cOtherAnchor, g:argObjectIsNotOverlapping[i][j]);
-            
-            for (k = 0 to oObject.last)
-                coord cRelativePos = util:RelativePos(cAnchor, oObject[k]);
-                
-                coord cPos = [cRelativePos.x - cOtherRelativePos.x, cRelativePos.y - cOtherRelativePos.y];
-                if (aPos.has(cPos) == false)
-                    aPos.push(cPos);
-                    
-                    insert.rule.pos = cPos;
-                    util:IsNot(cOtherAnchor);
-                end
-            end
-        end
-    end
-    return true;
-end
-
-
-
-nested function->bool Object.IsNotOverlapping(array object aObjects)
-    
-//
-    if (s:debug)
-        if (aObjects.count == 0)
-            warning("IsNotOverlapping(array object aObjects) -> aObjects was empty, function had no effect.");
-            return false;
-        end
-    end
-//
-
-    if (g:runObjectTests == false)
-        g:callObjectIsNotOverlapping = true;
-        
-        g:argObjectIsNotOverlapping = aObjects;
-        return false;
-    end
-    if (g:callObjectIsNextTo or g:callObjectIsOverlapping)
-        return false;
-    end
-    
-    if (g:updateArgObjectIsNotOverlapping and g:callObjectIsNotOverlapping)
-        g:argObjectIsNotOverlapping = util:ConfigUpdateObjects(g:argObjectIsNotOverlapping, g:updateCheck);
-        g:updateArgObjectIsNotOverlapping = false;
-    end
-    
-    return internal:ObjectIsNotOverlapping();
-end
-
-
-
-function->null internal:ObjectExecuteCalls()
-
-    if (g:callObjectHasSpace and g:callObjectFits == false)
-        internal:ObjectHasSpace();
-    end
-    if (g:callObjectFits)
-        internal:ObjectFits();
-    end
-    if (g:callObjectIsNotOverlapping)
-        internal:ObjectIsNotOverlapping();
-    end
-    if (g:callObjectIsEdge)
-        internal:ObjectIsEdge();
-    end
-    if (g:callObjectIsNotEdge)
-        internal:ObjectIsNotEdge();
-    end
-    if (g:callObjectIsOver)
-        internal:ObjectIsOver();
-    end
-end
-
-
-
-function->bool internal:ObjectIsNextTo()
-
-    object oObject = g:vInsertObject;
-    coord cAnchor = g:vInsertIndex;
+    array object aArray = util:ConfigUpdateObjects(aObjects, g:updateCheck);
     
     array coord aNextToPos;    
-    for (i = 0 to g:argObjectIsNextTo.last)
-        coord cOtherAnchor = g:argObjectIsNextTo[i].anchor;
+    for (i = 0 to aArray.last)
+        coord cOtherAnchor = aArray[i].anchor;
         
         array coord aPos;
-        for (j = 0 to g:argObjectIsNextTo[i].last)
-            coord cOtherRelativePos = util:RelativePos(cOtherAnchor, g:argObjectIsNextTo[i][j]);
+        for (j = 0 to aArray[i].last)
+            coord cOtherRelativePos = util:RelativePos(cOtherAnchor, aArray[i][j]);
             
-            for (k = 0 to oObject.last)
-                coord cRelativePos = util:RelativePos(cAnchor, oObject[k]);
+            for (k = 0 to g:vInsertObject.last)
+                coord cRelativePos = util:RelativePos(g:vInsertIndex, g:vInsertObject[k]);
                 
                 coord cPos1 = [cRelativePos.x - cOtherRelativePos.x - 1, cRelativePos.y - cOtherRelativePos.y];
                 coord cPos2 = [cRelativePos.x - cOtherRelativePos.x + 1, cRelativePos.y - cOtherRelativePos.y];
@@ -3607,32 +2867,93 @@ function->bool internal:ObjectIsNextTo()
     end
     
     for (n = 0 to aNextToPos.last)        
-        for (i = 0 to g:argObjectIsNextTo.last)
-            coord cOtherAnchor = g:argObjectIsNextTo[i].anchor;
+        for (i = 0 to aArray.last)
+            coord cOtherAnchor = aArray[i].anchor;
             
-            insert.newrule;
-            util:InsertIndex(cAnchor);
             insert.rule.pos = aNextToPos[n];
-            util:Is(cOtherAnchor);
+            insert.rule.pos.type = index;
+            insert.rule.pos.index = cOtherAnchor;
+            insert.rule.pos.operator = g:or;
+            insert.rule.pos.group = g:group;
         
             array coord aPos;
-            for (j = 0 to g:argObjectIsNextTo[i].last)
-                coord cOtherRelativePos = util:RelativePos(cOtherAnchor, g:argObjectIsNextTo[i][j]);
+            for (j = 0 to aArray[i].last)
+                coord cOtherRelativePos = util:RelativePos(cOtherAnchor, aArray[i][j]);
                 
-                for (k = 0 to oObject.last)
-                    coord cRelativePos = util:RelativePos(cAnchor, oObject[k]);
+                for (k = 0 to g:vInsertObject.last)
+                    coord cRelativePos = util:RelativePos(g:vInsertIndex, g:vInsertObject[k]);
                     
                     coord cPos = [cRelativePos.x - cOtherRelativePos.x, cRelativePos.y - cOtherRelativePos.y];
                     if (aPos.has(cPos) == false)
                         aPos.push(cPos);
                         
                         insert.rule.pos = cPos;
-                        util:IsNot(cOtherAnchor);
+                        insert.rule.pos.type = notindex;
+                        insert.rule.pos.index = cOtherAnchor;
                     end
                 end            
             end
+        end
+    end
+    
+    g:group = g:group + 1;
+    return true;
+end
+
+
+
+nested function->bool Object.IsNotNextTo(array object aObjects)
+
+    if (g:initObject)
+        return false;
+    end
+
+//
+    if (s:debug)
+        if (aObjects.count == 0)
+            warning("Object.IsNotNextTo(array object aObjects) -> aObjects was empty, function had no effect.");
+            return false;
+        end
+    end
+//
+
+    array object aArray = util:ConfigUpdateObjects(aObjects, g:updateCheck);
+    
+    for (i = 0 to aArray.last)
+        coord cOtherAnchor = aArray[i].anchor;
+        
+        array coord aPos;
+        for (j = 0 to aArray[i].last)
+            coord cOtherRelativePos = util:RelativePos(cOtherAnchor, aArray[i][j]);
             
-            internal:ObjectExecuteCalls();
+            for (k = 0 to g:vInsertObject.last)
+                coord cRelativePos = util:RelativePos(g:vInsertIndex, g:vInsertObject[k]);
+                
+                coord cPos = [cRelativePos.x - cOtherRelativePos.x, cRelativePos.y - cOtherRelativePos.y];
+                if (aPos.has(cPos) == false)
+                    aPos.push(cPos);
+                    
+                    insert.rule.pos = cPos;
+                    insert.rule.pos.type = notindex;
+                    insert.rule.pos.index = cOtherAnchor;
+                end
+                
+                insert.rule.pos = [cRelativePos.x - cOtherRelativePos.x - 1, cRelativePos.y - cOtherRelativePos.y];
+                insert.rule.pos.type = notindex;
+                insert.rule.pos.index = cOtherAnchor;
+                
+                insert.rule.pos = [cRelativePos.x - cOtherRelativePos.x + 1, cRelativePos.y - cOtherRelativePos.y];
+                insert.rule.pos.type = notindex;
+                insert.rule.pos.index = cOtherAnchor;
+                
+                insert.rule.pos = [cRelativePos.x - cOtherRelativePos.x, cRelativePos.y - cOtherRelativePos.y - 1];
+                insert.rule.pos.type = notindex;
+                insert.rule.pos.index = cOtherAnchor;
+                
+                insert.rule.pos = [cRelativePos.x - cOtherRelativePos.x, cRelativePos.y - cOtherRelativePos.y + 1];
+                insert.rule.pos.type = notindex;
+                insert.rule.pos.index = cOtherAnchor;
+            end            
         end
     end
     return true;
@@ -3640,63 +2961,22 @@ end
 
 
 
-nested function->bool Object.IsNextTo(array object aObjects)
-
-//
-    if (s:debug)
-        if (aObjects.count == 0)
-            warning("IsNextTo(array object aObjects) -> aObjects was empty, function had no effect.");
-            return false;
-        end
-    end
-//
-
-    if (g:runObjectTests == false)
-        g:callObjectIsNextTo = true;
-        
-        g:argObjectIsNextTo = aObjects;
-        return false;
-    end
-    
-    if (g:updateArgObjectIsNextTo and g:callObjectIsNextTo)
-        g:argObjectIsNextTo = util:ConfigUpdateObjects(g:argObjectIsNextTo, g:updateCheck);
-        g:updateArgObjectIsNextTo = false;
-    end
-    
-    return internal:ObjectIsNextTo();
-end
-
-
-
 nested function->bool Object.IsOverlapping(array object aObjects)
 
-    if (g:runObjectTests == false)
-        g:callObjectIsOverlapping = true;
+    if (g:initObject)
         return false;
     end
 
 //
     if (s:debug)
         if (aObjects.count == 0)
-            warning("IsOverlapping(array object aObjects) -> aObjects was empty, function had no effect.");
+            warning("Object.IsOverlapping(array object aObjects) -> aObjects was empty, function had no effect.");
             return false;
         end
     end
 //
-
-    if (g:updateArgObjectIsNotOverlapping and g:callObjectIsNotOverlapping)
-        g:argObjectIsNotOverlapping = util:ConfigUpdateObjects(g:argObjectIsNotOverlapping, g:updateCheck);
-        g:updateArgObjectIsNotOverlapping = false;
-    end
-    if (g:updateArgObjectIsOver and g:callObjectIsOver)
-        g:argObjectIsOver = util:ConfigUpdateObjects(g:argObjectIsOver, g:updateCheck);
-        g:updateArgObjectIsOver = false;
-    end
     
     array object aArray = util:ConfigUpdateObjects(aObjects, g:updateCheck);
-    
-    object oObject = g:vInsertObject;
-    coord cAnchor = g:vInsertIndex;
     
     for (i = 0 to aArray.last)        
         coord cOtherAnchor = aArray[i].anchor;
@@ -3705,20 +2985,59 @@ nested function->bool Object.IsOverlapping(array object aObjects)
         for (j = 0 to aArray[i].last)
             coord cOtherRelativePos = util:RelativePos(cOtherAnchor, aArray[i][j]);
             
-            for (k = 0 to oObject.last)
-                coord cRelativePos = util:RelativePos(cAnchor, oObject[k]);
+            for (k = 0 to g:vInsertObject.last)
+                coord cRelativePos = util:RelativePos(g:vInsertIndex, g:vInsertObject[k]);
                 
                 coord cPos = [cRelativePos.x - cOtherRelativePos.x, cRelativePos.y - cOtherRelativePos.y];
                 if (aPos.has(cPos) == false)
                     aPos.push(cPos);
                     
-                    insert.newrule;
-                    util:InsertIndex(cAnchor);
+                    insert.rule.pos = cPos;
+                    insert.rule.pos.type = index;
+                    insert.rule.pos.index = cOtherAnchor;
+                    insert.rule.pos.operator = g:or;
+                    insert.rule.pos.group = g:group;
+                end
+            end
+        end
+    end
+    
+    g:group = g:group + 1;
+    return true;
+end
+
+
+
+nested function->bool Object.IsNotOverlapping(array object aObjects)
+    
+//
+    if (s:debug)
+        if (aObjects.count == 0)
+            warning("Object.IsNotOverlapping(array object aObjects) -> aObjects was empty, function had no effect.");
+            return false;
+        end
+    end
+//
+    
+    array object aArray = util:ConfigUpdateObjects(aObjects, g:updateCheck);
+    
+    for (i = 0 to aArray.last)
+        coord cOtherAnchor = aArray[i].anchor;
+        
+        array coord aPos;
+        for (j = 0 to aArray[i].last)
+            coord cOtherRelativePos = util:RelativePos(cOtherAnchor, aArray[i][j]);
+            
+            for (k = 0 to g:vInsertObject.last)
+                coord cRelativePos = util:RelativePos(g:vInsertIndex, g:vInsertObject[k]);
+                
+                coord cPos = [cRelativePos.x - cOtherRelativePos.x, cRelativePos.y - cOtherRelativePos.y];
+                if (aPos.has(cPos) == false)
+                    aPos.push(cPos);
                     
                     insert.rule.pos = cPos;
-                    util:Is(cOtherAnchor);
-
-                    internal:ObjectExecuteCalls();
+                    insert.rule.pos.type = notindex;
+                    insert.rule.pos.index = cOtherAnchor;
                 end
             end
         end

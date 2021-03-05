@@ -3051,6 +3051,37 @@ void ASTNodeEvaluator::insert(InsertC control, Value* value, uint32_t line)
                 automappers().back().runs.back().rules.back().posRules.back().indexInfos.push_back(ii);
         }
     }
+    else if (control == InsertC::InsertRulePosOperator) {
+        if (automappers().empty())
+            printError("Cannot evaluate 'insert.rule.pos.operator'. No automapper found.", line);
+        else if (automappers().back().runs.empty())
+            printError("Cannot evaluate 'insert.rule.pos.operator'. No run found.", line);
+        else if (automappers().back().runs.back().rules.empty())
+            printError("Cannot evaluate 'insert.rule.pos.operator'. No rule found.", line);
+        else if (automappers().back().runs.back().rules.back().posRules.empty())
+            printError("Cannot evaluate 'insert.rule.pos.operator'. No posrule found.", line);
+        else {
+            int32_t op = value->as<IntValue*>()->value;
+            if (op != util::enum_i32(Op::And) && op != util::enum_i32(Op::Or))
+                printError("Invalid value for 'insert.rule.pos.operator', must be either 0 or 1.", line);
+            else
+                automappers().back().runs.back().rules.back().posRules.back().op = util::i32_enum<Op>(op);
+        }
+    }
+    else if (control == InsertC::InsertRulePosGroup) {
+        if (automappers().empty())
+            printError("Cannot evaluate 'insert.rule.pos.group'. No automapper found.", line);
+        else if (automappers().back().runs.empty())
+            printError("Cannot evaluate 'insert.rule.pos.group'. No run found.", line);
+        else if (automappers().back().runs.back().rules.empty())
+            printError("Cannot evaluate 'insert.rule.pos.group'. No rule found.", line);
+        else if (automappers().back().runs.back().rules.back().posRules.empty())
+            printError("Cannot evaluate 'insert.rule.pos.group'. No posrule found.", line);
+        else {
+            int32_t group = value->as<IntValue*>()->value;
+            automappers().back().runs.back().rules.back().posRules.back().group = group;
+        }
+    }
     else {
         if (automappers().empty())
             printError("Cannot evaluate 'insert.rule.index'. No automapper found.", line);
@@ -3504,6 +3535,10 @@ ValueType ASTInsertNode::getNodeType()
     else if (getControl() == InsertC::InsertRuleIndex)
         return ValueType::Int;
     else if (getControl() == InsertC::InsertRulePosIndex)
+        return ValueType::Int;
+    else if (getControl() == InsertC::InsertRulePosOperator)
+        return ValueType::Int;
+    else if (getControl() == InsertC::InsertRulePosGroup)
         return ValueType::Int;
     else if (getControl() == InsertC::InsertNewrun)
         return ValueType::Int;

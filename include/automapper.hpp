@@ -50,6 +50,8 @@ struct PosRule {
     int32_t y;
     PosRuleType ruleType;
     std::vector<IndexInfo> indexInfos;
+    Op op;
+    int32_t group;
     
     friend bool operator==(const PosRule& lhs, const PosRule& rhs)
         { return lhs.x == rhs.x && lhs.y == rhs.y && lhs.ruleType == rhs.ruleType && lhs.indexInfos == rhs.indexInfos; }
