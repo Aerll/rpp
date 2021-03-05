@@ -1162,8 +1162,6 @@ bool g:hasThis = false;
 
 array float g:argInsertChance;
 int g:argInsertChanceIndex = 0;
-
-float g:totalChance = 1.0;
 /******************************************************************************
 
 */
@@ -1175,7 +1173,7 @@ end
 
 
 
-function->null internal:UpdateProbabilities(int iLast, bool bNormalize)
+function->null internal:UpdateProbabilities(int iLast)
 
     array float aProbabilities;
     
@@ -1190,14 +1188,6 @@ function->null internal:UpdateProbabilities(int iLast, bool bNormalize)
                 end
             end
             
-            float fSum = util:SumOf(aProbabilities);
-            if (fSum < 100.0)
-                g:totalChance = 100.0 / fSum;
-            end
-            
-            if (bNormalize)
-                aProbabilities = util:Normalize(aProbabilities, 100.0);
-            end
             g:argInsertChance = util:Unbias(aProbabilities);
         end
         if (g:randomize == false)
@@ -1213,6 +1203,8 @@ function->null internal:UpdateProbabilities(int iLast, bool bNormalize)
         end
         g:argInsertChance = aProbabilities;
     end
+    
+    g:argInsertChanceIndex = 0;
 end
 
 
@@ -1247,60 +1239,23 @@ function->null Insert(array int aIndices)
     
     array int aArray = util:ConfigUpdateIndices(aIndices, g:updateInsert);
     
-    internal:UpdateProbabilities(aArray.last, true);
+    internal:UpdateProbabilities(aArray.last);
     
-    if (g:hasThis == false)
-        if (aArray.count > 1)
-            g:vInsertIndex = g:mask;
-        end
-        if (aArray.count == 1)
-            g:vInsertIndex = aArray[0];
-        end
+    for (i = 0 to aArray.last)
+        g:vInsertIndex = aArray[i];
         
         insert.newrule;
         util:InsertIndex(g:vInsertIndex);
+        
         if (g:insertUseEmpty)
             insert.rule.pos = [0, 0];
             insert.rule.pos.type = empty;
         end
-        util:Chance(g:totalChance);
+        util:Chance(g:argInsertChance[g:argInsertChanceIndex]);    
         
         invoke(nested);
-    end
-    
-    g:totalChance = 1.0;
-    g:argInsertChanceIndex = 0;
-    
-    if (aArray.count > 1)
-        if (g:hasThis == false)
-            insert.newrun = 1;
-            insert.nocopy;
-        end
-        for (i = 0 to aArray.last)
-            g:vInsertIndex = aArray[i];
-            
-            insert.newrule;
-            util:InsertIndex(g:vInsertIndex);
-            
-            if (g:hasThis == false)
-                insert.rule.pos = [0, 0];
-                insert.rule.pos.type = index;
-                insert.rule.pos.index = g:mask;
-                util:Chance(g:argInsertChance[g:argInsertChanceIndex]);
-            end
-            if (g:hasThis)
-                if (g:insertUseEmpty)
-                    insert.rule.pos = [0, 0];
-                    insert.rule.pos.type = empty;
-                end
-                util:Chance(g:argInsertChance[g:argInsertChanceIndex]);    
-                
-                invoke(nested);
-            end            
-            
-            g:argInsertChanceIndex = g:argInsertChanceIndex + 1;
-        end
-        insert.newrun = 1;
+        
+        g:argInsertChanceIndex = g:argInsertChanceIndex + 1;
     end
     
     if (true)
@@ -2426,10 +2381,7 @@ function->null InsertObject(array object aObjects)
     
     array object aArray = util:ConfigUpdateObjects(aObjects, g:updateInsert);
     
-    internal:UpdateProbabilities(aArray.last, false);
-    
-    g:totalChance = 1.0;
-    g:argInsertChanceIndex = 0;
+    internal:UpdateProbabilities(aArray.last);
     
     for (i = 0 to aArray.last)
         g:vInsertObject = aArray[i];
