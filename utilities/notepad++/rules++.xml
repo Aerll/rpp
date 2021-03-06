@@ -935,52 +935,11 @@
         
         
         
-        <!-- Randomize -->
-        <KeyWord name="Randomize" func="yes">
-            <Overload retVal="preset">
-                <Param name="array int aIndices" />
-            </Overload>
-            <Overload retVal="preset">
-                <Param name="array object aObjects" />
-            </Overload>
-        </KeyWord>
-        
-        
-        
-        <!-- RandomizeCustom -->
-        <KeyWord name="RandomizeCustom" func="yes">
-            <Overload retVal="preset">
-                <Param name="array int aIndices" />
-                <Param name="array int aProbabilities" />
-            </Overload>
-        </KeyWord>
-        
-        
-        
         <!-- Checkerboard -->
         <KeyWord name="Checkerboard" func="yes">
             <Overload retVal="preset">
                 <Param name="int iIndex1" />
                 <Param name="int iIndex2" />
-            </Overload>
-        </KeyWord>
-        
-        
-        
-        <!-- ReplaceEachRotation -->
-        <KeyWord name="ReplaceEachRotation" func="yes">
-            <Overload retVal="preset">
-                <Param name="int iFrom" />
-                <Param name="int iTo" />
-            </Overload>
-        </KeyWord>
-        
-        
-        
-        <!-- RemoveDuplicates -->
-        <KeyWord name="RemoveDuplicates" func="yes">
-            <Overload retVal="preset">
-                <Param name="array int aIndices" />
             </Overload>
         </KeyWord>
     </AutoComplete>

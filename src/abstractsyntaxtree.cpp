@@ -611,10 +611,20 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAcces
         node = std::move(y);
     }
     else if (Token::stringToRotation(expression.get<3>()->getTokens().front()->value) != Rotation::Default) {
-        auto rotation = convertExpression(*expression.get<3>(), NodeID::Rotation);
-        rotation->as<ASTRotationNode*>()->setNode(convertExpression(*expression.get<1>()));
-        rotation->setLine(rotation->as<ASTRotationNode*>()->getLine());
-        node = std::move(rotation);
+        if (result != nullptr && result->id() == NodeID::Anchor) {
+            auto rotation = std::make_unique<ASTRotationNode>();
+            rotation->setRotation(Token::stringToRotation(expression.get<3>()->getTokens().front()->value));
+            rotation->setNode(convertExpression(*expression.get<1>()));
+            rotation->setLine(expression.get<3>()->getTokens().front()->line);
+            result->as<ASTAnchorNode*>()->setNode(std::move(rotation));
+            return result;
+        }
+        else {
+            auto rotation = convertExpression(*expression.get<3>(), NodeID::Rotation);
+            rotation->as<ASTRotationNode*>()->setNode(convertExpression(*expression.get<1>()));
+            rotation->setLine(rotation->as<ASTRotationNode*>()->getLine());
+            node = std::move(rotation);
+        }
     }
     else if (expression.get<3>()->getTokens().front()->value == KW::Rotate) {
         auto rotate = std::make_unique<ASTRotateNode>();
