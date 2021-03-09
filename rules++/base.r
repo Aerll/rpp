@@ -1239,6 +1239,9 @@ function->null Insert(array int aIndices)
     array int aArray = util:ConfigUpdateIndices(aIndices, g:updateInsert);
     
     internal:UpdateProbabilities(aArray.last);
+    if (g:roll)
+        insert.nocopy;
+    end
     
     for (i = 0 to aArray.last)
         g:vInsertIndex = aArray[i];
@@ -2377,6 +2380,9 @@ function->null InsertObject(array object aObjects)
     array object aArray = util:ConfigUpdateObjects(aObjects, g:updateInsert);
     
     internal:UpdateProbabilities(aArray.last);
+    if (g:roll)
+        insert.nocopy;
+    end
     
     for (i = 0 to aArray.last)
         g:vInsertObject = aArray[i];
