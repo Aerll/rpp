@@ -1,55 +1,10 @@
 
 ///////////////////////////////////////
-// NYI
-// - Insert.Chance working with Config
-
-///////////////////////////////////////
 // global variables (internal)
 ///////////////////////////////////////
 /******************************************************************************
 
 */
-// settings
-bool g:checkAllRotations  = false;
-bool g:checkOnlyRotations = false;
-bool g:checkOnlyMirrors   = false;
-
-bool g:checkV   = false;
-bool g:checkH   = false;
-bool g:checkR   = false;
-bool g:checkN   = false;
-bool g:checkVH  = false;
-bool g:checkVR  = false;
-bool g:checkHR  = false;
-bool g:checkVHR = false;
-
-bool g:checkUseEmpty = false;
-
-bool g:insertAllRotations  = false;
-bool g:insertOnlyRotations = false;
-bool g:insertOnlyMirrors   = false;
-
-bool g:insertV   = false;
-bool g:insertH   = false;
-bool g:insertR   = false;
-bool g:insertN   = false;
-bool g:insertVH  = false;
-bool g:insertVR  = false;
-bool g:insertHR  = false;
-bool g:insertVHR = false;
-
-bool g:insertUseEmpty = false;
-
-// flags
-int g:resetCheck  = 1000;
-int g:resetInsert = 1001;
-
-int g:updateCheck  = 2000;
-int g:updateInsert = 2001;
-
-int g:getCheck  = 3000;
-int g:getInsert = 3001;
-
 // value holders
 int g:vInsertIndex = 0;
 object g:vInsertObject;
@@ -67,89 +22,12 @@ int g:mask = 255;
 
 
 
-function->null util:ResetSettings(int iResetFlag)
-
-    if (iResetFlag == g:resetCheck)
-        g:checkAllRotations  = false;
-        g:checkOnlyRotations = false;
-        g:checkOnlyMirrors   = false;
-
-        g:checkV   = false;
-        g:checkH   = false;
-        g:checkR   = false;
-        g:checkN   = false;
-        g:checkVH  = false;
-        g:checkVR  = false;
-        g:checkHR  = false;
-        g:checkVHR = false;
-        
-        g:checkUseEmpty = false;
-    end
-    if (iResetFlag == g:resetInsert)
-        g:insertAllRotations  = false;
-        g:insertOnlyRotations = false;
-        g:insertOnlyMirrors   = false;
-
-        g:insertV   = false;
-        g:insertH   = false;
-        g:insertR   = false;
-        g:insertN   = false;
-        g:insertVH  = false;
-        g:insertVR  = false;
-        g:insertHR  = false;
-        g:insertVHR = false;
-        
-        g:insertUseEmpty = false;
-    end
-end
-
-
-
 ///////////////////////////////////////
 // settings
 ///////////////////////////////////////
 /******************************************************************************
 
 */
-// pos rules
-int s:checkAllRotations  = 10000;
-int s:checkOnlyRotations = 10001;
-int s:checkOnlyMirrors   = 10002;
-
-int s:checkV   = 10003;
-int s:checkH   = 10004;
-int s:checkR   = 10005;
-int s:checkN   = 10006;
-int s:checkVH  = 10007;
-int s:checkVR  = 10008;
-int s:checkHR  = 10009;
-int s:checkVHR = 10010;
-
-int s:checkUseEmpty = 10011;
-
-
-
-// rules
-int s:insertAllRotations  = 20000;
-int s:insertOnlyRotations = 20001;
-int s:insertOnlyMirrors   = 20002;
-
-int s:insertV   = 20003;
-int s:insertH   = 20004;
-int s:insertR   = 20005;
-int s:insertN   = 20006;
-int s:insertVH  = 20007;
-int s:insertVR  = 20008;
-int s:insertHR  = 20009;
-int s:insertVHR = 20010;
-
-int s:insertUseEmpty = 20011;
-
-
-
-// others
-int s:null = 0;
-
 bool s:debug = true;
 
 
@@ -216,364 +94,386 @@ end
 
 
 
-function->null util:ConfigUpdate(array int aSettings, int iFlag)
+function->array int util:N(array int aIndices)
 
-    if (aSettings.count == 0) 
-        return;
-    end
-
-    for (i = 0 to aSettings.last)
-        int iSetting = aSettings[i];
+    array int aResult;
+     
+    if (aIndices.count != 0)
+        array int aArray = aIndices.unique();
         
-        if (iFlag == g:updateCheck)
-            if (iSetting == s:checkAllRotations)  g:checkAllRotations  = true; end
-            if (iSetting == s:checkOnlyRotations) g:checkOnlyRotations = true; end
-            if (iSetting == s:checkOnlyMirrors)   g:checkOnlyMirrors   = true; end
-            if (iSetting == s:checkV)             g:checkV             = true; end
-            if (iSetting == s:checkH)             g:checkH             = true; end
-            if (iSetting == s:checkR)             g:checkR             = true; end
-            if (iSetting == s:checkN)             g:checkN             = true; end
-            if (iSetting == s:checkVH)            g:checkVH            = true; end
-            if (iSetting == s:checkVR)            g:checkVR            = true; end
-            if (iSetting == s:checkHR)            g:checkHR            = true; end
-            if (iSetting == s:checkVHR)           g:checkVHR           = true; end
-            if (iSetting == s:checkUseEmpty)      g:checkUseEmpty      = true; end
-        end
-        if (iFlag == g:updateInsert)
-            if (iSetting == s:insertAllRotations)  g:insertAllRotations  = true; end
-            if (iSetting == s:insertOnlyRotations) g:insertOnlyRotations = true; end
-            if (iSetting == s:insertOnlyMirrors)   g:insertOnlyMirrors   = true; end
-            if (iSetting == s:insertV)             g:insertV             = true; end
-            if (iSetting == s:insertH)             g:insertH             = true; end
-            if (iSetting == s:insertR)             g:insertR             = true; end
-            if (iSetting == s:insertN)             g:insertN             = true; end
-            if (iSetting == s:insertVH)            g:insertVH            = true; end
-            if (iSetting == s:insertVR)            g:insertVR            = true; end
-            if (iSetting == s:insertHR)            g:insertHR            = true; end
-            if (iSetting == s:insertVHR)           g:insertVHR           = true; end
-            if (iSetting == s:insertUseEmpty)      g:insertUseEmpty      = true; end
+        for (i = 0 to aArray.last)
+            aResult.push(aArray[i].N);
         end
     end
+    return aResult;
 end
 
 
 
-function->array int util:ConfigUpdateIndices(int iIndex, int iFlag)
+function->array object util:N(array object aObjects)
 
-    array int aArray;
-    if (iFlag == g:updateCheck)
-        if (g:checkAllRotations)
-            aArray.push(util:RemoveRotation(iIndex));
-        end
-        if (g:checkAllRotations == false)
-            if (g:checkOnlyRotations)
-                aArray.push(iIndex.R, iIndex.N, iIndex.VH, iIndex.VHR);
-            end
-            if (g:checkOnlyRotations == false)
-                if (g:checkV)  aArray.push(iIndex.V);  end
-                if (g:checkH)  aArray.push(iIndex.H);  end
-                if (g:checkVR) aArray.push(iIndex.VR); end
-                if (g:checkHR) aArray.push(iIndex.HR); end
-            end
-            
-            if (g:checkOnlyMirrors)
-                aArray.push(iIndex.V, iIndex.H, iIndex.VR, iIndex.HR);
-            end
-            if (g:checkOnlyMirrors == false)
-                if (g:checkR)   aArray.push(iIndex.R);   end
-                if (g:checkN)   aArray.push(iIndex.N);   end
-                if (g:checkVH)  aArray.push(iIndex.VH);  end
-                if (g:checkVHR) aArray.push(iIndex.VHR); end
-            end
+    array object aResult;
+     
+    if (aObjects.count != 0)
+        array object aArray = aObjects.unique();
+        
+        for (i = 0 to aArray.last)
+            aResult.push(aArray[i].N);
         end
     end
-    
-    if (iFlag == g:updateInsert)
-        if (g:insertAllRotations)
-            aArray.push(util:RemoveRotation(iIndex), iIndex.V, iIndex.H, iIndex.R, iIndex.VH, iIndex.VR, iIndex.HR, iIndex.VHR);
-        end
-        if (g:insertAllRotations == false)
-            if (g:insertOnlyRotations)
-                aArray.push(util:RemoveRotation(iIndex), iIndex.R, iIndex.VH, iIndex.VHR);
-            end
-            if (g:insertOnlyRotations == false)
-                if (g:insertV)  aArray.push(iIndex.V);  end
-                if (g:insertH)  aArray.push(iIndex.H);  end
-                if (g:insertVR) aArray.push(iIndex.VR); end
-                if (g:insertHR) aArray.push(iIndex.HR); end
-            end
-            
-            if (g:insertOnlyMirrors)
-                aArray.push(iIndex.V, iIndex.H, iIndex.VR, iIndex.HR);
-            end
-            if (g:insertOnlyMirrors == false)
-                if (g:insertN)   aArray.push(iIndex);     end
-                if (g:insertR)   aArray.push(iIndex.R);   end
-                if (g:insertVH)  aArray.push(iIndex.VH);  end
-                if (g:insertVHR) aArray.push(iIndex.VHR); end
-            end
-        end
-    end
-    
-    if (aArray.count == 0)
-        aArray.push(iIndex);
-    end
-    return aArray;
+    return aResult;
 end
 
 
 
-function->array int util:ConfigUpdateIndices(array int aIndices, int iFlag)
+function->array int util:V(array int aIndices)
 
-    array int aArray;
-    if (iFlag == g:updateCheck)
-        if (g:checkAllRotations)
-            for (i = 0 to aIndices.last)
-                int iIndex = util:RemoveRotation(aIndices[i]);
-                aArray.push(iIndex);
-            end
-        end
-        if (g:checkAllRotations == false)
-            if (g:checkOnlyRotations)
-                for (i = 0 to aIndices.last)
-                    int iIndex = aIndices[i];
-                    aArray.push(iIndex.R, iIndex.N, iIndex.VH, iIndex.VHR);
-                end
-            end
-            if (g:checkOnlyRotations == false)
-                for (i = 0 to aIndices.last)
-                    int iIndex = aIndices[i];
-                    if (g:checkV)  aArray.push(iIndex.V);  end
-                    if (g:checkH)  aArray.push(iIndex.H);  end
-                    if (g:checkVR) aArray.push(iIndex.VR); end
-                    if (g:checkHR) aArray.push(iIndex.HR); end
-                end
-            end
-            
-            if (g:checkOnlyMirrors)
-                for (i = 0 to aIndices.last)
-                    int iIndex = aIndices[i];
-                    aArray.push(iIndex.V, iIndex.H, iIndex.VR, iIndex.HR);
-                end
-            end
-            if (g:checkOnlyMirrors == false)
-                for (i = 0 to aIndices.last)
-                    int iIndex = aIndices[i];
-                    if (g:checkR)   aArray.push(iIndex.R);   end
-                    if (g:checkN)   aArray.push(iIndex.N);   end
-                    if (g:checkVH)  aArray.push(iIndex.VH);  end
-                    if (g:checkVHR) aArray.push(iIndex.VHR); end
-                end
-            end
+    array int aResult;
+     
+    if (aIndices.count != 0)
+        array int aArray = aIndices.unique();
+        
+        for (i = 0 to aArray.last)
+            aResult.push(aArray[i].V);
         end
     end
-    
-    if (iFlag == g:updateInsert)
-        if (g:insertAllRotations)
-            for (i = 0 to aIndices.last)
-                int iIndex = util:RemoveRotation(aIndices[i]);
-                aArray.push(iIndex, iIndex.V, iIndex.H, iIndex.R, iIndex.VH, iIndex.VR, iIndex.HR, iIndex.VHR);
-            end
-        end
-        if (g:insertAllRotations == false)
-            if (g:insertOnlyRotations)
-                for (i = 0 to aIndices.last)
-                    int iIndex = util:RemoveRotation(aIndices[i]);
-                    aArray.push(iIndex, iIndex.R, iIndex.VH, iIndex.VHR);
-                end
-            end
-            if (g:insertOnlyRotations == false)
-                for (i = 0 to aIndices.last)
-                    int iIndex = aIndices[i];
-                    if (g:insertV)  aArray.push(iIndex.V);  end
-                    if (g:insertH)  aArray.push(iIndex.H);  end
-                    if (g:insertVR) aArray.push(iIndex.VR); end
-                    if (g:insertHR) aArray.push(iIndex.HR); end
-                end
-            end
-            
-            if (g:insertOnlyMirrors)
-                for (i = 0 to aIndices.last)
-                    int iIndex = aIndices[i];
-                    aArray.push(iIndex.V, iIndex.H, iIndex.VR, iIndex.HR);
-                end
-            end
-            if (g:insertOnlyMirrors == false)
-                for (i = 0 to aIndices.last)
-                    int iIndex = util:RemoveRotation(aIndices[i]);
-                    if (g:insertN)   aArray.push(iIndex);     end
-                    if (g:insertR)   aArray.push(iIndex.R);   end
-                    if (g:insertVH)  aArray.push(iIndex.VH);  end
-                    if (g:insertVHR) aArray.push(iIndex.VHR); end
-                end
-            end
-        end
-    end
-    
-    if (aArray.count == 0)
-        aArray = aIndices;
-    end
-    return aArray;
+    return aResult;
 end
 
 
 
-function->array object util:ConfigUpdateObjects(object oObject, int iFlag)
+function->array object util:V(array object aObjects)
 
-    array object aArray;
-    if (iFlag == g:updateCheck)
-        if (g:checkAllRotations)
-            aArray.push(oObject.V, oObject.H, oObject.R, oObject.N, oObject.VH, oObject.VR, oObject.HR, oObject.VHR);
-        end
-        if (g:checkAllRotations == false)
-            if (g:checkOnlyRotations)
-                aArray.push(oObject.R, oObject.N, oObject.VH, oObject.VHR);
-            end
-            if (g:checkOnlyRotations == false)
-                if (g:checkV)  aArray.push(oObject.V);  end
-                if (g:checkH)  aArray.push(oObject.H);  end
-                if (g:checkVR) aArray.push(oObject.VR); end
-                if (g:checkHR) aArray.push(oObject.HR); end
-            end
-            
-            if (g:checkOnlyMirrors)
-                aArray.push(oObject.V, oObject.H, oObject.VR, oObject.HR);
-            end
-            if (g:checkOnlyMirrors == false)
-                if (g:checkR)   aArray.push(oObject.R);   end
-                if (g:checkN)   aArray.push(oObject.N);   end
-                if (g:checkVH)  aArray.push(oObject.VH);  end
-                if (g:checkVHR) aArray.push(oObject.VHR); end
-            end
+    array object aResult;
+     
+    if (aObjects.count != 0)
+        array object aArray = aObjects.unique();
+        
+        for (i = 0 to aArray.last)
+            aResult.push(aArray[i].V);
         end
     end
-    
-    if (iFlag == g:updateInsert)
-        if (g:insertAllRotations)
-            aArray.push(oObject.V, oObject.H, oObject.R, oObject.N, oObject.VH, oObject.VR, oObject.HR, oObject.VHR);
-        end
-        if (g:insertAllRotations == false)
-            if (g:insertOnlyRotations)
-                aArray.push(oObject.R, oObject.N, oObject.VH, oObject.VHR);
-            end
-            if (g:insertOnlyRotations == false)
-                if (g:insertV)  aArray.push(oObject.V);  end
-                if (g:insertH)  aArray.push(oObject.H);  end
-                if (g:insertVR) aArray.push(oObject.VR); end
-                if (g:insertHR) aArray.push(oObject.HR); end
-            end
-            
-            if (g:insertOnlyMirrors)
-                aArray.push(oObject.V, oObject.H, oObject.VR, oObject.HR);
-            end
-            if (g:insertOnlyMirrors == false)
-                if (g:insertR)   aArray.push(oObject.R);   end
-                if (g:insertN)   aArray.push(oObject.N);   end
-                if (g:insertVH)  aArray.push(oObject.VH);  end
-                if (g:insertVHR) aArray.push(oObject.VHR); end
-            end
-        end
-    end
-    
-    if (aArray.count == 0)
-        aArray.push(oObject);
-    end
-    return aArray;
+    return aResult;
 end
 
 
 
-function->array object util:ConfigUpdateObjects(array object aObjects, int iFlag)
+function->array int util:H(array int aIndices)
 
-    array object aArray;
-    if (iFlag == g:updateCheck)
-        if (g:checkAllRotations)
-            for (i = 0 to aObjects.last)
-                object oObject = aObjects[i];
-                aArray.push(oObject.V, oObject.H, oObject.R, oObject.N, oObject.VH, oObject.VR, oObject.HR, oObject.VHR);
-            end
-        end
-        if (g:checkAllRotations == false)
-            if (g:checkOnlyRotations)
-                for (i = 0 to aObjects.last)
-                    object oObject = aObjects[i];
-                    aArray.push(oObject.R, oObject.N, oObject.VH, oObject.VHR);
-                end
-            end
-            if (g:checkOnlyRotations == false)
-                for (i = 0 to aObjects.last)
-                    object oObject = aObjects[i];
-                    if (g:checkV)  aArray.push(oObject.V);  end
-                    if (g:checkH)  aArray.push(oObject.H);  end
-                    if (g:checkVR) aArray.push(oObject.VR); end
-                    if (g:checkHR) aArray.push(oObject.HR); end
-                end
-            end
-            
-            if (g:checkOnlyMirrors)
-                for (i = 0 to aObjects.last)
-                    object oObject = aObjects[i];
-                    aArray.push(oObject.V, oObject.H, oObject.VR, oObject.HR);
-                end
-            end
-            if (g:checkOnlyMirrors == false)
-                for (i = 0 to aObjects.last)
-                    object oObject = aObjects[i];
-                    if (g:checkR)   aArray.push(oObject.R);   end
-                    if (g:checkN)   aArray.push(oObject.N);   end
-                    if (g:checkVH)  aArray.push(oObject.VH);  end
-                    if (g:checkVHR) aArray.push(oObject.VHR); end
-                end
-            end
+    array int aResult;
+     
+    if (aIndices.count != 0)
+        array int aArray = aIndices.unique();
+        
+        for (i = 0 to aArray.last)
+            aResult.push(aArray[i].H);
         end
     end
-    
-    if (iFlag == g:updateInsert)
-        if (g:insertAllRotations)
-            for (i = 0 to aObjects.last)
-                object oObject = aObjects[i];
-                aArray.push(oObject.V, oObject.H, oObject.R, oObject.N, oObject.VH, oObject.VR, oObject.HR, oObject.VHR);
-            end
-        end
-        if (g:insertAllRotations == false)
-            if (g:insertOnlyRotations)
-                for (i = 0 to aObjects.last)
-                    object oObject = aObjects[i];
-                    aArray.push(oObject.R, oObject.N, oObject.VH, oObject.VHR);
-                end
-            end
-            if (g:insertOnlyRotations == false)
-                for (i = 0 to aObjects.last)
-                    object oObject = aObjects[i];
-                    if (g:insertV)  aArray.push(oObject.V);  end
-                    if (g:insertH)  aArray.push(oObject.H);  end
-                    if (g:insertVR) aArray.push(oObject.VR); end
-                    if (g:insertHR) aArray.push(oObject.HR); end
-                end
-            end
-            
-            if (g:insertOnlyMirrors)
-                for (i = 0 to aObjects.last)
-                    object oObject = aObjects[i];
-                    aArray.push(oObject.V, oObject.H, oObject.VR, oObject.HR);
-                end
-            end
-            if (g:insertOnlyMirrors == false)
-                for (i = 0 to aObjects.last)
-                    object oObject = aObjects[i];
-                    if (g:insertR)   aArray.push(oObject.R);   end
-                    if (g:insertN)   aArray.push(oObject.N);   end
-                    if (g:insertVH)  aArray.push(oObject.VH);  end
-                    if (g:insertVHR) aArray.push(oObject.VHR); end
-                end
-            end
+    return aResult;
+end
+
+
+
+function->array object util:H(array object aObjects)
+
+    array object aResult;
+     
+    if (aObjects.count != 0)
+        array object aArray = aObjects.unique();
+        
+        for (i = 0 to aArray.last)
+            aResult.push(aArray[i].H);
         end
     end
-    
-    if (aArray.count == 0)
-        aArray = aObjects;
+    return aResult;
+end
+
+
+
+function->array int util:R(array int aIndices)
+
+    array int aResult;
+     
+    if (aIndices.count != 0)
+        array int aArray = aIndices.unique();
+        
+        for (i = 0 to aArray.last)
+            aResult.push(aArray[i].R);
+        end
     end
-    return aArray;
+    return aResult;
+end
+
+
+
+function->array object util:R(array object aObjects)
+
+    array object aResult;
+     
+    if (aObjects.count != 0)
+        array object aArray = aObjects.unique();
+        
+        for (i = 0 to aArray.last)
+            aResult.push(aArray[i].R);
+        end
+    end
+    return aResult;
+end
+
+
+
+function->array int util:VH(array int aIndices)
+
+    array int aResult;
+     
+    if (aIndices.count != 0)
+        array int aArray = aIndices.unique();
+        
+        for (i = 0 to aArray.last)
+            aResult.push(aArray[i].VH);
+        end
+    end
+    return aResult;
+end
+
+
+
+function->array object util:VH(array object aObjects)
+
+    array object aResult;
+     
+    if (aObjects.count != 0)
+        array object aArray = aObjects.unique();
+        
+        for (i = 0 to aArray.last)
+            aResult.push(aArray[i].VH);
+        end
+    end
+    return aResult;
+end
+
+
+
+function->array int util:VR(array int aIndices)
+
+    array int aResult;
+     
+    if (aIndices.count != 0)
+        array int aArray = aIndices.unique();
+        
+        for (i = 0 to aArray.last)
+            aResult.push(aArray[i].VR);
+        end
+    end
+    return aResult;
+end
+
+
+
+function->array object util:VR(array object aObjects)
+
+    array object aResult;
+     
+    if (aObjects.count != 0)
+        array object aArray = aObjects.unique();
+        
+        for (i = 0 to aArray.last)
+            aResult.push(aArray[i].VR);
+        end
+    end
+    return aResult;
+end
+
+
+
+function->array int util:HR(array int aIndices)
+
+    array int aResult;
+     
+    if (aIndices.count != 0)
+        array int aArray = aIndices.unique();
+        
+        for (i = 0 to aArray.last)
+            aResult.push(aArray[i].HR);
+        end
+    end
+    return aResult;
+end
+
+
+
+function->array object util:HR(array object aObjects)
+
+    array object aResult;
+     
+    if (aObjects.count != 0)
+        array object aArray = aObjects.unique();
+        
+        for (i = 0 to aArray.last)
+            aResult.push(aArray[i].HR);
+        end
+    end
+    return aResult;
+end
+
+
+
+function->array int util:VHR(array int aIndices)
+
+    array int aResult;
+     
+    if (aIndices.count != 0)
+        array int aArray = aIndices.unique();
+        
+        for (i = 0 to aArray.last)
+            aResult.push(aArray[i].VHR);
+        end
+    end
+    return aResult;
+end
+
+
+
+function->array object util:VHR(array object aObjects)
+
+    array object aResult;
+     
+    if (aObjects.count != 0)
+        array object aArray = aObjects.unique();
+        
+        for (i = 0 to aArray.last)
+            aResult.push(aArray[i].VHR);
+        end
+    end
+    return aResult;
+end
+
+
+
+function->array int util:Rotations(array int aIndices)
+
+    array int aResult;
+     
+    if (aIndices.count != 0)
+        array int aArray = aIndices.unique();
+        
+        for (i = 0 to aArray.last)
+            int iIndex = aArray[i];
+            aResult.push(iIndex.N);
+            aResult.push(iIndex.R);
+            aResult.push(iIndex.VH);
+            aResult.push(iIndex.VHR);
+        end
+    end
+    return aResult;
+end
+
+
+
+function->array object util:Rotations(array object aObjects)
+
+    array object aResult;
+     
+    if (aObjects.count != 0)
+        array object aArray = aObjects.unique();
+        
+        for (i = 0 to aArray.last)
+            object oObject = aArray[i];
+            aResult.push(oObject.N);
+            aResult.push(oObject.R);
+            aResult.push(oObject.VH);
+            aResult.push(oObject.VHR);
+        end
+    end
+    return aResult;
+end
+
+
+
+function->array int util:Mirrors(array int aIndices)
+
+    array int aResult;
+     
+    if (aIndices.count != 0)
+        array int aArray = aIndices.unique();
+        
+        for (i = 0 to aArray.last)
+            int iIndex = aArray[i];
+            aResult.push(iIndex.V);
+            aResult.push(iIndex.H);
+            aResult.push(iIndex.VR);
+            aResult.push(iIndex.HR);
+        end
+    end
+    return aResult;
+end
+
+
+
+function->array object util:Mirrors(array object aObjects)
+
+    array object aResult;
+     
+    if (aObjects.count != 0)
+        array object aArray = aObjects.unique();
+        
+        for (i = 0 to aArray.last)
+            object oObject = aArray[i];
+            aResult.push(oObject.V);
+            aResult.push(oObject.H);
+            aResult.push(oObject.VR);
+            aResult.push(oObject.HR);
+        end
+    end
+    return aResult;
+end
+
+
+
+function->array int util:All(array int aIndices)
+
+    array int aResult;
+     
+    if (aIndices.count != 0)
+        array int aArray = aIndices.unique();
+        
+        for (i = 0 to aArray.last)
+            int iIndex = aArray[i];
+            aResult.push(iIndex.N);
+            aResult.push(iIndex.V);
+            aResult.push(iIndex.H);
+            aResult.push(iIndex.R);
+            aResult.push(iIndex.VH);
+            aResult.push(iIndex.VR);
+            aResult.push(iIndex.HR);
+            aResult.push(iIndex.VHR);
+        end
+    end
+    return aResult;
+end
+
+
+
+function->array object util:All(array object aObjects)
+
+    array object aResult;
+     
+    if (aObjects.count != 0)
+        array object aArray = aObjects.unique();
+        
+        for (i = 0 to aArray.last)
+            object oObject = aArray[i];
+            aResult.push(oObject.N);
+            aResult.push(oObject.V);
+            aResult.push(oObject.H);
+            aResult.push(oObject.R);
+            aResult.push(oObject.VH);
+            aResult.push(oObject.VR);
+            aResult.push(oObject.HR);
+            aResult.push(oObject.VHR);
+        end
+    end
+    return aResult;
 end
 
 
@@ -975,26 +875,6 @@ end
 
 
 
-function->bool internal:IsEmptySwap()
-
-    if (g:checkUseEmpty == false)
-        return internal:TestIndicesEmpty();
-    end
-    return internal:TestIndicesFull();
-end
-
-
-
-function->bool internal:IsFullSwap()
-
-    if (g:checkUseEmpty)
-        return internal:TestIndicesEmpty();
-    end
-    return internal:TestIndicesFull();
-end
-
-
-
 
 
 ///////////////////////////////////////
@@ -1156,7 +1036,6 @@ end
 ///////////////////////////////////////
 //
 bool g:initInsert = true;
-bool g:hasThis = false;
 bool g:hasAt = false;
 
 array float g:argInsertChance;
@@ -1166,8 +1045,7 @@ int g:argInsertChanceIndex = 0;
 */
 function->null internal:InsertResetFlags()
 
-    g:initInsert = true;    
-    g:hasThis = false;  
+    g:initInsert = true;
 end
 
 
@@ -1210,7 +1088,6 @@ end
 
 function->null Insert(array int aIndices) 
     nested(
-        Config,
         At,
         NoDefaultPosRule, Chance, Roll, If,
         TestIndices
@@ -1230,30 +1107,26 @@ function->null Insert(array int aIndices)
         end
     end
 //
-
-    util:ResetSettings(g:resetInsert);
     
     invoke(nested);
     g:initInsert = false;
     
-    array int aArray = util:ConfigUpdateIndices(aIndices, g:updateInsert);
-    
-    internal:UpdateProbabilities(aArray.last);
+    internal:UpdateProbabilities(aIndices.last);
     if (g:roll)
         insert.nocopy;
     end
     
-    for (i = 0 to aArray.last)
-        g:vInsertIndex = aArray[i];
+    for (i = 0 to aIndices.last)
+        g:vInsertIndex = aIndices[i];
         
         insert.newrule;
         util:InsertIndex(g:vInsertIndex);
         
-        if (g:insertUseEmpty)
+        if (g:vTestIndices.has(0))
             insert.rule.pos = [0, 0];
             insert.rule.pos.type = empty;
         end
-        util:Chance(g:argInsertChance[g:argInsertChanceIndex]);    
+        util:Chance(g:argInsertChance[g:argInsertChanceIndex]);
         
         invoke(nested);
         
@@ -1272,15 +1145,6 @@ function->null Insert(array int aIndices)
 
     internal:InsertResetFlags();
     internal:ResetFlags();
-end
-
-
-
-nested function->null Insert.Config(array int aSettings)
-
-    if (g:initInsert)
-        util:ConfigUpdate(aSettings, g:updateInsert);
-    end
 end
 
 
@@ -1453,30 +1317,29 @@ function->null internal:BorderRule()
     int iX = g:posIndexAt.x;
     int iY = g:posIndexAt.y;
     
-    if (g:borderTop         == 0) insert.rule.pos = [iX    , iY - 1]; internal:IsEmptySwap(); end
-    if (g:borderRight       == 0) insert.rule.pos = [iX + 1, iY    ]; internal:IsEmptySwap(); end
-    if (g:borderBottom      == 0) insert.rule.pos = [iX    , iY + 1]; internal:IsEmptySwap(); end
-    if (g:borderLeft        == 0) insert.rule.pos = [iX - 1, iY    ]; internal:IsEmptySwap(); end
-    if (g:borderTopLeft     == 0) insert.rule.pos = [iX - 1, iY - 1]; internal:IsEmptySwap(); end
-    if (g:borderTopRight    == 0) insert.rule.pos = [iX + 1, iY - 1]; internal:IsEmptySwap(); end
-    if (g:borderBottomLeft  == 0) insert.rule.pos = [iX - 1, iY + 1]; internal:IsEmptySwap(); end
-    if (g:borderBottomRight == 0) insert.rule.pos = [iX + 1, iY + 1]; internal:IsEmptySwap(); end
+    if (g:borderTop         == 0) insert.rule.pos = [iX    , iY - 1]; internal:TestIndicesEmpty(); end
+    if (g:borderRight       == 0) insert.rule.pos = [iX + 1, iY    ]; internal:TestIndicesEmpty(); end
+    if (g:borderBottom      == 0) insert.rule.pos = [iX    , iY + 1]; internal:TestIndicesEmpty(); end
+    if (g:borderLeft        == 0) insert.rule.pos = [iX - 1, iY    ]; internal:TestIndicesEmpty(); end
+    if (g:borderTopLeft     == 0) insert.rule.pos = [iX - 1, iY - 1]; internal:TestIndicesEmpty(); end
+    if (g:borderTopRight    == 0) insert.rule.pos = [iX + 1, iY - 1]; internal:TestIndicesEmpty(); end
+    if (g:borderBottomLeft  == 0) insert.rule.pos = [iX - 1, iY + 1]; internal:TestIndicesEmpty(); end
+    if (g:borderBottomRight == 0) insert.rule.pos = [iX + 1, iY + 1]; internal:TestIndicesEmpty(); end
     
-    if (g:borderTop         == 1) insert.rule.pos = [iX    , iY - 1]; internal:IsFullSwap(); end
-    if (g:borderRight       == 1) insert.rule.pos = [iX + 1, iY    ]; internal:IsFullSwap(); end
-    if (g:borderBottom      == 1) insert.rule.pos = [iX    , iY + 1]; internal:IsFullSwap(); end
-    if (g:borderLeft        == 1) insert.rule.pos = [iX - 1, iY    ]; internal:IsFullSwap(); end
-    if (g:borderTopLeft     == 1) insert.rule.pos = [iX - 1, iY - 1]; internal:IsFullSwap(); end
-    if (g:borderTopRight    == 1) insert.rule.pos = [iX + 1, iY - 1]; internal:IsFullSwap(); end
-    if (g:borderBottomLeft  == 1) insert.rule.pos = [iX - 1, iY + 1]; internal:IsFullSwap(); end
-    if (g:borderBottomRight == 1) insert.rule.pos = [iX + 1, iY + 1]; internal:IsFullSwap(); end
+    if (g:borderTop         == 1) insert.rule.pos = [iX    , iY - 1]; internal:TestIndicesFull(); end
+    if (g:borderRight       == 1) insert.rule.pos = [iX + 1, iY    ]; internal:TestIndicesFull(); end
+    if (g:borderBottom      == 1) insert.rule.pos = [iX    , iY + 1]; internal:TestIndicesFull(); end
+    if (g:borderLeft        == 1) insert.rule.pos = [iX - 1, iY    ]; internal:TestIndicesFull(); end
+    if (g:borderTopLeft     == 1) insert.rule.pos = [iX - 1, iY - 1]; internal:TestIndicesFull(); end
+    if (g:borderTopRight    == 1) insert.rule.pos = [iX + 1, iY - 1]; internal:TestIndicesFull(); end
+    if (g:borderBottomLeft  == 1) insert.rule.pos = [iX - 1, iY + 1]; internal:TestIndicesFull(); end
+    if (g:borderBottomRight == 1) insert.rule.pos = [iX + 1, iY + 1]; internal:TestIndicesFull(); end
 end
 
 
 
 function->bool IndexAt(array coord aCoords) 
     nested(
-        Config,
         Is, IsNot, IsEmpty, IsEmptyAt, IsFull, IsFullAt, IsOut, IsNotOut,
         IsEdge, IsNotEdge,
         IsNextTo, IsNotNextTo,
@@ -1498,7 +1361,6 @@ function->bool IndexAt(array coord aCoords)
         return false;
     end
 
-    util:ResetSettings(g:resetCheck);
     invoke(nested);
     g:initIndexAt = false;
     
@@ -1517,17 +1379,11 @@ end
 
 
 
-nested function->bool IndexAt.Config(array int aSettings)
-    
-    if (g:initIndexAt)
-        util:ConfigUpdate(aSettings, g:updateCheck);
-    end
-    return true;
-end
-
-
-
 nested function->bool IndexAt.Is(array int aIndices)
+
+    if (g:initIndexAt)
+        return false;
+    end
 
 //
     if (s:debug)
@@ -1544,19 +1400,10 @@ nested function->bool IndexAt.Is(array int aIndices)
     end
 //
 
-    if (g:initIndexAt)
-        if (aIndices.has(this))
-            g:hasThis = true;
-        end
-        return false;
-    end
-
-    array int aArray = util:ConfigUpdateIndices(aIndices, g:updateCheck);
-
     insert.rule.pos = g:posIndexAt;
     insert.rule.pos.type = index;
-    for (i = 0 to aArray.last)
-        int iIndex = aArray[i];
+    for (i = 0 to aIndices.last)
+        int iIndex = aIndices[i];
         if (iIndex != this) insert.rule.pos.index = iIndex; end
         if (iIndex == this) insert.rule.pos.index = g:vInsertIndex; end
     end
@@ -1566,6 +1413,10 @@ end
 
 
 nested function->bool IndexAt.IsNot(array int aIndices)
+
+    if (g:initIndexAt)
+        return false;
+    end
 
 //
     if (s:debug)
@@ -1582,19 +1433,10 @@ nested function->bool IndexAt.IsNot(array int aIndices)
     end
 //
 
-    if (g:initIndexAt)
-        if (aIndices.has(this))
-            g:hasThis = true;
-        end
-        return false;
-    end
-
-    array int aArray = util:ConfigUpdateIndices(aIndices, g:updateCheck);
-
     insert.rule.pos = g:posIndexAt;
     insert.rule.pos.type = notindex;
-    for (i = 0 to aArray.last)
-        int iIndex = aArray[i];
+    for (i = 0 to aIndices.last)
+        int iIndex = aIndices[i];
         if (iIndex != this) insert.rule.pos.index = iIndex; end
         if (iIndex == this) insert.rule.pos.index = g:vInsertIndex; end
     end
@@ -1892,6 +1734,10 @@ end
 
 nested function->bool IndexAt.IsNextTo(array int aIndices)
 
+    if (g:initIndexAt)
+        return false;
+    end
+
 //
     if (s:debug)
         if (aIndices.count == 0)
@@ -1906,21 +1752,12 @@ nested function->bool IndexAt.IsNextTo(array int aIndices)
         end
     end
 //
-
-    if (g:initIndexAt)
-        if (aIndices.has(this))
-            g:hasThis = true;
-        end
-        return false;
-    end
-
-    array int aArray = util:ConfigUpdateIndices(aIndices, g:updateCheck);
     
     int iX = g:posIndexAt.x;
     int iY = g:posIndexAt.y;
     
-    for (i = 0 to aArray.last)
-        int iIndex = aArray[i];
+    for (i = 0 to aIndices.last)
+        int iIndex = aIndices[i];
     
         insert.rule.pos = [iX - 1, iY];
         insert.rule.pos.type = index;
@@ -1959,6 +1796,10 @@ end
 
 nested function->bool IndexAt.IsNotNextTo(array int aIndices)
 
+    if (g:initIndexAt)
+        return false;
+    end
+
 //
     if (s:debug)
         if (aIndices.count == 0)
@@ -1973,21 +1814,12 @@ nested function->bool IndexAt.IsNotNextTo(array int aIndices)
         end
     end
 //
-
-    if (g:initIndexAt)
-        if (aIndices.has(this))
-            g:hasThis = true;
-        end
-        return false;
-    end
-    
-    array int aArray = util:ConfigUpdateIndices(aIndices, g:updateCheck);
     
     int iX = g:posIndexAt.x;
     int iY = g:posIndexAt.y;
 
-    for (i = 0 to aArray.last)
-        int iIndex = aArray[i];
+    for (i = 0 to aIndices.last)
+        int iIndex = aIndices[i];
     
         insert.rule.pos = [iX - 1, iY];
         insert.rule.pos.type = notindex;
@@ -2156,7 +1988,7 @@ nested function->bool IndexAt.HasSpaceFor(object oObject)
         coord cRelativePos = util:RelativePos(oObject.anchor, oObject[i]);
     
         insert.rule.pos = [cRelativePos.x + iX, cRelativePos.y + iY];
-        internal:IsFullSwap();
+        internal:TestIndicesFull();
     end
     return true;
 end
@@ -2177,17 +2009,15 @@ nested function->bool IndexAt.IsOverlapping(array object aObjects)
         end
     end
 //
-
-    array object aArray = util:ConfigUpdateObjects(aObjects, g:updateCheck);
     
     int iX = g:posIndexAt.x;
     int iY = g:posIndexAt.y;
 
-    for (i = 0 to aArray.last)
-        coord cAnchor = aArray[i].anchor;
+    for (i = 0 to aObjects.last)
+        coord cAnchor = aObjects[i].anchor;
         
-        for (j = 0 to aArray[i].last)
-            coord cRelativePos = util:RelativePos(cAnchor, aArray[i][j]);
+        for (j = 0 to aObjects[i].last)
+            coord cRelativePos = util:RelativePos(cAnchor, aObjects[i][j]);
          
             insert.rule.pos = [iX + cRelativePos.x * -1, iY + cRelativePos.y * -1];
             insert.rule.pos.type = index;
@@ -2220,14 +2050,12 @@ nested function->bool IndexAt.IsNotOverlapping(array object aObjects)
     
     int iX = g:posIndexAt.x;
     int iY = g:posIndexAt.y;
-    
-    array object aArray = util:ConfigUpdateObjects(aObjects, g:updateCheck);
 
-    for (i = 0 to aArray.last)
-        coord cAnchor = aArray[i].anchor;
+    for (i = 0 to aObjects.last)
+        coord cAnchor = aObjects[i].anchor;
         
-        for (j = 0 to aArray[i].last)
-            coord cRelativePos = util:RelativePos(cAnchor, aArray[i][j]);
+        for (j = 0 to aObjects[i].last)
+            coord cRelativePos = util:RelativePos(cAnchor, aObjects[i][j]);
             
             insert.rule.pos = [iX + cRelativePos.x * -1, iY + cRelativePos.y * -1];
             insert.rule.pos.type = notindex;
@@ -2371,27 +2199,23 @@ function->null InsertObject(array object aObjects)
         end
     end
 //
-
-    util:ResetSettings(g:resetInsert);
     
     invoke(nested);
     g:initInsert = false;
     
-    array object aArray = util:ConfigUpdateObjects(aObjects, g:updateInsert);
-    
-    internal:UpdateProbabilities(aArray.last);
+    internal:UpdateProbabilities(aObjects.last);
     if (g:roll)
         insert.nocopy;
     end
     
-    for (i = 0 to aArray.last)
-        g:vInsertObject = aArray[i];
-        g:vInsertIndex = aArray[i].anchor;
+    for (i = 0 to aObjects.last)
+        g:vInsertObject = aObjects[i];
+        g:vInsertIndex = aObjects[i].anchor;
         
         insert.newrule;
         util:InsertIndex(g:vInsertIndex);
         
-        if (g:insertUseEmpty)
+        if (g:vTestIndices.has(0))
             insert.rule.pos = [0, 0];
             insert.rule.pos.type = empty;
         end
@@ -2414,15 +2238,6 @@ function->null InsertObject(array object aObjects)
     
     internal:InsertResetFlags();
     internal:ResetFlags();
-end
-
-
-
-nested function->null InsertObject.Config(array int aSettings)
-
-    if (g:initInsert)
-        util:ConfigUpdate(aSettings, g:updateInsert);
-    end
 end
 
 
@@ -2556,7 +2371,6 @@ end
 
 function->bool Object()
     nested(
-        Config,
         HasSpace, Fits, IsOver,
         IsEdge, IsNotEdge,
         IsNextTo, IsNotNextTo,
@@ -2566,11 +2380,11 @@ function->bool Object()
     if (g:initInsert or g:hasAt)
         return false;
     end
-
-    insert.nocopy;
-    util:ResetSettings(g:resetCheck);
+    
     invoke(nested);
     g:initObject = false;
+
+    insert.nocopy;
     
     array int aRect = util:Rect(g:vInsertObject);
     g:vObjectTop    = aRect[0];
@@ -2587,25 +2401,18 @@ end
 
 
 
-nested function->bool Object.Config(array int aSettings)
-
-    if (g:initObject)
-        util:ConfigUpdate(aSettings, g:updateCheck);
-    end
-    return true;
-end
-
-
-
 nested function->bool Object.HasSpace()
 
     if (g:initObject)
         return false;
     end
     
-    for (i = 0 to g:vInsertObject.last)        
-        insert.rule.pos = util:RelativePos(g:vInsertIndex, g:vInsertObject[i]);
-        internal:IsFullSwap();
+    object oObject = g:vInsertObject;
+    coord cAnchor = g:vInsertIndex;
+    
+    for (i = 0 to oObject.last)        
+        insert.rule.pos = util:RelativePos(cAnchor, oObject[i]);
+        internal:TestIndicesFull();
     end
     return true;
 end
@@ -2618,14 +2425,17 @@ nested function->bool Object.Fits()
         return false;
     end 
     
+    object oObject = g:vInsertObject;
+    coord cAnchor = g:vInsertIndex;
+    
     array coord aRelativePos;
-    for (i = 0 to g:vInsertObject.last)
-        coord cRelativePos = util:RelativePos(g:vInsertIndex, g:vInsertObject[i]);
+    for (i = 0 to oObject.last)
+        coord cRelativePos = util:RelativePos(cAnchor, oObject[i]);
         
         aRelativePos.push(cRelativePos);
         
         insert.rule.pos = cRelativePos;
-        internal:IsFullSwap();
+        internal:TestIndicesFull();
     end
     
     for (i = 0 to aRelativePos.last)
@@ -2638,19 +2448,19 @@ nested function->bool Object.Fits()
         
         if (aRelativePos.has(cTop) == false)
             insert.rule.pos = cTop;
-            internal:IsEmptySwap();
+            internal:TestIndicesEmpty();
         end
         if (aRelativePos.has(cRight) == false)
             insert.rule.pos = cRight;
-            internal:IsEmptySwap();
+            internal:TestIndicesEmpty();
         end
         if (aRelativePos.has(cBottom) == false)
             insert.rule.pos = cBottom;
-            internal:IsEmptySwap();
+            internal:TestIndicesEmpty();
         end
         if (aRelativePos.has(cLeft) == false)
             insert.rule.pos = cLeft;
-            internal:IsEmptySwap();
+            internal:TestIndicesEmpty();
         end
     end
     return true;
@@ -2672,13 +2482,11 @@ nested function->bool Object.IsOver(array object aObjects)
         end
     end
 //
-    
-    array object aArray = util:ConfigUpdateObjects(aObjects, g:updateCheck);
 
     insert.rule.pos = [0, 0];
-    for (i = 0 to aArray.last)
+    for (i = 0 to aObjects.last)
         insert.rule.pos.type = index;
-        insert.rule.pos.index = aArray[i].anchor;
+        insert.rule.pos.index = aObjects[i].anchor;
     end
     return true;
 end
@@ -2824,19 +2632,20 @@ nested function->bool Object.IsNextTo(array object aObjects)
         end
     end
 //
-
-    array object aArray = util:ConfigUpdateObjects(aObjects, g:updateCheck);
+    
+    object oObject = g:vInsertObject;
+    coord cAnchor = g:vInsertIndex;
     
     array coord aNextToPos;    
-    for (i = 0 to aArray.last)
-        coord cOtherAnchor = aArray[i].anchor;
+    for (i = 0 to aObjects.last)
+        coord cOtherAnchor = aObjects[i].anchor;
         
         array coord aPos;
-        for (j = 0 to aArray[i].last)
-            coord cOtherRelativePos = util:RelativePos(cOtherAnchor, aArray[i][j]);
+        for (j = 0 to aObjects[i].last)
+            coord cOtherRelativePos = util:RelativePos(cOtherAnchor, aObjects[i][j]);
             
-            for (k = 0 to g:vInsertObject.last)
-                coord cRelativePos = util:RelativePos(g:vInsertIndex, g:vInsertObject[k]);
+            for (k = 0 to oObject.last)
+                coord cRelativePos = util:RelativePos(cAnchor, oObject[k]);
                 
                 coord cPos1 = [cRelativePos.x - cOtherRelativePos.x - 1, cRelativePos.y - cOtherRelativePos.y];
                 coord cPos2 = [cRelativePos.x - cOtherRelativePos.x + 1, cRelativePos.y - cOtherRelativePos.y];
@@ -2860,8 +2669,8 @@ nested function->bool Object.IsNextTo(array object aObjects)
     end
     
     for (n = 0 to aNextToPos.last)        
-        for (i = 0 to aArray.last)
-            coord cOtherAnchor = aArray[i].anchor;
+        for (i = 0 to aObjects.last)
+            coord cOtherAnchor = aObjects[i].anchor;
             
             insert.rule.pos = aNextToPos[n];
             insert.rule.pos.type = index;
@@ -2870,11 +2679,11 @@ nested function->bool Object.IsNextTo(array object aObjects)
             insert.rule.pos.group = g:group;
         
             array coord aPos;
-            for (j = 0 to aArray[i].last)
-                coord cOtherRelativePos = util:RelativePos(cOtherAnchor, aArray[i][j]);
+            for (j = 0 to aObjects[i].last)
+                coord cOtherRelativePos = util:RelativePos(cOtherAnchor, aObjects[i][j]);
                 
-                for (k = 0 to g:vInsertObject.last)
-                    coord cRelativePos = util:RelativePos(g:vInsertIndex, g:vInsertObject[k]);
+                for (k = 0 to oObject.last)
+                    coord cRelativePos = util:RelativePos(cAnchor, oObject[k]);
                     
                     coord cPos = [cRelativePos.x - cOtherRelativePos.x, cRelativePos.y - cOtherRelativePos.y];
                     if (aPos.has(cPos) == false)
@@ -2909,18 +2718,19 @@ nested function->bool Object.IsNotNextTo(array object aObjects)
         end
     end
 //
-
-    array object aArray = util:ConfigUpdateObjects(aObjects, g:updateCheck);
     
-    for (i = 0 to aArray.last)
-        coord cOtherAnchor = aArray[i].anchor;
+    object oObject = g:vInsertObject;
+    coord cAnchor = g:vInsertIndex;
+    
+    for (i = 0 to aObjects.last)
+        coord cOtherAnchor = aObjects[i].anchor;
         
         array coord aPos;
-        for (j = 0 to aArray[i].last)
-            coord cOtherRelativePos = util:RelativePos(cOtherAnchor, aArray[i][j]);
+        for (j = 0 to aObjects[i].last)
+            coord cOtherRelativePos = util:RelativePos(cOtherAnchor, aObjects[i][j]);
             
-            for (k = 0 to g:vInsertObject.last)
-                coord cRelativePos = util:RelativePos(g:vInsertIndex, g:vInsertObject[k]);
+            for (k = 0 to oObject.last)
+                coord cRelativePos = util:RelativePos(cAnchor, oObject[k]);
                 
                 coord cPos = [cRelativePos.x - cOtherRelativePos.x, cRelativePos.y - cOtherRelativePos.y];
                 if (aPos.has(cPos) == false)
@@ -2969,17 +2779,18 @@ nested function->bool Object.IsOverlapping(array object aObjects)
     end
 //
     
-    array object aArray = util:ConfigUpdateObjects(aObjects, g:updateCheck);
+    object oObject = g:vInsertObject;
+    coord cAnchor = g:vInsertIndex;
     
-    for (i = 0 to aArray.last)        
-        coord cOtherAnchor = aArray[i].anchor;
+    for (i = 0 to aObjects.last)        
+        coord cOtherAnchor = aObjects[i].anchor;
         
         array coord aPos;
-        for (j = 0 to aArray[i].last)
-            coord cOtherRelativePos = util:RelativePos(cOtherAnchor, aArray[i][j]);
+        for (j = 0 to aObjects[i].last)
+            coord cOtherRelativePos = util:RelativePos(cOtherAnchor, aObjects[i][j]);
             
-            for (k = 0 to g:vInsertObject.last)
-                coord cRelativePos = util:RelativePos(g:vInsertIndex, g:vInsertObject[k]);
+            for (k = 0 to oObject.last)
+                coord cRelativePos = util:RelativePos(cAnchor, oObject[k]);
                 
                 coord cPos = [cRelativePos.x - cOtherRelativePos.x, cRelativePos.y - cOtherRelativePos.y];
                 if (aPos.has(cPos) == false)
@@ -3012,17 +2823,18 @@ nested function->bool Object.IsNotOverlapping(array object aObjects)
     end
 //
     
-    array object aArray = util:ConfigUpdateObjects(aObjects, g:updateCheck);
+    object oObject = g:vInsertObject;
+    coord cAnchor = g:vInsertIndex;
     
-    for (i = 0 to aArray.last)
-        coord cOtherAnchor = aArray[i].anchor;
+    for (i = 0 to aObjects.last)
+        coord cOtherAnchor = aObjects[i].anchor;
         
         array coord aPos;
-        for (j = 0 to aArray[i].last)
-            coord cOtherRelativePos = util:RelativePos(cOtherAnchor, aArray[i][j]);
+        for (j = 0 to aObjects[i].last)
+            coord cOtherRelativePos = util:RelativePos(cOtherAnchor, aObjects[i][j]);
             
-            for (k = 0 to g:vInsertObject.last)
-                coord cRelativePos = util:RelativePos(g:vInsertIndex, g:vInsertObject[k]);
+            for (k = 0 to oObject.last)
+                coord cRelativePos = util:RelativePos(cAnchor, oObject[k]);
                 
                 coord cPos = [cRelativePos.x - cOtherRelativePos.x, cRelativePos.y - cOtherRelativePos.y];
                 if (aPos.has(cPos) == false)

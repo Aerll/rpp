@@ -118,38 +118,7 @@
         
         <!-- ******************************************************************
             settings
-        -->
-        <KeyWord name="s:checkAllRotations" />
-        <KeyWord name="s:checkOnlyRotations" />
-        <KeyWord name="s:checkOnlyMirrors" />
-        
-        <KeyWord name="s:checkV" />
-        <KeyWord name="s:checkH" />
-        <KeyWord name="s:checkR" />
-        <KeyWord name="s:checkN" />
-        <KeyWord name="s:checkVH" />
-        <KeyWord name="s:checkVR" />
-        <KeyWord name="s:checkHR" />
-        <KeyWord name="s:checkVHR" />
-        
-        <KeyWord name="s:checkUseEmpty" />
-
-        <KeyWord name="s:insertAllRotations" /> 
-        <KeyWord name="s:insertOnlyRotations" />
-        <KeyWord name="s:insertOnlyMirrors" />  
-
-        <KeyWord name="s:insertV" />
-        <KeyWord name="s:insertH" />
-        <KeyWord name="s:insertR" />
-        <KeyWord name="s:insertN" />
-        <KeyWord name="s:insertVH" />
-        <KeyWord name="s:insertVR" />
-        <KeyWord name="s:insertHR" />
-        <KeyWord name="s:insertVHR" />
-        
-        <KeyWord name="s:insertUseEmpty" />
-        
-        <KeyWord name="s:null" />
+        -->        
         <KeyWord name="s:debug" />
         
         
@@ -158,16 +127,7 @@
         
         <!-- ******************************************************************
             utility functions
-        -->
-        
-        <!-- util:ResetSettings -->
-        <KeyWord name="util:ResetSettings" func="yes">
-            <Overload retVal="null">
-                <Param name="int iResetFlag" />
-            </Overload>
-        </KeyWord>
-        
-        
+        -->       
         
         <!-- util:ArrayBool -->
         <KeyWord name="util:ArrayBool" func="yes">
@@ -241,39 +201,133 @@
         
         
         
-        <!-- util:ConfigUpdate -->
-        <KeyWord name="util:ConfigUpdate" func="yes">
-            <Overload retVal="null">
-                <Param name="array int aSettings" />
-                <Param name="int iFlag" />
-            </Overload>
-        </KeyWord>
-        
-        
-        
-        <!-- util:ConfigUpdateIndices -->
-        <KeyWord name="util:ConfigUpdateIndices" func="yes">
-            <Overload retVal="array int">
-                <Param name="int iIndex" />
-                <Param name="int iFlag" />
-            </Overload>
+        <!-- util:N -->
+        <KeyWord name="util:N" func="yes">
             <Overload retVal="array int">
                 <Param name="array int aIndices" />
-                <Param name="int iFlag" />
-            </Overload>
-        </KeyWord>
-        
-        
-        
-        <!-- util:ConfigUpdateObjects -->
-        <KeyWord name="util:ConfigUpdateObjects" func="yes">
-            <Overload retVal="array object">
-                <Param name="object oObject" />
-                <Param name="int iFlag" />
             </Overload>
             <Overload retVal="array object">
                 <Param name="array object aObjects" />
-                <Param name="int iFlag" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:V -->
+        <KeyWord name="util:V" func="yes">
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:H -->
+        <KeyWord name="util:H" func="yes">
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:R -->
+        <KeyWord name="util:R" func="yes">
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:VH -->
+        <KeyWord name="util:VH" func="yes">
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:VR -->
+        <KeyWord name="util:VR" func="yes">
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:HR -->
+        <KeyWord name="util:HR" func="yes">
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:VHR -->
+        <KeyWord name="util:VHR" func="yes">
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:Rotations -->
+        <KeyWord name="util:Rotations" func="yes">
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:Mirrors -->
+        <KeyWord name="util:Mirrors" func="yes">
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:All -->
+        <KeyWord name="util:All" func="yes">
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
             </Overload>
         </KeyWord>
         
@@ -784,18 +838,6 @@
         <KeyWord name="At" func="yes">
             <Overload retVal="null">
                 <Param name="coord cPos" />
-            </Overload>
-        </KeyWord>
-        
-        
-        
-        <!-- Config -->
-        <KeyWord name="Config" func="yes">
-            <Overload retVal="bool">
-                <Param name="array int aSettings" />
-            </Overload>
-            <Overload retVal="null">
-                <Param name="array int aSettings" />
             </Overload>
         </KeyWord>
         
