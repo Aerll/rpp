@@ -426,6 +426,36 @@
         
         
         
+        <!-- util:PosRange -->
+        <KeyWord name="util:PosRange" func="yes">
+            <Overload retVal="array coord">
+                <Param name="range rX" />
+                <Param name="range rY" />
+            </Overload>
+            <Overload retVal="array coord">
+                <Param name="range rX" />
+                <Param name="int iY" />
+            </Overload>
+            <Overload retVal="array coord">
+                <Param name="int iX" />
+                <Param name="range rY" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:Negate -->
+        <KeyWord name="util:Negate" func="yes">
+            <Overload retVal="int">
+                <Param name="int iValue" />
+            </Overload>
+            <Overload retVal="coord">
+                <Param name="coord cValue" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
         <!-- util:RelativePos -->
         <KeyWord name="util:RelativePos" func="yes">
             <Overload retVal="coord">
@@ -532,24 +562,6 @@
         
         
         
-        <!-- PosRange -->
-        <KeyWord name="PosRange" func="yes">
-            <Overload retVal="array coord">
-                <Param name="range rX" />
-                <Param name="range rY" />
-            </Overload>
-            <Overload retVal="array coord">
-                <Param name="range rX" />
-                <Param name="int iY" />
-            </Overload>
-            <Overload retVal="array coord">
-                <Param name="int iX" />
-                <Param name="range rY" />
-            </Overload>
-        </KeyWord>
-        
-        
-        
         <!-- Indices -->
         <KeyWord name="Indices" func="yes">
             <Overload retVal="object">
@@ -564,18 +576,6 @@
             <Overload retVal="object">
                 <Param name="int iTopLeft" />
                 <Param name="int iBottomRight" />
-            </Overload>
-        </KeyWord>
-        
-        
-        
-        <!-- Negate -->
-        <KeyWord name="Negate" func="yes">
-            <Overload retVal="int">
-                <Param name="int iValue" />
-            </Overload>
-            <Overload retVal="coord">
-                <Param name="coord cValue" />
             </Overload>
         </KeyWord>
         

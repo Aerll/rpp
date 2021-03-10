@@ -643,6 +643,62 @@ end
 
 
 
+function->array coord util:PosRange(range rX, range rY)
+
+    array int aX = util:ArrayInt(rX);
+    array int aY = util:ArrayInt(rY);
+
+    array coord aResult;
+    for (i = 0 to aX.last)
+        for (j = 0 to aY.last)
+            aResult.push([aX[i], aY[j]]);
+        end
+    end
+    return aResult;
+end
+
+
+
+function->array coord util:PosRange(range rX, int iY)
+
+    array int aX = util:ArrayInt(rX);
+
+    array coord aResult;
+    for (i = 0 to aX.last)
+        aResult.push([aX[i], iY]);
+    end
+    return aResult;
+end
+
+
+
+function->array coord util:PosRange(int iX, range rY)
+
+    array int aY = util:ArrayInt(rY);
+
+    array coord aResult;
+    for (i = 0 to aY.last)
+        aResult.push([iX, aY[i]]);
+    end
+    return aResult;
+end
+
+
+
+function->int util:Negate(int iValue)
+
+    return iValue * -1;
+end
+
+
+
+function->coord util:Negate(coord cValue)
+
+    return [cValue.x * -1, cValue.y * -1];
+end
+
+
+
 function->coord util:RelativePos(coord cAnchor, int iIndex)
 
     coord cPos = iIndex;
@@ -919,48 +975,6 @@ end
 
 
 
-function->array coord PosRange(range rX, range rY)
-
-    array int aX = util:ArrayInt(rX);
-    array int aY = util:ArrayInt(rY);
-
-    array coord aResult;
-    for (i = 0 to aX.last)
-        for (j = 0 to aY.last)
-            aResult.push([aX[i], aY[j]]);
-        end
-    end
-    return aResult;
-end
-
-
-
-function->array coord PosRange(range rX, int iY)
-
-    array int aX = util:ArrayInt(rX);
-
-    array coord aResult;
-    for (i = 0 to aX.last)
-        aResult.push([aX[i], iY]);
-    end
-    return aResult;
-end
-
-
-
-function->array coord PosRange(int iX, range rY)
-
-    array int aY = util:ArrayInt(rY);
-
-    array coord aResult;
-    for (i = 0 to aY.last)
-        aResult.push([iX, aY[i]]);
-    end
-    return aResult;
-end
-
-
-
 function->object Indices(array int aIndices)
 
 //
@@ -1015,20 +1029,6 @@ function->object Rect(int iTopLeft, int iBottomRight)
         end
     end
     return Indices(aResult);
-end
-
-
-
-function->int Negate(int iValue)
-
-    return iValue * -1;
-end
-
-
-
-function->coord Negate(coord cValue)
-
-    return [cValue.x * -1, cValue.y * -1];
 end
 
 
@@ -1169,7 +1169,7 @@ nested function->null Insert.At(coord cPos)
     end
 //
 
-    coord cPosNegated = Negate(cPos);
+    coord cPosNegated = util:Negate(cPos);
 
     insert.rule.pos = cPosNegated;
     insert.rule.pos.type = notindex;
@@ -2262,7 +2262,7 @@ nested function->null InsertObject.At(coord cPos)
     end
 //
 
-    coord cPosNegated = Negate(cPos);
+    coord cPosNegated = util:Negate(cPos);
 
     insert.rule.pos = cPosNegated;
     insert.rule.pos.type = notindex;
