@@ -94,6 +94,26 @@ end
 
 
 
+function->array int util:RemoveRotation(array float aIndices)
+
+    array int aResult;
+    if (aIndices.count != 0)
+        for (i = 0 to aIndices.last)
+            aResult.push(aIndices[i]);
+        end
+    end
+    return aResult;
+end
+
+
+
+function->int util:N(int iIndex)
+
+    return iIndex.N;
+end
+
+
+
 function->array int util:N(array int aIndices)
 
     array int aResult;
@@ -106,6 +126,13 @@ function->array int util:N(array int aIndices)
         end
     end
     return aResult;
+end
+
+
+
+function->object util:N(object oObject)
+
+    return oObject.N;
 end
 
 
@@ -126,6 +153,13 @@ end
 
 
 
+function->int util:V(int iIndex)
+
+    return iIndex.V;
+end
+
+
+
 function->array int util:V(array int aIndices)
 
     array int aResult;
@@ -138,6 +172,13 @@ function->array int util:V(array int aIndices)
         end
     end
     return aResult;
+end
+
+
+
+function->object util:V(object oObject)
+
+    return oObject.V;
 end
 
 
@@ -158,6 +199,13 @@ end
 
 
 
+function->int util:H(int iIndex)
+
+    return iIndex.H;
+end
+
+
+
 function->array int util:H(array int aIndices)
 
     array int aResult;
@@ -170,6 +218,13 @@ function->array int util:H(array int aIndices)
         end
     end
     return aResult;
+end
+
+
+
+function->object util:H(object oObject)
+
+    return oObject.H;
 end
 
 
@@ -190,6 +245,13 @@ end
 
 
 
+function->int util:R(int iIndex)
+
+    return iIndex.R;
+end
+
+
+
 function->array int util:R(array int aIndices)
 
     array int aResult;
@@ -202,6 +264,13 @@ function->array int util:R(array int aIndices)
         end
     end
     return aResult;
+end
+
+
+
+function->object util:R(object oObject)
+
+    return oObject.R;
 end
 
 
@@ -222,6 +291,13 @@ end
 
 
 
+function->int util:VH(int iIndex)
+
+    return iIndex.VH;
+end
+
+
+
 function->array int util:VH(array int aIndices)
 
     array int aResult;
@@ -234,6 +310,13 @@ function->array int util:VH(array int aIndices)
         end
     end
     return aResult;
+end
+
+
+
+function->object util:VH(object oObject)
+
+    return oObject.VH;
 end
 
 
@@ -254,6 +337,13 @@ end
 
 
 
+function->int util:VR(int iIndex)
+
+    return iIndex.VR;
+end
+
+
+
 function->array int util:VR(array int aIndices)
 
     array int aResult;
@@ -266,6 +356,13 @@ function->array int util:VR(array int aIndices)
         end
     end
     return aResult;
+end
+
+
+
+function->object util:VR(object oObject)
+
+    return oObject.VR;
 end
 
 
@@ -286,6 +383,13 @@ end
 
 
 
+function->int util:HR(int iIndex)
+
+    return iIndex.HR;
+end
+
+
+
 function->array int util:HR(array int aIndices)
 
     array int aResult;
@@ -298,6 +402,13 @@ function->array int util:HR(array int aIndices)
         end
     end
     return aResult;
+end
+
+
+
+function->object util:HR(object oObject)
+
+    return oObject.HR;
 end
 
 
@@ -318,6 +429,13 @@ end
 
 
 
+function->int util:VHR(int iIndex)
+
+    return iIndex.VHR;
+end
+
+
+
 function->array int util:VHR(array int aIndices)
 
     array int aResult;
@@ -334,6 +452,13 @@ end
 
 
 
+function->object util:VHR(object oObject)
+
+    return oObject.VHR;
+end
+
+
+
 function->array object util:VHR(array object aObjects)
 
     array object aResult;
@@ -345,6 +470,18 @@ function->array object util:VHR(array object aObjects)
             aResult.push(aArray[i].VHR);
         end
     end
+    return aResult;
+end
+
+
+
+function->array int util:Rotations(int iIndex)
+
+    array int aResult;
+    aResult.push(iIndex.N);
+    aResult.push(iIndex.R);
+    aResult.push(iIndex.VH);
+    aResult.push(iIndex.VHR);
     return aResult;
 end
 
@@ -370,6 +507,18 @@ end
 
 
 
+function->array object util:Rotations(object oObject)
+
+    array object aResult;
+    aResult.push(oObject.N);
+    aResult.push(oObject.R);
+    aResult.push(oObject.VH);
+    aResult.push(oObject.VHR);
+    return aResult;
+end
+
+
+
 function->array object util:Rotations(array object aObjects)
 
     array object aResult;
@@ -385,6 +534,18 @@ function->array object util:Rotations(array object aObjects)
             aResult.push(oObject.VHR);
         end
     end
+    return aResult;
+end
+
+
+
+function->array int util:Mirrors(int iIndex)
+
+    array int aResult;
+    aResult.push(iIndex.V);
+    aResult.push(iIndex.H);
+    aResult.push(iIndex.VR);
+    aResult.push(iIndex.HR);
     return aResult;
 end
 
@@ -410,6 +571,18 @@ end
 
 
 
+function->array object util:Mirrors(object oObject)
+
+    array object aResult;
+    aResult.push(oObject.V);
+    aResult.push(oObject.H);
+    aResult.push(oObject.VR);
+    aResult.push(oObject.HR);
+    return aResult;
+end
+
+
+
 function->array object util:Mirrors(array object aObjects)
 
     array object aResult;
@@ -425,6 +598,22 @@ function->array object util:Mirrors(array object aObjects)
             aResult.push(oObject.HR);
         end
     end
+    return aResult;
+end
+
+
+
+function->array int util:All(int iIndex)
+
+    array int aResult;
+    aResult.push(iIndex.N);
+    aResult.push(iIndex.V);
+    aResult.push(iIndex.H);
+    aResult.push(iIndex.R);
+    aResult.push(iIndex.VH);
+    aResult.push(iIndex.VR);
+    aResult.push(iIndex.HR);
+    aResult.push(iIndex.VHR);
     return aResult;
 end
 
@@ -449,6 +638,22 @@ function->array int util:All(array int aIndices)
             aResult.push(iIndex.VHR);
         end
     end
+    return aResult;
+end
+
+
+
+function->array object util:All(object oObject)
+
+    array object aResult;
+    aResult.push(oObject.N);
+    aResult.push(oObject.V);
+    aResult.push(oObject.H);
+    aResult.push(oObject.R);
+    aResult.push(oObject.VH);
+    aResult.push(oObject.VR);
+    aResult.push(oObject.HR);
+    aResult.push(oObject.VHR);
     return aResult;
 end
 
