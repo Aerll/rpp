@@ -1092,6 +1092,7 @@ end
 //
 bool g:randomize = false;
 bool g:roll      = false;
+bool g:hasAt     = false;
 ///////////////////////////////////////
 // internal utility functions
 ///////////////////////////////////////
@@ -1101,7 +1102,8 @@ bool g:roll      = false;
 function->null internal:ResetFlags()
 
     g:randomize = false;
-    g:roll = false;
+    g:roll      = false;
+    g:hasAt     = false;
 end
 
 
@@ -1241,7 +1243,6 @@ end
 ///////////////////////////////////////
 //
 bool g:initInsert = true;
-bool g:hasAt = false;
 
 array float g:argInsertChance;
 int g:argInsertChanceIndex = 0;
@@ -1256,6 +1257,10 @@ end
 
 
 function->null internal:UpdateProbabilities(int iLast)
+
+    if (iLast == 0)
+        g:roll = false;
+    end
 
     array float aProbabilities;
 
@@ -2390,7 +2395,6 @@ end
 */
 function->null InsertObject(array object aObjects)
     nested(
-        Config,
         At,
         NoDefaultPosRule, Chance, Roll, If,
         TestIndices
