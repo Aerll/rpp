@@ -513,6 +513,16 @@
         
         
         
+        <!-- util:Copies -->
+        <KeyWord name="util:Copies" func="yes">
+            <Overload retVal="array float">
+                <Param name="float fValue" />
+                <Param name="int iCopies" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
         <!-- util:Negate -->
         <KeyWord name="util:Negate" func="yes">
             <Overload retVal="int">

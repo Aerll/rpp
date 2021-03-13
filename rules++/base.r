@@ -890,6 +890,25 @@ end
 
 
 
+function->array float util:Copies(float fValue, int iCopies)
+
+//
+    if (s:debug)
+        if (iCopies < 1)
+            error("util:Copies(float fValue, int iCopies) -> iCopies needs to be greater than 0.");
+        end
+    end
+//
+
+    array float aResult;
+    for (i = 0 to iCopies - 1)
+        aResult.push(fValue);
+    end
+    return aResult;
+end
+
+
+
 function->int util:Negate(int iValue)
 
     return iValue * -1;
@@ -1165,7 +1184,7 @@ function->null NewRun(int iCopies)
 //
     if (s:debug)
         if (iCopies < 1)
-            error("NewRun(int iCopies) -> value needs to be greater than 0.");
+            error("NewRun(int iCopies) -> iCopies needs to be greater than 0.");
         end
     end
 //
@@ -1322,7 +1341,7 @@ function->null Insert(array int aIndices)
     g:initInsert = false;
 
     internal:UpdateProbabilities(aIndices.last);
-    if (g:roll)
+    if (g:roll or g:randomize)
         insert.nocopy;
     end
 
@@ -2272,7 +2291,6 @@ nested function->bool IndexAt.IsNotOverlapping(array object aObjects)
             insert.rule.pos.index = cAnchor;
         end
     end
-    insert.nocopy;
     return true;
 end
 
@@ -2413,7 +2431,7 @@ function->null InsertObject(array object aObjects)
     g:initInsert = false;
 
     internal:UpdateProbabilities(aObjects.last);
-    if (g:roll)
+    if (g:roll or g:randomize)
         insert.nocopy;
     end
 
