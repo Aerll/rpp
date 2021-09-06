@@ -1,0 +1,1084 @@
+<?xml version="1.0" encoding="Windows-1252" ?>
+<NotepadPlus>
+    <AutoComplete language="rules++">
+        <Environment ignoreCase="no" startFunc="(" stopFunc=")" paramSeparator="," terminal=";" additionalWordChar=":" />
+        
+        <!-- ******************************************************************
+            keywords
+        -->
+        <KeyWord name="anchor" />
+        <KeyWord name="and" />
+        <KeyWord name="any" />
+        <KeyWord name="array" />
+        <KeyWord name="automapper" />
+        <KeyWord name="bool" />
+        <KeyWord name="coord" />
+        <KeyWord name="count" />
+        <KeyWord name="empty" />
+        <KeyWord name="end" />
+        <KeyWord name="false" />
+        <KeyWord name="float" />
+        <KeyWord name="for" />
+        <KeyWord name="full" />
+        <KeyWord name="function" />
+        <KeyWord name="group" />
+        <KeyWord name="if" />
+        <KeyWord name="index" />
+        <KeyWord name="insert" />
+        <KeyWord name="int" />
+        <KeyWord name="invoke" />
+        <KeyWord name="last" />
+        <KeyWord name="nested" />
+        <KeyWord name="newrule" />
+        <KeyWord name="newrun" />
+        <KeyWord name="nocopy" />
+        <KeyWord name="nodefault" />
+        <KeyWord name="notindex" />
+        <KeyWord name="null" />
+        <KeyWord name="object" />
+        <KeyWord name="operator" />
+        <KeyWord name="or" />
+        <KeyWord name="pos" />
+        <KeyWord name="preset" />
+        <KeyWord name="random" />
+        <KeyWord name="range" />
+        <KeyWord name="return" />
+        <KeyWord name="rotate" />
+        <KeyWord name="rule" />
+        <KeyWord name="string" />
+        <KeyWord name="to" />
+        <KeyWord name="true" />
+        <KeyWord name="type" />
+        
+        
+        
+        <!-- error -->
+        <KeyWord name="error" func="yes">
+            <Overload retVal="null">
+                <Param name="string sMessage" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- warning -->
+        <KeyWord name="warning" func="yes">
+            <Overload retVal="null">
+                <Param name="string sMessage" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        
+        
+        <!-- ******************************************************************
+            properties
+        -->
+        <KeyWord name="x" />
+        <KeyWord name="y" />
+        <KeyWord name="N" />
+        <KeyWord name="V" />
+        <KeyWord name="H" />
+        <KeyWord name="R" />
+        <KeyWord name="VH" />
+        <KeyWord name="VR" />
+        <KeyWord name="HR" />
+        <KeyWord name="VHR" />
+        
+        
+        
+        <!-- push -->
+        <KeyWord name="push" func="yes">
+            <Overload retVal="null">
+                <Param name="NewValues" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- has -->
+        <KeyWord name="has" func="yes">
+            <Overload retVal="bool">
+                <Param name="Value" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- unique -->
+        <KeyWord name="unique" func="yes">
+            <Overload retVal="array">
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- str -->
+        <KeyWord name="str" func="yes">
+            <Overload retVal="string">
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        
+        
+        <!-- ******************************************************************
+            settings
+        -->        
+        <KeyWord name="s:debug" />
+        
+        
+        
+        
+        
+        <!-- ******************************************************************
+            utility functions
+        -->       
+        
+        <!-- util:ArrayBool -->
+        <KeyWord name="util:ArrayBool" func="yes">
+            <Overload retVal="array bool">
+                <Param name="array bool aValues" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:ArrayInt -->
+        <KeyWord name="util:ArrayInt" func="yes">
+            <Overload retVal="array int">
+                <Param name="array int aValues" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:ArrayCoord -->
+        <KeyWord name="util:ArrayCoord" func="yes">
+            <Overload retVal="array coord">
+                <Param name="array coord aValues" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:ArrayRange -->
+        <KeyWord name="util:ArrayRange" func="yes">
+            <Overload retVal="array range">
+                <Param name="array range aValues" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:ArrayFloat -->
+        <KeyWord name="util:ArrayFloat" func="yes">
+            <Overload retVal="array float">
+                <Param name="array float aValues" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:ArrayString -->
+        <KeyWord name="util:ArrayString" func="yes">
+            <Overload retVal="array string">
+                <Param name="array string aValues" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:ArrayObject -->
+        <KeyWord name="util:ArrayObject" func="yes">
+            <Overload retVal="array object">
+                <Param name="array object aValues" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:RemoveRotation -->
+        <KeyWord name="util:RemoveRotation" func="yes">
+            <Overload retVal="int">
+                <Param name="float fIndex" />
+            </Overload>
+            <Overload retVal="array int">
+                <Param name="array float aIndices" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:N -->
+        <KeyWord name="util:N" func="yes">
+            <Overload retVal="int">
+                <Param name="int iIndex" />
+            </Overload>
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="object">
+                <Param name="object oObject" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:V -->
+        <KeyWord name="util:V" func="yes">
+            <Overload retVal="int">
+                <Param name="int iIndex" />
+            </Overload>
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="object">
+                <Param name="object oObject" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:H -->
+        <KeyWord name="util:H" func="yes">
+            <Overload retVal="int">
+                <Param name="int iIndex" />
+            </Overload>
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="object">
+                <Param name="object oObject" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:R -->
+        <KeyWord name="util:R" func="yes">
+            <Overload retVal="int">
+                <Param name="int iIndex" />
+            </Overload>
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="object">
+                <Param name="object oObject" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:VH -->
+        <KeyWord name="util:VH" func="yes">
+            <Overload retVal="int">
+                <Param name="int iIndex" />
+            </Overload>
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="object">
+                <Param name="object oObject" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:VR -->
+        <KeyWord name="util:VR" func="yes">
+            <Overload retVal="int">
+                <Param name="int iIndex" />
+            </Overload>
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="object">
+                <Param name="object oObject" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:HR -->
+        <KeyWord name="util:HR" func="yes">
+            <Overload retVal="int">
+                <Param name="int iIndex" />
+            </Overload>
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="object">
+                <Param name="object oObject" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:VHR -->
+        <KeyWord name="util:VHR" func="yes">
+            <Overload retVal="int">
+                <Param name="int iIndex" />
+            </Overload>
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="object">
+                <Param name="object oObject" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:Rotations -->
+        <KeyWord name="util:Rotations" func="yes">
+            <Overload retVal="array int">
+                <Param name="int iIndex" />
+            </Overload>
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="object oObject" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:Mirrors -->
+        <KeyWord name="util:Mirrors" func="yes">
+            <Overload retVal="array int">
+                <Param name="int iIndex" />
+            </Overload>
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="object oObject" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:All -->
+        <KeyWord name="util:All" func="yes">
+            <Overload retVal="array int">
+                <Param name="int iIndex" />
+            </Overload>
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="object oObject" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:Is -->
+        <KeyWord name="util:Is" func="yes">
+            <Overload retVal="bool">
+                <Param name="int iIndex" />
+            </Overload>
+            <Overload retVal="bool">
+                <Param name="array int aIndices" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:IsNot -->
+        <KeyWord name="util:IsNot" func="yes">
+            <Overload retVal="bool">
+                <Param name="int iIndex" />
+            </Overload>
+            <Overload retVal="bool">
+                <Param name="array int aIndices" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:IsEmpty -->
+        <KeyWord name="util:IsEmpty" func="yes">
+            <Overload retVal="bool" />
+        </KeyWord>
+        
+        
+        
+        <!-- util:IsFull -->
+        <KeyWord name="util:IsFull" func="yes">
+            <Overload retVal="bool" />
+        </KeyWord>
+        
+        
+        
+        <!-- util:IsOut -->
+        <KeyWord name="util:IsOut" func="yes">
+            <Overload retVal="bool" />
+        </KeyWord>
+        
+        
+        
+        <!-- util:IsNotOut -->
+        <KeyWord name="util:IsNotOut" func="yes">
+            <Overload retVal="bool" />
+        </KeyWord>
+        
+        
+        
+        <!-- util:NewRule -->
+        <KeyWord name="util:NewRule" func="yes">
+            <Overload retVal="null" />
+        </KeyWord>
+        
+        
+        
+        <!-- util:NewPosRule -->
+        <KeyWord name="util:NewPosRule" func="yes">
+            <Overload retVal="null">
+                <Param name="coord cPos" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:InsertIndex -->
+        <KeyWord name="util:InsertIndex" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:NoDefaultPosRule -->
+        <KeyWord name="util:NoDefaultPosRule" func="yes">
+            <Overload retVal="null" />
+        </KeyWord>
+        
+        
+        
+        <!-- util:Chance -->
+        <KeyWord name="util:Chance" func="yes">
+            <Overload retVal="null">
+                <Param name="float fProbability" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:PosRange -->
+        <KeyWord name="util:PosRange" func="yes">
+            <Overload retVal="array coord">
+                <Param name="range rX" />
+                <Param name="range rY" />
+            </Overload>
+            <Overload retVal="array coord">
+                <Param name="range rX" />
+                <Param name="int iY" />
+            </Overload>
+            <Overload retVal="array coord">
+                <Param name="int iX" />
+                <Param name="range rY" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:Copies -->
+        <KeyWord name="util:Copies" func="yes">
+            <Overload retVal="array float">
+                <Param name="float fValue" />
+                <Param name="int iCopies" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:Negate -->
+        <KeyWord name="util:Negate" func="yes">
+            <Overload retVal="int">
+                <Param name="int iValue" />
+            </Overload>
+            <Overload retVal="coord">
+                <Param name="coord cValue" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:RelativePos -->
+        <KeyWord name="util:RelativePos" func="yes">
+            <Overload retVal="coord">
+                <Param name="coord cAnchor" />
+                <Param name="int iIndex" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:Min -->
+        <KeyWord name="util:Min" func="yes">
+            <Overload retVal="int">
+                <Param name="array int aValues" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:Max -->
+        <KeyWord name="util:Max" func="yes">
+            <Overload retVal="int">
+                <Param name="array int aValues" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:Rect -->
+        <KeyWord name="util:Rect" func="yes">
+            <Overload retVal="array int">
+                <Param name="object oObject" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:Size -->
+        <KeyWord name="util:Size" func="yes">
+            <Overload retVal="coord">
+                <Param name="object oObject" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:SumOf -->
+        <KeyWord name="util:SumOf" func="yes">
+            <Overload retVal="float">
+                <Param name="array float aValues" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:Normalize -->
+        <KeyWord name="util:Normalize" func="yes">
+            <Overload retVal="array float">
+                <Param name="array float aValues" />
+                <Param name="float fBound" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:Unbias -->
+        <KeyWord name="util:Unbias" func="yes">
+            <Overload retVal="array float">
+                <Param name="array float aProbabilities" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:ToProbabilities -->
+        <KeyWord name="util:ToProbabilities" func="yes">
+            <Overload retVal="array float">
+                <Param name="array float aPercents" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        
+        
+        <!-- ******************************************************************
+            functions
+        -->
+        
+        <!-- AutoMapper -->
+        <KeyWord name="AutoMapper" func="yes">
+            <Overload retVal="null">
+                <Param name="string sName" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- NewRun -->
+        <KeyWord name="NewRun" func="yes">
+            <Overload retVal="null" />
+            <Overload retVal="null">
+                <Param name="int iCopies" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- OverrideLayer -->
+        <KeyWord name="OverrideLayer" func="yes">
+            <Overload retVal="null" />
+        </KeyWord>
+        
+        
+        
+        <!-- Indices -->
+        <KeyWord name="Indices" func="yes">
+            <Overload retVal="object">
+                <Param name="array int aIndices" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- Rect -->
+        <KeyWord name="Rect" func="yes">
+            <Overload retVal="object">
+                <Param name="int iTopLeft" />
+                <Param name="int iBottomRight" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        
+        
+        <!-- ******************************************************************
+            function Insert
+        -->
+        
+        <!-- Insert -->
+        <KeyWord name="Insert" func="yes">
+            <Overload retVal="null">
+                <Param name="array int aIndices" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        
+        
+        <!-- ******************************************************************
+            function IndexAt
+        -->
+        
+        <KeyWord name="top" />
+        <KeyWord name="right" />
+        <KeyWord name="bottom" />
+        <KeyWord name="left" />
+        <KeyWord name="topLeft" />
+        <KeyWord name="topRight" />
+        <KeyWord name="bottomLeft" />
+        <KeyWord name="bottomRight" />
+        <KeyWord name="this" />
+        
+        <!-- IndexAt -->
+        <KeyWord name="IndexAt" func="yes">
+            <Overload retVal="bool">
+                <Param name="array coord aCoords" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- Is -->
+        <KeyWord name="Is" func="yes">
+            <Overload retVal="bool">
+                <Param name="array int aIndices" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- IsNot -->
+        <KeyWord name="IsNot" func="yes">
+            <Overload retVal="bool">
+                <Param name="array int aIndices" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- IsEmpty -->
+        <KeyWord name="IsEmpty" func="yes">
+            <Overload retVal="bool" />
+        </KeyWord>
+        
+        
+        
+        <!-- IsEmptyAt -->
+        <KeyWord name="IsEmptyAt" func="yes">
+            <Overload retVal="bool">
+                <Param name="array int aOrientations" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- IsFull -->
+        <KeyWord name="IsFull" func="yes">
+            <Overload retVal="bool" />
+        </KeyWord>
+        
+        
+        
+        <!-- IsFullAt -->
+        <KeyWord name="IsFullAt" func="yes">
+            <Overload retVal="bool">
+                <Param name="array int aOrientations" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- IsOut -->
+        <KeyWord name="IsOut" func="yes">
+            <Overload retVal="bool" />
+        </KeyWord>
+        
+        
+        
+        <!-- IsNotOut -->
+        <KeyWord name="IsNotOut" func="yes">
+            <Overload retVal="bool" />
+        </KeyWord>
+        
+        
+        
+        <!-- IsWall -->
+        <KeyWord name="IsWall" func="yes">
+            <Overload retVal="bool">
+                <Param name="array int aOrientations" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- IsOuterCorner -->
+        <KeyWord name="IsOuterCorner" func="yes">
+            <Overload retVal="bool">
+                <Param name="array int aOrientations" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- IsInnerCorner -->
+        <KeyWord name="IsInnerCorner" func="yes">
+            <Overload retVal="bool">
+                <Param name="array int aOrientations" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- HasSpaceFor -->
+        <KeyWord name="HasSpaceFor" func="yes">
+            <Overload retVal="bool">
+                <Param name="object oObject" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        
+        
+        <!-- ******************************************************************
+            function Replace
+        -->
+        
+        <!-- Replace -->
+        <KeyWord name="Replace" func="yes">
+            <Overload retVal="null">
+                <Param name="int iFrom" />
+                <Param name="int iTo" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        
+        
+        <!-- ******************************************************************
+            function ReplaceNot
+        -->
+        
+        <!-- ReplaceNot -->
+        <KeyWord name="ReplaceNot" func="yes">
+            <Overload retVal="null">
+                <Param name="int iNot" />
+                <Param name="int iTo" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        
+        
+        <!-- ******************************************************************
+            function Shift
+        -->
+        
+        <!-- Shift -->
+        <KeyWord name="Shift" func="yes">
+            <Overload retVal="null">
+                <Param name="array int aIndices" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- By -->
+        <KeyWord name="By" func="yes">
+            <Overload retVal="null">
+                <Param name="coord cPos" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        
+        
+        <!-- ******************************************************************
+            function InsertObject
+        -->
+        
+        <!-- InsertObject -->
+        <KeyWord name="InsertObject" func="yes">
+            <Overload retVal="null">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        
+        
+        <!-- ******************************************************************
+            function Object
+        -->
+        
+        <!-- Object -->
+        <KeyWord name="Object" func="yes">
+            <Overload retVal="bool" />
+        </KeyWord>
+        
+        
+        
+        <!-- HasSpace -->
+        <KeyWord name="HasSpace" func="yes">
+            <Overload retVal="bool" />
+        </KeyWord>
+        
+        
+        
+        <!-- Fits -->
+        <KeyWord name="Fits" func="yes">
+            <Overload retVal="bool" />
+        </KeyWord>
+        
+        
+        
+        <!-- IsOver -->
+        <KeyWord name="IsOver" func="yes">
+            <Overload retVal="bool">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        
+        
+        <!-- ******************************************************************
+            shared
+        -->
+        
+        <!-- At -->
+        <KeyWord name="At" func="yes">
+            <Overload retVal="null">
+                <Param name="coord cPos" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- IsOverlapping -->
+        <KeyWord name="IsOverlapping" func="yes">
+            <Overload retVal="bool">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- IsNotOverlapping -->
+        <KeyWord name="IsNotOverlapping" func="yes">
+            <Overload retVal="bool">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- IsEdge -->
+        <KeyWord name="IsEdge" func="yes">
+            <Overload retVal="bool">
+                <Param name="int sOrientation" />
+            </Overload>
+            <Overload retVal="bool">
+                <Param name="int sOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- IsNotEdge -->
+        <KeyWord name="IsNotEdge" func="yes">
+            <Overload retVal="bool">
+                <Param name="array int aOrientations" />
+            </Overload>
+            <Overload retVal="bool">
+                <Param name="array int aOrientations" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- IsNextTo -->
+        <KeyWord name="IsNextTo" func="yes">
+            <Overload retVal="bool">
+                <Param name="array object aObjects" />
+            </Overload>
+            <Overload retVal="bool">
+                <Param name="array int aIndices" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- IsNotNextTo -->
+        <KeyWord name="IsNotNextTo" func="yes">
+            <Overload retVal="bool">
+                <Param name="array object aObjects" />
+            </Overload>
+            <Overload retVal="bool">
+                <Param name="array int aIndices" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- NoDefaultPosRule -->
+        <KeyWord name="NoDefaultPosRule" func="yes">
+            <Overload retVal="null" />
+        </KeyWord>
+        
+        
+        
+        <!-- If -->
+        <KeyWord name="If" func="yes">
+            <Overload retVal="null">
+                <Param name="array bool bTests" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- TestIndices -->
+        <KeyWord name="TestIndices" func="yes">
+            <Overload retVal="null">
+                <Param name="array int aIndices" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- Roll -->
+        <KeyWord name="Roll" func="yes">
+            <Overload retVal="null">
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- Chance -->
+        <KeyWord name="Chance" func="yes">
+            <Overload retVal="null">
+                <Param name="float fProbability" />
+            </Overload>
+            <Overload retVal="null">
+                <Param name="array float aProbabilities" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        
+        
+        <!-- ******************************************************************
+            presets
+        -->
+        
+        <!-- Clear -->
+        <KeyWord name="Clear" func="yes">
+            <Overload retVal="preset">
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- FillObjects -->
+        <KeyWord name="FillObjects" func="yes">
+            <Overload retVal="preset">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- Checkerboard -->
+        <KeyWord name="Checkerboard" func="yes">
+            <Overload retVal="preset">
+                <Param name="int iIndex1" />
+                <Param name="int iIndex2" />
+            </Overload>
+        </KeyWord>
+    </AutoComplete>
+</NotepadPlus>
