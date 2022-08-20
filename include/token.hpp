@@ -92,7 +92,7 @@ public:
     static Rotation stringToRotation(std::string_view s) noexcept;
     static std::string rotationToString(Rotation rotation) noexcept;
 
-    static ValueType stringToType(std::string_view type, bool lowercase = true);
+    static ValueType stringToType(std::string_view type);
     static std::string typeToString(ValueType type, bool lowercase = true);
 
 public:

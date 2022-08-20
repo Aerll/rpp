@@ -84,7 +84,7 @@ void ObjectValue::update(bool sort)
     }
 
     last.value = static_cast<int32_t>(value.size()) - 1;
-    count.value = value.size();
+    count.value = static_cast<int32_t>(value.size());
 
     for (auto& val : value)
         val.rotation = rotation;

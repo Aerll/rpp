@@ -27,7 +27,7 @@
 /*
     PTStatementVisitor
 */
-std::unique_ptr<Error> PTStatementVisitor::parse(PTEmptyStatement& node)
+std::unique_ptr<Error> PTStatementVisitor::parse([[maybe_unused]] PTEmptyStatement& node)
 {
     // statement itself is always valid
     return nullptr;
@@ -595,25 +595,25 @@ std::unique_ptr<Error> PTExpressionVisitor::parse(PTInvalidExpression& node)
     return std::make_unique<ErrInvalidExpression>(node.get<1>());
 }
 
-std::unique_ptr<Error> PTExpressionVisitor::parse(PTEmptyExpression& node)
+std::unique_ptr<Error> PTExpressionVisitor::parse([[maybe_unused]] PTEmptyExpression& node)
 {
     // expression itself is always valid
     return nullptr;
 }
 
-std::unique_ptr<Error> PTExpressionVisitor::parse(PTLiteralExpression& node)
+std::unique_ptr<Error> PTExpressionVisitor::parse([[maybe_unused]] PTLiteralExpression& node)
 {
     // expression itself is always valid
     return nullptr;
 }
 
-std::unique_ptr<Error> PTExpressionVisitor::parse(PTIdentifierExpression& node)
+std::unique_ptr<Error> PTExpressionVisitor::parse([[maybe_unused]] PTIdentifierExpression& node)
 {
     // expression itself is always valid
     return nullptr;
 }
 
-std::unique_ptr<Error> PTExpressionVisitor::parse(PTKeywordExpression& node)
+std::unique_ptr<Error> PTExpressionVisitor::parse([[maybe_unused]] PTKeywordExpression& node)
 {
     // expression itself is always valid
     return nullptr;
@@ -1319,7 +1319,7 @@ std::unique_ptr<Error> PTExpressionVisitor::parse(PTArraySubscriptExpression& no
     return nullptr;
 }
 
-std::unique_ptr<Error> PTExpressionVisitor::parse(PTPercentLiteralExpression& node)
+std::unique_ptr<Error> PTExpressionVisitor::parse([[maybe_unused]] PTPercentLiteralExpression& node)
 {
     // expression itself is always valid
     return nullptr;
@@ -1695,7 +1695,7 @@ void PTExpressionVisitor::visit(PTDeclTypeExpression& node)
 /*
     PTEmptyStatement
 */
-bool PTEmptyStatement::hasNode(ExpressionID id) const
+bool PTEmptyStatement::hasNode([[maybe_unused]] ExpressionID id) const
 {
     return false;
 }
@@ -1837,7 +1837,7 @@ bool PTReturnStatement::hasNode(ExpressionID id) const
 /*
     PTBreakStatement
 */
-bool PTBreakStatement::hasNode(ExpressionID id) const
+bool PTBreakStatement::hasNode([[maybe_unused]] ExpressionID id) const
 {
     return false;
 }
@@ -1845,7 +1845,7 @@ bool PTBreakStatement::hasNode(ExpressionID id) const
 /*
     PTContinueStatement
 */
-bool PTContinueStatement::hasNode(ExpressionID id) const
+bool PTContinueStatement::hasNode([[maybe_unused]] ExpressionID id) const
 {
     return false;
 }
@@ -1875,7 +1875,7 @@ bool PTInvalidExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids, con
     return false;
 }
 
-bool PTInvalidExpression::hasKW(std::string_view name) const
+bool PTInvalidExpression::hasKW([[maybe_unused]] std::string_view kw_name) const
 {
     return false;
 }
@@ -1915,7 +1915,7 @@ bool PTEmptyExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids, const
     return false;
 }
 
-bool PTEmptyExpression::hasKW(std::string_view name) const
+bool PTEmptyExpression::hasKW([[maybe_unused]] std::string_view kw_name) const
 {
     return false;
 }
@@ -1955,7 +1955,7 @@ bool PTLiteralExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids, con
     return false;
 }
 
-bool PTLiteralExpression::hasKW(std::string_view name) const
+bool PTLiteralExpression::hasKW([[maybe_unused]] std::string_view kw_name) const
 {
     return false;
 }
@@ -1995,9 +1995,9 @@ bool PTIdentifierExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids, 
     return false;
 }
 
-bool PTIdentifierExpression::hasKW(std::string_view name) const
+bool PTIdentifierExpression::hasKW(std::string_view kw_name) const
 {
-    return this->token->value == name;
+    return this->token->value == kw_name;
 }
 
 std::vector<Token*> PTIdentifierExpression::getTokens() const
@@ -2035,9 +2035,9 @@ bool PTKeywordExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids, con
     return false;
 }
 
-bool PTKeywordExpression::hasKW(std::string_view name) const
+bool PTKeywordExpression::hasKW(std::string_view kw_name) const
 {
-    return this->token->value == name;
+    return this->token->value == kw_name;
 }
 
 std::vector<Token*> PTKeywordExpression::getTokens() const
@@ -2088,11 +2088,11 @@ bool PTAssignmentExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids, 
     return false;
 }
 
-bool PTAssignmentExpression::hasKW(std::string_view name) const
+bool PTAssignmentExpression::hasKW(std::string_view kw_name) const
 {
-    if (this->left->hasKW(name))
+    if (this->left->hasKW(kw_name))
         return true;
-    if (this->right->hasKW(name))
+    if (this->right->hasKW(kw_name))
         return true;
 
     return false;
@@ -2158,11 +2158,11 @@ bool PTArithmeticExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids, 
     return false;
 }
 
-bool PTArithmeticExpression::hasKW(std::string_view name) const
+bool PTArithmeticExpression::hasKW(std::string_view kw_name) const
 {
-    if (this->left->hasKW(name))
+    if (this->left->hasKW(kw_name))
         return true;
-    if (this->right->hasKW(name))
+    if (this->right->hasKW(kw_name))
         return true;
 
     return false;
@@ -2228,11 +2228,11 @@ bool PTComparisonExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids, 
     return false;
 }
 
-bool PTComparisonExpression::hasKW(std::string_view name) const
+bool PTComparisonExpression::hasKW(std::string_view kw_name) const
 {
-    if (this->left->hasKW(name))
+    if (this->left->hasKW(kw_name))
         return true;
-    if (this->right->hasKW(name))
+    if (this->right->hasKW(kw_name))
         return true;
 
     return false;
@@ -2298,11 +2298,11 @@ bool PTLogicalExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids, con
     return false;
 }
 
-bool PTLogicalExpression::hasKW(std::string_view name) const
+bool PTLogicalExpression::hasKW(std::string_view kw_name) const
 {
-    if (this->left->hasKW(name))
+    if (this->left->hasKW(kw_name))
         return true;
-    if (this->right->hasKW(name))
+    if (this->right->hasKW(kw_name))
         return true;
 
     return false;
@@ -2364,9 +2364,9 @@ bool PTUnaryLogicalExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids
     return false;
 }
 
-bool PTUnaryLogicalExpression::hasKW(std::string_view name) const
+bool PTUnaryLogicalExpression::hasKW(std::string_view kw_name) const
 {
-    if (this->expr->hasKW(name))
+    if (this->expr->hasKW(kw_name))
         return true;
 
     return false;
@@ -2417,13 +2417,13 @@ bool PTReturnTypeExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids, 
     return false;
 }
 
-bool PTReturnTypeExpression::hasKW(std::string_view name) const
+bool PTReturnTypeExpression::hasKW(std::string_view kw_name) const
 {
-    if (this->left->value == name)
+    if (this->left->value == kw_name)
         return true;
-    if (this->type != nullptr && this->type->value == name)
+    if (this->type != nullptr && this->type->value == kw_name)
         return true;
-    if (this->subtype != nullptr && this->subtype->value == name)
+    if (this->subtype != nullptr && this->subtype->value == kw_name)
         return true;
 
     return false;
@@ -2487,11 +2487,11 @@ bool PTFunctionCallExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids
     return false;
 }
 
-bool PTFunctionCallExpression::hasKW(std::string_view name) const
+bool PTFunctionCallExpression::hasKW(std::string_view kw_name) const
 {
-    if (this->name != nullptr && this->name->value == name)
+    if (this->name != nullptr && this->name->value == kw_name)
         return true;
-    if (this->expr->hasKW(name))
+    if (this->expr->hasKW(kw_name))
         return true;
 
     return false;
@@ -2561,11 +2561,11 @@ bool PTForRangeExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids, co
     return false;
 }
 
-bool PTForRangeExpression::hasKW(std::string_view name) const
+bool PTForRangeExpression::hasKW(std::string_view kw_name) const
 {
-    if (this->left->hasKW(name))
+    if (this->left->hasKW(kw_name))
         return true;
-    if (this->right->hasKW(name))
+    if (this->right->hasKW(kw_name))
         return true;
 
     return false;
@@ -2631,11 +2631,11 @@ bool PTMemberAccessExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids
     return false;
 }
 
-bool PTMemberAccessExpression::hasKW(std::string_view name) const
+bool PTMemberAccessExpression::hasKW(std::string_view kw_name) const
 {
-    if (this->left->hasKW(name))
+    if (this->left->hasKW(kw_name))
         return true;
-    if (this->right->hasKW(name))
+    if (this->right->hasKW(kw_name))
         return true;
 
     return false;
@@ -2694,11 +2694,11 @@ bool PTErrorExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids, const
     return false;
 }
 
-bool PTErrorExpression::hasKW(std::string_view name) const
+bool PTErrorExpression::hasKW(std::string_view kw_name) const
 {
-    if (this->keyword->value == name)
+    if (this->keyword->value == kw_name)
         return true;
-    if (this->expr->hasKW(name))
+    if (this->expr->hasKW(kw_name))
         return true;
 
     return false;
@@ -2763,11 +2763,11 @@ bool PTWarningExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids, con
     return false;
 }
 
-bool PTWarningExpression::hasKW(std::string_view name) const
+bool PTWarningExpression::hasKW(std::string_view kw_name) const
 {
-    if (this->keyword->value == name)
+    if (this->keyword->value == kw_name)
         return true;
-    if (this->expr->hasKW(name))
+    if (this->expr->hasKW(kw_name))
         return true;
 
     return false;
@@ -2839,11 +2839,11 @@ bool PTArraySubscriptExpression::hasOnlyNodes(const std::vector<ExpressionID>& i
     return false;
 }
 
-bool PTArraySubscriptExpression::hasKW(std::string_view name) const
+bool PTArraySubscriptExpression::hasKW(std::string_view kw_name) const
 {
-    if (this->array->hasKW(name))
+    if (this->array->hasKW(kw_name))
         return true;
-    if (this->expr->hasKW(name))
+    if (this->expr->hasKW(kw_name))
         return true;
 
     return false;
@@ -2900,7 +2900,7 @@ bool PTPercentLiteralExpression::hasOnlyNodes(const std::vector<ExpressionID>& i
     return false;
 }
 
-bool PTPercentLiteralExpression::hasKW(std::string_view name) const
+bool PTPercentLiteralExpression::hasKW([[maybe_unused]] std::string_view kw_name) const
 {
     return false;
 }
@@ -2945,7 +2945,7 @@ bool PTStringLiteralExpression::hasOnlyNodes(const std::vector<ExpressionID>& id
     return false;
 }
 
-bool PTStringLiteralExpression::hasKW(std::string_view name) const
+bool PTStringLiteralExpression::hasKW([[maybe_unused]] std::string_view kw_name) const
 {
     return false;
 }
@@ -3011,11 +3011,11 @@ bool PTRangeLiteralExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids
     return false;
 }
 
-bool PTRangeLiteralExpression::hasKW(std::string_view name) const
+bool PTRangeLiteralExpression::hasKW(std::string_view kw_name) const
 {
-    if (this->left->hasKW(name))
+    if (this->left->hasKW(kw_name))
         return true;
-    if (this->right->hasKW(name))
+    if (this->right->hasKW(kw_name))
         return true;
 
     return false;
@@ -3074,9 +3074,9 @@ bool PTCoordLiteralExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids
     return false;
 }
 
-bool PTCoordLiteralExpression::hasKW(std::string_view name) const
+bool PTCoordLiteralExpression::hasKW(std::string_view kw_name) const
 {
-    if (this->expr->hasKW(name))
+    if (this->expr->hasKW(kw_name))
         return true;
 
     return false;
@@ -3138,11 +3138,11 @@ bool PTSeparatorExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids, c
     return false;
 }
 
-bool PTSeparatorExpression::hasKW(std::string_view name) const
+bool PTSeparatorExpression::hasKW(std::string_view kw_name) const
 {
-    if (this->left->hasKW(name))
+    if (this->left->hasKW(kw_name))
         return true;
-    if (this->right->hasKW(name))
+    if (this->right->hasKW(kw_name))
         return true;
 
     return false;
@@ -3195,11 +3195,11 @@ bool PTDeclTypeExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids, co
     return false;
 }
 
-bool PTDeclTypeExpression::hasKW(std::string_view name) const
+bool PTDeclTypeExpression::hasKW(std::string_view kw_name) const
 {
-    if (this->type->value == name)
+    if (this->type->value == kw_name)
         return true;
-    if (this->subtype != nullptr && this->subtype->value == name)
+    if (this->subtype != nullptr && this->subtype->value == kw_name)
         return true;
 
     return false;

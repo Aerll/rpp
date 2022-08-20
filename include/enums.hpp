@@ -63,16 +63,16 @@ enum class ValueType {
     ArrayObject = Array | Object,
 };
 
-static ValueType operator|(ValueType lhs, ValueType rhs) noexcept
+inline ValueType operator|(ValueType lhs, ValueType rhs) noexcept
     { return util::i32_enum<ValueType>(util::enum_i32(lhs) | util::enum_i32(rhs)); }
 
-static ValueType& operator|=(ValueType& lhs, ValueType rhs) noexcept
+inline ValueType& operator|=(ValueType& lhs, ValueType rhs) noexcept
     { return lhs = lhs | rhs; }
 
-static ValueType operator&(ValueType lhs, ValueType rhs) noexcept
+inline ValueType operator&(ValueType lhs, ValueType rhs) noexcept
     { return util::i32_enum<ValueType>(util::enum_i32(lhs) & util::enum_i32(rhs)); }
 
-static ValueType operator^(ValueType lhs, ValueType rhs) noexcept
+inline ValueType operator^(ValueType lhs, ValueType rhs) noexcept
     { return util::i32_enum<ValueType>(util::enum_i32(lhs) ^ util::enum_i32(rhs)); }
 
 enum class StatementID {
@@ -197,19 +197,19 @@ enum class Rotation {
     VHR     = V | H | R,
 };
 
-static Rotation operator|(Rotation lhs, Rotation rhs) noexcept
+inline Rotation operator|(Rotation lhs, Rotation rhs) noexcept
     { return util::i32_enum<Rotation>(util::enum_i32(lhs) | util::enum_i32(rhs)); }
 
-static Rotation& operator|=(Rotation& lhs, Rotation rhs) noexcept
+inline Rotation& operator|=(Rotation& lhs, Rotation rhs) noexcept
     { return lhs = lhs | rhs; }
 
-static Rotation operator&(Rotation lhs, Rotation rhs) noexcept
+inline Rotation operator&(Rotation lhs, Rotation rhs) noexcept
     { return util::i32_enum<Rotation>(util::enum_i32(lhs) & util::enum_i32(rhs)); }
 
-static Rotation operator^(Rotation lhs, Rotation rhs) noexcept
+inline Rotation operator^(Rotation lhs, Rotation rhs) noexcept
     { return util::i32_enum<Rotation>(util::enum_i32(lhs) ^ util::enum_i32(rhs)); }
 
-static Rotation& operator^=(Rotation& lhs, Rotation rhs) noexcept
+inline Rotation& operator^=(Rotation& lhs, Rotation rhs) noexcept
     { return lhs = lhs ^ rhs; }
 
 enum class InsertC {
@@ -242,19 +242,19 @@ enum class InsertC {
     InsertRuleIndex             = Insert | Rule | Index,
 };
 
-static InsertC operator|(InsertC lhs, InsertC rhs) noexcept
+inline InsertC operator|(InsertC lhs, InsertC rhs) noexcept
     { return util::i32_enum<InsertC>(util::enum_i32(lhs) | util::enum_i32(rhs)); }
 
-static InsertC& operator|=(InsertC& lhs, InsertC rhs) noexcept
+inline InsertC& operator|=(InsertC& lhs, InsertC rhs) noexcept
     { return lhs = lhs | rhs; }
 
-static InsertC operator&(InsertC lhs, InsertC rhs) noexcept
+inline InsertC operator&(InsertC lhs, InsertC rhs) noexcept
     { return util::i32_enum<InsertC>(util::enum_i32(lhs) & util::enum_i32(rhs)); }
 
-static InsertC operator^(InsertC lhs, InsertC rhs) noexcept
+inline InsertC operator^(InsertC lhs, InsertC rhs) noexcept
     { return util::i32_enum<InsertC>(util::enum_i32(lhs) ^ util::enum_i32(rhs)); }
 
-static InsertC& operator^=(InsertC& lhs, InsertC rhs) noexcept
+inline InsertC& operator^=(InsertC& lhs, InsertC rhs) noexcept
     { return lhs = lhs ^ rhs; }
 
 #endif // RPP_ENUMS_HPP

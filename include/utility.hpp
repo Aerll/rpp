@@ -57,7 +57,7 @@ constexpr EnumType i32_enum(int32_t val) noexcept
     return static_cast<EnumType>(val);
 }
 
-static uint32_t digitsCount(uint32_t val) noexcept
+inline uint32_t digitsCount(uint32_t val) noexcept
 {
     if (val < 10u) return 1;
     if (val < 100u) return 2;

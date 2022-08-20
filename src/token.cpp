@@ -448,7 +448,7 @@ std::string Token::rotationToString(Rotation rotation) noexcept
     }
 }
 
-ValueType Token::stringToType(std::string_view type, bool lowercase)
+ValueType Token::stringToType(std::string_view type)
 {
     if (type == KW::Bool)
         return ValueType::Bool;

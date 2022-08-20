@@ -62,7 +62,7 @@ public:
 
     virtual bool hasNode(ExpressionID id) const = 0;
     virtual bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const = 0;
-    virtual bool hasKW(std::string_view name) const = 0;
+    virtual bool hasKW(std::string_view kw_name) const = 0;
     virtual std::vector<Token*> getTokens() const = 0;
     virtual Token* getLastToken() const = 0;
 
@@ -1049,7 +1049,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -1074,7 +1074,7 @@ class PTEmptyExpression final : public IPTExpressionNode {
 public:
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -1103,7 +1103,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -1143,7 +1143,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -1183,7 +1183,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -1227,7 +1227,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -1285,7 +1285,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -1343,7 +1343,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -1401,7 +1401,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -1457,7 +1457,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -1510,7 +1510,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -1577,7 +1577,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -1642,7 +1642,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -1700,7 +1700,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -1760,7 +1760,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -1827,7 +1827,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -1894,7 +1894,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -1957,7 +1957,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -2008,7 +2008,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -2066,7 +2066,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -2124,7 +2124,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -2182,7 +2182,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 
@@ -2240,7 +2240,7 @@ public:
 
     bool hasNode(ExpressionID id) const final;
     bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
-    bool hasKW(std::string_view name) const final;
+    bool hasKW(std::string_view kw_name) const final;
     std::vector<Token*> getTokens() const final;
     Token* getLastToken() const final;
 

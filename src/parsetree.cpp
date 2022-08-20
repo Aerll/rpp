@@ -546,7 +546,7 @@ ParseTree::ptr_expr ParseTree::getFunctionCallExpressionNode(TokenStream& tokenS
     return std::make_unique<PTFunctionCallExpression>(std::move(expr));
 }
 
-ParseTree::ptr_expr ParseTree::getPercentLiteralExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const
+ParseTree::ptr_expr ParseTree::getPercentLiteralExpressionNode(TokenStream& tokenStream, uint32_t beg, [[maybe_unused]] uint32_t end) const
 {
     if (tokenStream.current(beg).cat != TLiteral &&
         tokenStream.current(beg).type != ValueType::Int &&
@@ -592,7 +592,7 @@ ParseTree::ptr_expr ParseTree::getStringLiteralExpressionNode(TokenStream& token
     return std::make_unique<PTStringLiteralExpression>(std::move(expr));
 }
 
-ParseTree::ptr_expr ParseTree::getReturnTypeExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const
+ParseTree::ptr_expr ParseTree::getReturnTypeExpressionNode(TokenStream& tokenStream, uint32_t beg, [[maybe_unused]] uint32_t end) const
 {
     if (tokenStream.current(beg).value != KW::Function)
         return nullptr;
@@ -654,7 +654,7 @@ ParseTree::ptr_expr ParseTree::getWarningExpressionNode(TokenStream& tokenStream
     return std::make_unique<PTWarningExpression>(std::move(expr));
 }
 
-ParseTree::ptr_expr ParseTree::getDeclTypeExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const
+ParseTree::ptr_expr ParseTree::getDeclTypeExpressionNode(TokenStream& tokenStream, uint32_t beg, [[maybe_unused]] uint32_t end) const
 {
     if (!Token::isType(tokenStream.current(beg).value))
         return nullptr;
@@ -692,7 +692,7 @@ uint32_t ParseTree::findEnd(const TokenStream& tokenStream, uint32_t beg, const 
         else if (*curr == TH::End)
             --scope;
     }
-    return tokenStream.data().size();
+    return static_cast<uint32_t>(tokenStream.data().size());
 }
 
 uint32_t ParseTree::findRange(const TokenStream& tokenStream, uint32_t beg, uint32_t end, const std::vector<TokenH>& tokens) const

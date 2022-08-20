@@ -1567,8 +1567,8 @@ void ASTNodeLinker::link(ASTFunctionNode* node)
     if (error == nullptr) {
         if (!node->getNestedIdentifiers().empty()) {
             std::vector<std::string> nestedIdentifiers;
-            for (auto&& identifier : node->getNestedIdentifiers())
-                nestedIdentifiers.push_back(identifier->as<ASTNestedIdentifierNode*>()->getName());
+            for (auto&& nested_identifier : node->getNestedIdentifiers())
+                nestedIdentifiers.push_back(nested_identifier->as<ASTNestedIdentifierNode*>()->getName());
 
             std::sort(nestedIdentifiers.begin(), nestedIdentifiers.end());
             auto duplicate = std::adjacent_find(nestedIdentifiers.begin(), nestedIdentifiers.end());
@@ -1896,22 +1896,22 @@ Value* ASTNodeEvaluator::evaluate(ASTRotationNode* node)
     return _StackTop;
 }
 
-Value* ASTNodeEvaluator::evaluate(ASTEmptyNode* node)
+Value* ASTNodeEvaluator::evaluate([[maybe_unused]] ASTEmptyNode* node)
 {
     return nullptr;
 }
 
-Value* ASTNodeEvaluator::evaluate(ASTFullNode* node)
+Value* ASTNodeEvaluator::evaluate([[maybe_unused]] ASTFullNode* node)
 {
     return nullptr;
 }
 
-Value* ASTNodeEvaluator::evaluate(ASTIndexNode* node)
+Value* ASTNodeEvaluator::evaluate([[maybe_unused]] ASTIndexNode* node)
 {
     return nullptr;
 }
 
-Value* ASTNodeEvaluator::evaluate(ASTNotIndexNode* node)
+Value* ASTNodeEvaluator::evaluate([[maybe_unused]] ASTNotIndexNode* node)
 {
     return nullptr;
 }
@@ -1924,7 +1924,7 @@ Value* ASTNodeEvaluator::evaluate(ASTInsertNode* node)
 
     if (valueNode != nullptr) {
         if (control == InsertC::InsertRulePosType)
-            insertPosType(nullptr, node->getLine(), valueNode->id());
+            insertPosType(node->getLine(), valueNode->id());
         else {
             Value* value = valueNode->accept(*this); _BreakIfFailed;
             insert(control, value, node->getLine());
@@ -2490,13 +2490,13 @@ Value* ASTNodeEvaluator::evaluate(ASTReturnNode* node)
     return _StackTop;
 }
 
-Value* ASTNodeEvaluator::evaluate(ASTBreakNode* node)
+Value* ASTNodeEvaluator::evaluate([[maybe_unused]] ASTBreakNode* node)
 {
     m_break = true;
     return nullptr;
 }
 
-Value* ASTNodeEvaluator::evaluate(ASTContinueNode* node)
+Value* ASTNodeEvaluator::evaluate([[maybe_unused]] ASTContinueNode* node)
 {
     m_continue = true;
     return nullptr;
@@ -3086,7 +3086,7 @@ void ASTNodeEvaluator::rotate(Value* value, Rotation rotation)
     }
 }
 
-void ASTNodeEvaluator::insertPosType(Value* value, uint32_t line, NodeID id)
+void ASTNodeEvaluator::insertPosType(uint32_t line, NodeID id)
 {
     if (automappers().empty())
         printError("Cannot evaluate 'insert.rule.pos.type'. No automapper found.", line);

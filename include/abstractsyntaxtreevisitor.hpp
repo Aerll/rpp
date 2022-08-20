@@ -77,7 +77,7 @@ public:
     virtual void accept(IASTNodeLinker& visitor) = 0;
     virtual Value* accept(IASTNodeEvaluator& translator) = 0;
     virtual NodeID id() const noexcept = 0;
-    virtual void attach(IASTNode* previous) { }
+    virtual void attach([[maybe_unused]] IASTNode* previous) { }
 
     bool hasPreviousNode() const noexcept
         { return m_prev != nullptr; }
@@ -3182,7 +3182,7 @@ public:
     bool hasRotation(Value* value, Rotation rotation);
     void rotate(Value* value, Rotation rotation);
 
-    void insertPosType(Value* value, uint32_t line, NodeID id);
+    void insertPosType(uint32_t line, NodeID id);
     void insert(InsertC control, Value* value, uint32_t line);
 
     void printError(std::string_view message, uint32_t line);

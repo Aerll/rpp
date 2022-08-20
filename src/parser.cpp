@@ -40,7 +40,7 @@ void Parser::parse(ParseTree& parseTree, TokenStream& ts)
         stat->accept(visitor);
 
     m_errors = std::move(ex_visitor.errors());
-    m_count = m_errors.size();
+    m_count = static_cast<uint32_t>(m_errors.size());
     if (hasErrors()) {
         m_failed = true;
         printErrors(util::digitsCount(m_errors.back()->line()));
@@ -62,14 +62,14 @@ void Parser::parse(AbstractSyntaxTree& abstractTree)
     if (abstractTree.getMainNode()->hasNode(NodeID::InvokeNested, { NodeID::Function }))
         m_errors.push(std::make_unique<ErrInvokeInvalidContext>(abstractTree.getMainNode()->findNode({ NodeID::InvokeNested }, { NodeID::Function }, true)->getLine()));
 
-    m_count = m_errors.size();
+    m_count = static_cast<uint32_t>(m_errors.size());
 
     if (!hasErrors()) {
         ASTNodeLinker linker;
         abstractTree.getMainNode()->accept(linker);
 
         m_errors = std::move(linker.errors());
-        m_count = m_errors.size();
+        m_count = static_cast<uint32_t>(m_errors.size());
         if (!hasErrors()) {
             errorOutput::print::stage("... Type check:");
 
@@ -77,7 +77,7 @@ void Parser::parse(AbstractSyntaxTree& abstractTree)
             abstractTree.getMainNode()->accept(parser);
 
             m_errors = std::move(parser.errors());
-            m_count = m_errors.size();
+            m_count = static_cast<uint32_t>(m_errors.size());
         }
     }
 
