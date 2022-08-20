@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2022 Aerll - aerlldev@gmail.com
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
