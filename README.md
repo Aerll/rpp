@@ -9,6 +9,9 @@ To start using **rules++**, you need 3 files, which you can grab from [here](htt
   
 A tutorial, explaining every feature in detail, is available on the [wiki](https://github.com/Aerll/rpp/wiki).
 
-## Utilities for notepad++
+## Utilities for Notepad++
 Utilities include syntax highlighting and auto completion. Preferable theme can be found [here](https://github.com/cydh/VS2015-Dark-Npp).<br/>
 Don't forget to check _Enable global background colour_ in _Settings -> Style Configurator..._
+
+## Extension for VS Code
+This extension supports basic syntax highlighting. To install it follow [this](https://code.visualstudio.com/docs/editor/extension-marketplace#_install-from-a-vsix) guide.
