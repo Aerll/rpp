@@ -14,4 +14,13 @@ Utilities include syntax highlighting and auto completion. Preferable theme can 
 Don't forget to check _Enable global background colour_ in _Settings -> Style Configurator..._
 
 ## Extension for VS Code
-This extension supports basic syntax highlighting. To install it follow [this](https://code.visualstudio.com/docs/editor/extension-marketplace#_install-from-a-vsix) guide.
+This extension supports basic syntax highlighting. To install it follow [this](https://code.visualstudio.com/docs/editor/extension-marketplace#_install-from-a-vsix) guide.<br/>
+Paste the following snippet into _settings.json_ file, which can be accessed via _Ctrl+Shift+P -> Preferences: Open Workspace Settings (JSON)_:
+```json
+{
+    "workbench.colorTheme": "rpp",
+    "workbench.preferredDarkColorTheme": "rpp",
+    "workbench.preferredHighContrastColorTheme": "rpp",
+    "workbench.preferredLightColorTheme": "rpp"
+}
+```
