@@ -67,6 +67,9 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC") # visual studio
         TREE ${CMAKE_CURRENT_SOURCE_DIR}
         FILES ${RPP_SOURCE_FILES} ${RPP_HEADER_FILES}
         )
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib")
+    target_compile_options(rpp PRIVATE /MT)
+    target_link_options(rpp PRIVATE /INCREMENTAL:NO /NODEFAULTLIB:MSVCRT)
 endif()
 
 target_compile_features(rpp PRIVATE cxx_std_23)
