@@ -148,6 +148,11 @@ std::string Error::strNotAMemberOf(const std::string& s, const std::string& of)
     return "'" + s + "' is not a member of '" + of + "'.";
 }
 
+std::string Error::strNameCallNotVariable()
+{
+    return "'name()' can only be used on a variable.";
+}
+
 std::string Error::strRedeclaration(const std::string& s)
 {
     return "'" + s + "' is already declared.";
@@ -415,6 +420,15 @@ ErrNotAMemberOf::ErrNotAMemberOf(std::string_view member, std::string_view name,
 }
 
 /*
+    ErrNameCallNotVariable
+*/
+ErrNameCallNotVariable::ErrNameCallNotVariable(uint32_t line)
+{
+    m_line = line;
+    m_err = Error::strNameCallNotVariable();
+}
+
+/*
     ErrRedeclaration
 */
 ErrRedeclaration::ErrRedeclaration(const std::string& name, uint32_t line)
@@ -473,7 +487,6 @@ ErrNestedSignatureNotFound::ErrNestedSignatureNotFound(const std::string& name, 
     m_line = line;
     m_err = Error::strNestedSignatureNotFound(name);
 }
-
 
 /*
     ErrPresetSignatureNotFound

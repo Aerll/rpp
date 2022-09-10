@@ -582,6 +582,12 @@ void ASTNodeParser::parse(ASTStrCallNode* node)
         node->getNextNode()->accept(*this);
 }
 
+void ASTNodeParser::parse(ASTNameCallNode* node)
+{
+    if (node->hasNextNode())
+        node->getNextNode()->accept(*this);
+}
+
 void ASTNodeParser::parse(ASTFunctionCallNode* node)
 {
     for (auto&& arg : node->getArguments())
@@ -1374,6 +1380,25 @@ void ASTNodeLinker::link(ASTStrCallNode* node)
     std::unique_ptr<Error> error;
     if (!node->getArguments().empty())
         error = std::make_unique<ErrInvalidArguments>("str", node->getLine());
+
+    if (error != nullptr)
+        errors().push(std::move(error));
+
+    if (node->hasNextNode())
+        node->getNextNode()->accept(*this);
+}
+
+void ASTNodeLinker::link(ASTNameCallNode* node)
+{
+    node->attach(node->getPreviousNode());
+
+    node->getVariable()->accept(*this);
+
+    std::unique_ptr<Error> error;
+    if (!node->getArguments().empty())
+        error = std::make_unique<ErrInvalidArguments>("name", node->getLine());
+    else if (node->getVariable()->id() != NodeID::Variable)
+        error = std::make_unique<ErrNameCallNotVariable>(node->getLine());
 
     if (error != nullptr)
         errors().push(std::move(error));
@@ -2587,6 +2612,17 @@ Value* ASTNodeEvaluator::evaluate(ASTStrCallNode* node)
 
     _TryEvaluateNextNodeAndClearStack;
     ptr_value result = std::make_unique<StringValue>(value->str());
+
+    _StackPush(result);
+    return _StackTop;
+}
+
+Value* ASTNodeEvaluator::evaluate(ASTNameCallNode* node)
+{
+    _StackInit;
+
+    _TryEvaluateNextNodeAndClearStack;
+    ptr_value result = std::make_unique<StringValue>(node->getVariable()->as<ASTVariableNode*>()->getName());
 
     _StackPush(result);
     return _StackTop;
@@ -4236,6 +4272,21 @@ ValueType ASTStrCallNode::getNodeType()
 }
 
 void ASTStrCallNode::attach(IASTNode* previous)
+{
+    for (auto&& arg : m_arguments)
+        arg->setPreviousNode(previous);
+    m_variable->setPreviousNode(previous);
+}
+
+/*
+    ASTNameCallNode
+*/
+ValueType ASTNameCallNode::getNodeType()
+{
+    return ValueType::String;
+}
+
+void ASTNameCallNode::attach(IASTNode* previous)
 {
     for (auto&& arg : m_arguments)
         arg->setPreviousNode(previous);

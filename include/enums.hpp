@@ -170,6 +170,7 @@ enum class NodeID {
     HasCall,
     UniqueCall,
     StrCall,
+    NameCall,
     FunctionCall,
     NestedCall,
     PresetCall,
