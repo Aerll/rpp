@@ -27,7 +27,7 @@
             <Keywords name="Keywords1">#path #include #tileset #stack</Keywords>
             <Keywords name="Keywords2">if end and or not null for to preset last count object automapper newrun function array coord bool int float range string error warning return insert nested newrule true false rule pos nocopy nodefault random rotate invoke type index notindex full empty anchor operator group break continue</Keywords>
             <Keywords name="Keywords3">AutoMapper NewRun OverrideLayer Indices Rect Insert NoDefaultPosRule Chance Roll If IndexAt Is IsNot IsEmpty IsEmptyAt IsFull IsFullAt IsOut IsNotOut IsEdge IsNotEdge IsWall IsOuterCorner IsInnerCorner HasSpaceFor IsNotOverlapping IsOverlapping Replace ReplaceNot InsertObject HasSpace Fits IsOver Object IsNextTo IsNotNextTo Shift By At TestIndices IsWithinRadius IsNotWithinRadius</Keywords>
-            <Keywords name="Keywords4">push has unique str x y N V H R VR VH HR VHR</Keywords>
+            <Keywords name="Keywords4">push has unique str name x y N V H R VR VH HR VHR</Keywords>
             <Keywords name="Keywords5">util: internal:</Keywords>
             <Keywords name="Keywords6">g: s:</Keywords>
             <Keywords name="Keywords7">Clear FillObjects Checkerboard</Keywords>

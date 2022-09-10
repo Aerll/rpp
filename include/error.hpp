@@ -49,6 +49,7 @@ protected:
     // AST
     static std::string strNotAMemberOf(const std::string& s, ValueType type);
     static std::string strNotAMemberOf(const std::string& s, const std::string& of);
+    static std::string strNameCallNotVariable();
     static std::string strRedeclaration(const std::string& s);
     static std::string strUndeclared(const std::string& s);
     static std::string strUnassignedVariable(const std::string& s);
@@ -143,6 +144,11 @@ public:
     ErrNotAMemberOf(std::string_view member, ValueType type, uint32_t line);
     ErrNotAMemberOf(const std::string& member, std::string_view name, uint32_t line);
     ErrNotAMemberOf(std::string_view member, std::string_view name, uint32_t line);
+};
+
+class ErrNameCallNotVariable final : public Error {
+public:
+    ErrNameCallNotVariable(uint32_t line);
 };
 
 class ErrRedeclaration final : public Error {

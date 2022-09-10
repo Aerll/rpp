@@ -122,6 +122,14 @@
         
         
         
+        <!-- name -->
+        <KeyWord name="name" func="yes">
+            <Overload retVal="string">
+            </Overload>
+        </KeyWord>
+        
+        
+        
         
         
         <!-- ******************************************************************

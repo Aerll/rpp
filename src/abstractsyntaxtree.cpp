@@ -571,6 +571,11 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTFunctionCal
         node->setArguments(convertArguments(expression));
         return node;
     }
+    else if (id == NodeID::NameCall) {
+        auto node = std::make_unique<ASTNameCallNode>();
+        node->setArguments(convertArguments(expression));
+        return node;
+    }
     else {
         if (expression.get<1>() == nullptr)
             return convertExpression(*expression.get<3>());
@@ -718,6 +723,12 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAcces
             strcall->as<ASTStrCallNode*>()->setVariable(convertExpression(*expression.get<1>()));
             strcall->as<ASTStrCallNode*>()->setLine(functionExpr.get<1>()->line);
             node = std::move(strcall);
+        }
+        else if (functionExpr.get<1>()->value == "name") {
+            auto namecall = convertExpression(functionExpr, NodeID::NameCall);
+            namecall->as<ASTNameCallNode*>()->setVariable(convertExpression(*expression.get<1>()));
+            namecall->as<ASTNameCallNode*>()->setLine(functionExpr.get<1>()->line);
+            node = std::move(namecall);
         }
     }
 
