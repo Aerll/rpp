@@ -87,19 +87,20 @@ end
 
 
 
-function->int util:RemoveRotation(float fIndex)
+function->int util:RemoveRotation(int iIndex)
 
+    float fIndex = iIndex;
     return fIndex;
 end
 
 
 
-function->array int util:RemoveRotation(array float aIndices)
+function->array int util:RemoveRotation(array int aIndices)
 
     array int aResult;
     if (aIndices.count != 0)
         for (i = 0 to aIndices.last)
-            aResult.push(aIndices[i]);
+            aResult.push(util:RemoveRotation(aIndices[i]));
         end
     end
     return aResult;

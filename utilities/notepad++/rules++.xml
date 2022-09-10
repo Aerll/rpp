@@ -203,10 +203,10 @@
         <!-- util:RemoveRotation -->
         <KeyWord name="util:RemoveRotation" func="yes">
             <Overload retVal="int">
-                <Param name="float fIndex" />
+                <Param name="int iIndex" />
             </Overload>
             <Overload retVal="array int">
-                <Param name="array float aIndices" />
+                <Param name="array int aIndices" />
             </Overload>
         </KeyWord>
         
