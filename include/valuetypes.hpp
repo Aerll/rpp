@@ -86,7 +86,7 @@ public:
     void reset() final
         { value = false; }
 
-    std::string str() const 
+    std::string str() const final
         { return value ? "true" : "false"; }
 
 public:
@@ -137,7 +137,7 @@ public:
     void reset() final
         { value = 0; rotation = Rotation::Default; }
 
-    std::string str() const {
+    std::string str() const final {
         std::string result = std::to_string(value);
         if (rotation != Rotation::Default)
             result += "." + Token::rotationToString(rotation);
@@ -181,7 +181,7 @@ public:
     void reset() final
         { from = 0; to = 0; rotation = Rotation::Default; }
 
-    std::string str() const {
+    std::string str() const final {
         std::string result = std::to_string(from) + "_" + std::to_string(to);
         if (rotation != Rotation::Default)
             result += "." + Token::rotationToString(rotation);
@@ -225,7 +225,7 @@ public:
     void reset() final
         { x = {}; y = {}; rotation = Rotation::Default; }
 
-    std::string str() const {
+    std::string str() const final {
         std::string result = "[" + std::to_string(x.value) + ", " + std::to_string(y.value) + "]";
         if (rotation != Rotation::Default)
             result += "." + Token::rotationToString(rotation);
@@ -282,7 +282,7 @@ public:
     void reset() final
         { value = 0.0f; }
 
-    std::string str() const 
+    std::string str() const final
         { return std::to_string(value); }
 
     IntValue toInt() const noexcept;
@@ -320,7 +320,7 @@ public:
     void reset() final
         { value = {}; }
 
-    std::string str() const
+    std::string str() const final
         { return value; }
 
 public:
@@ -384,7 +384,7 @@ public:
     Value* at(size_t index) final
         { return &value[index]; }
 
-    std::string str() const {
+    std::string str() const final {
         std::string result = "{";
         int32_t int_anchor = anchor.toInt().value;
         for (std::size_t i = 0; i < value.size(); ++i) {
@@ -483,7 +483,7 @@ public:
         { return std::find(value.rbegin(), value.rend(), val) != value.rend(); }
     void unique() final
         { value.erase(util::removeDuplicates(value.begin(), value.end()), value.end()); update(); }
-    std::string str() const {
+    std::string str() const final {
         std::string result = "{";
         for (std::size_t i = 0; i < value.size(); ++i) {
             result += value[i].str();
