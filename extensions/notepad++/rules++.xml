@@ -8,7 +8,6 @@
         -->
         <KeyWord name="anchor" />
         <KeyWord name="and" />
-        <KeyWord name="any" />
         <KeyWord name="array" />
         <KeyWord name="automapper" />
         <KeyWord name="bool" />
@@ -622,6 +621,16 @@
             functions
         -->
         
+        <KeyWord name="top" />
+        <KeyWord name="right" />
+        <KeyWord name="bottom" />
+        <KeyWord name="left" />
+        <KeyWord name="topLeft" />
+        <KeyWord name="topRight" />
+        <KeyWord name="bottomLeft" />
+        <KeyWord name="bottomRight" />
+        <KeyWord name="all" />
+        
         <!-- AutoMapper -->
         <KeyWord name="AutoMapper" func="yes">
             <Overload retVal="null">
@@ -718,14 +727,6 @@
             function IndexAt
         -->
         
-        <KeyWord name="top" />
-        <KeyWord name="right" />
-        <KeyWord name="bottom" />
-        <KeyWord name="left" />
-        <KeyWord name="topLeft" />
-        <KeyWord name="topRight" />
-        <KeyWord name="bottomLeft" />
-        <KeyWord name="bottomRight" />
         <KeyWord name="this" />
         
         <!-- IndexAt -->

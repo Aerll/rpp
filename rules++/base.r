@@ -1139,14 +1139,15 @@ end
 
 ///////////////////////////////////////
 //
-int top         = 100;
-int right       = 101;
-int bottom      = 102;
-int left        = 103;
-int topLeft     = 104;
-int topRight    = 105;
-int bottomLeft  = 106;
-int bottomRight = 107;
+int top         = 1000;
+int right       = 1001;
+int bottom      = 1002;
+int left        = 1003;
+int topLeft     = 1004;
+int topRight    = 1005;
+int bottomLeft  = 1006;
+int bottomRight = 1007;
+int all         = 1008;
 ///////////////////////////////////////
 // general functions
 ///////////////////////////////////////
@@ -2156,8 +2157,8 @@ nested function->bool IndexAt.IsNotEdge(array int aOrientations)
         end
         
         for (i = 0 to aOrientations.last)
-            if (aOrientations[i] < top or aOrientations[i] > left)
-                error("IndexAt.IsNotEdge(array int aOrientations) -> values need to be top, right, bottom or left.");
+            if ((aOrientations[i] < top or aOrientations[i] > left) and aOrientations[i] != all)
+                error("IndexAt.IsNotEdge(array int aOrientations) -> values need to be top, right, bottom, left or all.");
             end
         end
     end
@@ -2167,22 +2168,22 @@ nested function->bool IndexAt.IsNotEdge(array int aOrientations)
     int iY = g:posIndexAt.y;
 
     for (i = 0 to aOrientations.last)
-        if (aOrientations[i] == top)
+        if (aOrientations[i] == top or aOrientations[i] == all)
             insert.rule.pos = [iX, iY - 1];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
         end
-        if (aOrientations[i] == right)
+        if (aOrientations[i] == right or aOrientations[i] == all)
             insert.rule.pos = [iX + 1, iY];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
         end
-        if (aOrientations[i] == bottom)
+        if (aOrientations[i] == bottom or aOrientations[i] == all)
             insert.rule.pos = [iX, iY + 1];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
         end
-        if (aOrientations[i] == left)
+        if (aOrientations[i] == left or aOrientations[i] == all)
             insert.rule.pos = [iX - 1, iY];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
@@ -3105,30 +3106,30 @@ nested function->bool Object.IsNotEdge(array int aOrientations)
         end
         
         for (i = 0 to aOrientations.last)
-            if (aOrientations[i] < top or aOrientations[i] > left)
-                error("Object.IsNotEdge(array int aOrientations) -> values need to be top, right, bottom or left.");
+            if ((aOrientations[i] < top or aOrientations[i] > left) and aOrientations[i] != all)
+                error("Object.IsNotEdge(array int aOrientations) -> values need to be top, right, bottom, left or all.");
             end
         end
     end
 //
 
     for (i = 0 to aOrientations.last)
-        if (aOrientations[i] == top)
+        if (aOrientations[i] == top or aOrientations[i] == all)
             insert.rule.pos = [0, g:vObjectTop - 1];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
         end
-        if (aOrientations[i] == right)
+        if (aOrientations[i] == right or aOrientations[i] == all)
             insert.rule.pos = [g:vObjectRight + 1, 0];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
         end
-        if (aOrientations[i] == bottom)
+        if (aOrientations[i] == bottom or aOrientations[i] == all)
             insert.rule.pos = [0, g:vObjectBottom + 1];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
         end
-        if (aOrientations[i] == left)
+        if (aOrientations[i] == left or aOrientations[i] == all)
             insert.rule.pos = [g:vObjectLeft - 1, 0];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
