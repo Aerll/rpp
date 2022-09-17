@@ -511,29 +511,11 @@
         
         
         
-        <!-- util:PosRange -->
-        <KeyWord name="util:PosRange" func="yes">
-            <Overload retVal="array coord">
-                <Param name="range rX" />
-                <Param name="range rY" />
-            </Overload>
-            <Overload retVal="array coord">
-                <Param name="range rX" />
-                <Param name="int iY" />
-            </Overload>
-            <Overload retVal="array coord">
-                <Param name="int iX" />
-                <Param name="range rY" />
-            </Overload>
-        </KeyWord>
-        
-        
-        
-        <!-- util:Copies -->
-        <KeyWord name="util:Copies" func="yes">
+        <!-- util:CopiesOf -->
+        <KeyWord name="util:CopiesOf" func="yes">
             <Overload retVal="array float">
-                <Param name="float fValue" />
                 <Param name="int iCopies" />
+                <Param name="float fValue" />
             </Overload>
         </KeyWord>
         
@@ -685,6 +667,36 @@
         
         
         
+        <!-- Area -->
+        <KeyWord name="Area" func="yes">
+            <Overload retVal="array coord">
+                <Param name="coord cPos" />
+                <Param name="coord cSize" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- Radius -->
+        <KeyWord name="Radius" func="yes">
+            <Overload retVal="array coord">
+                <Param name="coord cPos" />
+                <Param name="int iRadius" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- Footprint -->
+        <KeyWord name="Footprint" func="yes">
+            <Overload retVal="array coord">
+                <Param name="object oObject" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
         
         
         <!-- ******************************************************************
@@ -785,6 +797,43 @@
         <!-- IsNotOut -->
         <KeyWord name="IsNotOut" func="yes">
             <Overload retVal="bool" />
+        </KeyWord>
+        
+
+
+        
+        <!-- IsWithinArea -->
+        <KeyWord name="IsWithinArea" func="yes">
+            <Overload retVal="bool">
+                <Param name="int iWidth" />
+                <Param name="int iHeight" />
+            </Overload>
+        </KeyWord>
+        
+        
+        <!-- IsNotWithinArea -->
+        <KeyWord name="IsNotWithinArea" func="yes">
+            <Overload retVal="bool">
+                <Param name="int iWidth" />
+                <Param name="int iHeight" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- IsWithinRadius -->
+        <KeyWord name="IsWithinRadius" func="yes">
+            <Overload retVal="bool">
+                <Param name="int iRadius" />
+            </Overload>
+        </KeyWord>
+        
+        
+        <!-- IsNotWithinRadius -->
+        <KeyWord name="IsNotWithinRadius" func="yes">
+            <Overload retVal="bool">
+                <Param name="int iRadius" />
+            </Overload>
         </KeyWord>
         
         

@@ -849,54 +849,12 @@ end
 
 
 
-function->array coord util:PosRange(range rX, range rY)
-
-    array int aX = util:ArrayInt(rX);
-    array int aY = util:ArrayInt(rY);
-
-    array coord aResult;
-    for (i = 0 to aX.last)
-        for (j = 0 to aY.last)
-            aResult.push([aX[i], aY[j]]);
-        end
-    end
-    return aResult;
-end
-
-
-
-function->array coord util:PosRange(range rX, int iY)
-
-    array int aX = util:ArrayInt(rX);
-
-    array coord aResult;
-    for (i = 0 to aX.last)
-        aResult.push([aX[i], iY]);
-    end
-    return aResult;
-end
-
-
-
-function->array coord util:PosRange(int iX, range rY)
-
-    array int aY = util:ArrayInt(rY);
-
-    array coord aResult;
-    for (i = 0 to aY.last)
-        aResult.push([iX, aY[i]]);
-    end
-    return aResult;
-end
-
-
-
-function->array float util:Copies(float fValue, int iCopies)
+function->array float util:CopiesOf(int iCopies, float fValue)
 
 //
     if (s:debug)
         if (iCopies < 1)
-            error("util:Copies(float fValue, int iCopies) -> iCopies needs to be greater than 0.");
+            error("util:CopiesOf(int iCopies, float fValue) -> iCopies needs to be greater than 0.");
         end
     end
 //
@@ -1180,6 +1138,16 @@ end
 
 
 ///////////////////////////////////////
+//
+int top         = 100;
+int right       = 101;
+int bottom      = 102;
+int left        = 103;
+int topLeft     = 104;
+int topRight    = 105;
+int bottomLeft  = 106;
+int bottomRight = 107;
+///////////////////////////////////////
 // general functions
 ///////////////////////////////////////
 /******************************************************************************
@@ -1277,6 +1245,93 @@ function->object Rect(int iTopLeft, int iBottomRight)
 
     object oResult = aIndices;
     return oResult;
+end
+
+
+
+function->array coord Area(coord cPos, coord cSize)
+
+//
+    if (s:debug)
+        if (cSize.x < 1 or cSize.y < 1)
+            error("Area(coord cPos, coord cSize) -> cSize needs to be greater than 0.");
+        end
+    end
+//
+
+    array coord aResult;
+    
+    for (x = cPos.x to cPos.x + cSize.x - 1)
+        for (y = cPos.y to cPos.y + cSize.y - 1)
+            aResult.push([x, y]);
+        end
+    end    
+    return aResult;
+end
+
+
+
+function->array coord Radius(coord cPos, int iRadius)
+
+//
+    if (s:debug)
+        if (iRadius < 1)
+            error("Radius(coord cPos, int iRadius) -> iRadius needs to be greater than or equal to 0.");
+        end
+    end
+//
+
+    array coord aResult;
+
+    for (x = util:Negate(iRadius) to iRadius)
+        for (y = util:Negate(iRadius) to iRadius)
+            int iDiffX = cPos.x - x;
+            int iDiffY = cPos.y - y;
+            
+            if (iDiffX * iDiffX + iDiffY * iDiffY <= iRadius * iRadius)
+                aResult.push([x, y]);
+            end
+        end
+    end
+    return aResult;
+end
+
+
+
+function->array coord Footprint(object oObject, int iOrientation)
+
+//
+    if (s:debug)
+        if (oObject.count == 0)
+            error("Footprint(object oObject, int iOrientation) -> oObject cannot be empty.");
+        end
+
+        if (iOrientation != top and iOrientation != right and iOrientation != bottom and iOrientation != left)
+            error("Footprint(object oObject, int iOrientation) -> iOrientation needs to be top, right, bottom or left.");
+        end
+    end
+//
+
+    array coord aResult;
+    array int aRect = util:Rect(oObject);
+
+    for (i = 0 to oObject.last)
+        coord cRelativePos = util:RelativePos(oObject.anchor, oObject[i]);
+
+        if (iOrientation == top and cRelativePos.y == aRect[0])
+            aResult.push([cRelativePos.x, cRelativePos.y - 1]);
+        end
+        if (iOrientation == right and cRelativePos.x == aRect[1])
+            aResult.push([cRelativePos.x + 1, cRelativePos.y]);
+        end
+        if (iOrientation == bottom and cRelativePos.y == aRect[2])
+            aResult.push([cRelativePos.x, cRelativePos.y + 1]);
+        end
+        if (iOrientation == left and cRelativePos.x == aRect[3])
+            aResult.push([cRelativePos.x - 1, cRelativePos.y]);
+        end
+    end
+    return aResult;
 end
 
 
@@ -1487,15 +1542,7 @@ int g:borderTopRight    = 1;
 int g:borderBottomLeft  = 1;
 int g:borderBottomRight = 1;
 
-int top         = 100;
-int right       = 101;
-int bottom      = 102;
-int left        = 103;
-int topLeft     = 104;
-int topRight    = 105;
-int bottomLeft  = 106;
-int bottomRight = 107;
-int this        = 99999;
+int this = 99999;
 /******************************************************************************
 
 */
@@ -1556,6 +1603,7 @@ function->bool IndexAt(array coord aCoords)
     nested(
         TestIndices,
         Is, IsNot, IsEmpty, IsEmptyAt, IsFull, IsFullAt, IsOut, IsNotOut,
+        IsWithinArea, IsNotWithinArea,
         IsWithinRadius, IsNotWithinRadius,
         IsEdge, IsNotEdge,
         IsNextTo, IsNotNextTo,
@@ -1862,6 +1910,72 @@ end
 
 
 
+nested function->bool IndexAt.IsWithinArea(int iWidth, int iHeight)
+
+    if (g:initIndexAt)
+        return false;
+    end
+
+//
+    if (s:debug)
+        if (iWidth < 1)
+            error("IndexAt.IsNotWithinArea(int iWidth, int iHeight) -> iWidth needs to be greater than 0.");
+        end
+        if (iHeight < 1)
+            error("IndexAt.IsNotWithinArea(int iWidth, int iHeight) -> iHeight needs to be greater than 0.");
+        end
+    end
+//
+
+    int iX = g:posIndexAt.x;
+    int iY = g:posIndexAt.y;
+    
+    for (x = iX to iX + iWidth - 1)
+        for (y = iY to iY + iHeight - 1)            
+            insert.rule.pos = [x, y];
+            internal:TestIndicesFull();
+            insert.rule.pos.operator = g:or;
+            insert.rule.pos.group = g:group;
+        end
+    end
+    
+    g:group = g:group + 1;
+    return true;
+end
+
+
+
+nested function->bool IndexAt.IsNotWithinArea(int iWidth, int iHeight)
+
+    if (g:initIndexAt)
+        return false;
+    end
+
+//
+    if (s:debug)
+        if (iWidth < 1)
+            error("IndexAt.IsNotWithinArea(int iWidth, int iHeight) -> iWidth needs to be greater than 0.");
+        end
+        if (iHeight < 1)
+            error("IndexAt.IsNotWithinArea(int iWidth, int iHeight) -> iHeight needs to be greater than 0.");
+        end
+    end
+//
+
+    int iX = g:posIndexAt.x;
+    int iY = g:posIndexAt.y;
+    
+    for (x = iX to iX + iWidth - 1)
+        for (y = iY to iY + iHeight - 1)            
+            insert.rule.pos = [x, y];
+            internal:TestIndicesEmpty();
+        end
+    end
+    return true;
+end
+
+
+
 nested function->bool IndexAt.IsWithinRadius(int iRadius)
 
     if (g:initIndexAt)
@@ -1871,8 +1985,7 @@ nested function->bool IndexAt.IsWithinRadius(int iRadius)
 //
     if (s:debug)
         if (iRadius < 0)
-            warning("IndexAt.IsWithinRadius(int iRadius) -> iRadius needs to be greater than or equal to 0.");
-            return false;
+            error("IndexAt.IsWithinRadius(int iRadius) -> iRadius needs to be greater than or equal to 0.");
         end
     end
 //
@@ -1909,8 +2022,7 @@ nested function->bool IndexAt.IsNotWithinRadius(int iRadius)
 //
     if (s:debug)
         if (iRadius < 0)
-            warning("IndexAt.IsNotWithinRadius(int iRadius) -> iRadius needs to be greater than or equal to 0.");
-            return false;
+            error("IndexAt.IsNotWithinRadius(int iRadius) -> iRadius needs to be greater than or equal to 0.");
         end
     end
 //
