@@ -1919,10 +1919,10 @@ nested function->bool IndexAt.IsWithinArea(int iWidth, int iHeight)
 //
     if (s:debug)
         if (iWidth < 1)
-            error("IndexAt.IsNotWithinArea(int iWidth, int iHeight) -> iWidth needs to be greater than 0.");
+            error("IndexAt.IsWithinArea(int iWidth, int iHeight) -> iWidth needs to be greater than 0.");
         end
         if (iHeight < 1)
-            error("IndexAt.IsNotWithinArea(int iWidth, int iHeight) -> iHeight needs to be greater than 0.");
+            error("IndexAt.IsWithinArea(int iWidth, int iHeight) -> iHeight needs to be greater than 0.");
         end
     end
 //
