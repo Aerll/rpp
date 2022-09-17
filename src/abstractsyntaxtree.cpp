@@ -899,6 +899,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTRangeLitera
     auto node = std::make_unique<ASTOpRangeNode>();
     node->setLeft(std::move(from));
     node->setRight(std::move(to));
+    node->setLine(expression.get<1>()->getTokens().front()->line);
 
     return node;
 }
@@ -911,6 +912,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTCoordLitera
     auto node = std::make_unique<ASTOpCoordNode>();
     node->setLeft(std::move(x));
     node->setRight(std::move(y));
+    node->setLine(expression.get<1>()->line);
 
     return node;
 }
