@@ -76,6 +76,7 @@ int App::exec(int argc, char** argv) {
     try {
         using namespace std::chrono;
         auto beg = high_resolution_clock::now();
+        bool wait = false;
 
         for (int i = 1; i < argc; ++i) {
             max_memory = 0;
@@ -89,8 +90,10 @@ int App::exec(int argc, char** argv) {
 
             Preprocessor preprocessor(tokenizer.data());
             preprocessor.run(path);
-            if (preprocessor.failed())
+            if (preprocessor.failed()) {
+                wait = true;
                 continue;
+            }
 
             max_memory = preprocessor.stack(); // in megabytes
 
@@ -103,19 +106,27 @@ int App::exec(int argc, char** argv) {
 
                 Parser parser;
                 parser.parse(parseTree, tokenStream);
-                if (parser.failed())
+                if (parser.failed()) {
+                    wait = true;
                     continue;
+                }
 
                 abstractSyntaxTree.create(parseTree);
                 parser.parse(abstractSyntaxTree);
-                if (parser.failed())
+                if (parser.failed()) {
+                    wait = true;
                     continue;
+                }
             }
 
             Translator translator;
             translator.run(abstractSyntaxTree);
-            if (translator.failed())
+            if (translator.failed()) {
+                wait = true;
                 continue;
+            }
+            if (translator.warned())
+                wait = true;
 
             RulesGen::exec(translator.automappers(), preprocessor.path(), preprocessor.tileset());
         }
@@ -126,7 +137,8 @@ int App::exec(int argc, char** argv) {
         std::cout << "\n\n";
         std::cout << "Finished in: " << time << "s\n";
 
-        pause();
+        if (wait)
+            pause();
         return 0;
     }
     catch (const std::overflow_error& error) {

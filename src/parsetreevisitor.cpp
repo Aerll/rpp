@@ -1052,24 +1052,27 @@ std::unique_ptr<Error> PTExpressionVisitor::parse(PTMemberAccessExpression& node
     if (node.get<1>()->id() == ExpressionID::Empty)
         return std::make_unique<ErrMissingExpression>(node.getTokens());
 
-    if ((node.get<1>()->id() == ExpressionID::Literal && (
-            leftLastToken->type != ValueType::Float
-            )) ||
+    if ((node.get<1>()->id() == ExpressionID::Literal) ||
         (leftLastToken->cat == TIdentifier) ||
         (leftLastToken->cat == TKeyword && (
             leftLastToken->value == KW::Anchor ||
+            leftLastToken->value == KW::Count ||
+            leftLastToken->value == KW::False ||
             leftLastToken->value == KW::Index ||
             leftLastToken->value == KW::Insert ||
+            leftLastToken->value == KW::Last ||
             leftLastToken->value == KW::Pos ||
             leftLastToken->value == KW::Preset ||
             leftLastToken->value == KW::Rotate ||
-            leftLastToken->value == KW::Rule
+            leftLastToken->value == KW::Rule ||
+            leftLastToken->value == KW::True
             )) ||
         (node.get<1>()->id() == ExpressionID::FunctionCall) ||
         (node.get<1>()->id() == ExpressionID::MemberAccess) ||
         (node.get<1>()->id() == ExpressionID::ArraySubscript) ||
         (node.get<1>()->id() == ExpressionID::RangeLiteral) ||
-        (node.get<1>()->id() == ExpressionID::CoordLiteral)
+        (node.get<1>()->id() == ExpressionID::CoordLiteral) ||
+        (node.get<1>()->id() == ExpressionID::StringLiteral)
         ) {} // valid
     else {
         return std::make_unique<ErrInvalidExpression>(node.getTokens());

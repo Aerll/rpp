@@ -426,7 +426,11 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTIdentifierE
 
 AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTKeywordExpression& expression)
 {
-    if (expression.get<1>()->value == KW::Empty)
+    if (expression.get<1>()->value == KW::Anchor)
+        return convert<ASTAnchorNode>(expression.get<1>()->line);
+    else if (expression.get<1>()->value == KW::Count)
+        return convert<ASTCountNode>(expression.get<1>()->line);
+    else if (expression.get<1>()->value == KW::Empty)
         return convert<ASTEmptyNode>(expression.get<1>()->line);
     else if (expression.get<1>()->value == KW::False)
         return convertValue<ASTBoolNode>(false, expression.get<1>()->line);
@@ -434,8 +438,12 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTKeywordExpr
         return convert<ASTFullNode>(expression.get<1>()->line);
     else if (expression.get<1>()->value == KW::Index)
         return convert<ASTIndexNode>(expression.get<1>()->line);
+    else if (expression.get<1>()->value == KW::Last)
+        return convert<ASTLastNode>(expression.get<1>()->line);
     else if (expression.get<1>()->value == KW::Notindex)
         return convert<ASTNotIndexNode>(expression.get<1>()->line);
+    else if (expression.get<1>()->value == KW::Rotate)
+        return convert<ASTRotateNode>(expression.get<1>()->line);
     else if (expression.get<1>()->value == KW::True)
         return convertValue<ASTBoolNode>(true, expression.get<1>()->line);
     else
@@ -554,26 +562,31 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTFunctionCal
     else if (id == NodeID::PushCall) {
         auto node = std::make_unique<ASTPushCallNode>();
         node->setArguments(convertArguments(expression));
+        node->setLine(expression.get<1>()->line);
         return node;
     }
     else if (id == NodeID::HasCall) {
         auto node = std::make_unique<ASTHasCallNode>();
         node->setArguments(convertArguments(expression));
+        node->setLine(expression.get<1>()->line);
         return node;
     }
     else if (id == NodeID::UniqueCall) {
         auto node = std::make_unique<ASTUniqueCallNode>();
         node->setArguments(convertArguments(expression));
+        node->setLine(expression.get<1>()->line);
         return node;
     }
     else if (id == NodeID::StrCall) {
         auto node = std::make_unique<ASTStrCallNode>();
         node->setArguments(convertArguments(expression));
+        node->setLine(expression.get<1>()->line);
         return node;
     }
     else if (id == NodeID::NameCall) {
         auto node = std::make_unique<ASTNameCallNode>();
         node->setArguments(convertArguments(expression));
+        node->setLine(expression.get<1>()->line);
         return node;
     }
     else {
@@ -606,145 +619,234 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAcces
         return convertExpression(*expression.get<1>(), id);
     else if (id == NodeID::NestedIdentifier)
         return convertExpression(*expression.get<3>(), id);
+        
+    auto nodes = convertExpressions(expression, id);
 
-    if (expression.get<1>()->getLastToken()->value == KW::Insert) {
-        auto insert = std::make_unique<ASTInsertNode>();
-        insert->setControl(convertInsertControl(expression));
-        insert->setLine(expression.get<1>()->getLastToken()->line);
-        return insert;
-    }
-
-    if ((expression.get<1>()->getLastToken()->value == KW::Preset) &&
-        (expression.get<3>()->id() == ExpressionID::FunctionCall)
-        ) return convertExpression(*expression.get<3>(), NodeID::PresetCall);
-    
+    // handle nested calls
+    ptr_node result;
     ptr_node functionCall;
-    if (
-        (expression.get<1>()->id() == ExpressionID::FunctionCall && (
-            expression.get<3>()->id() == ExpressionID::FunctionCall ||
-            expression.get<3>()->id() == ExpressionID::MemberAccess
-            )) &&
-        (id == NodeID::Null)
-        ) {
-        functionCall = convertExpression(*expression.get<1>());
-        auto nestedCalls = convertNestedCalls(expression, NodeID::FunctionCall);
-        for (auto& call : nestedCalls) {
-            if (call->id() == NodeID::NestedCall)
-                call->as<ASTNestedCallNode*>()->setFunctionCall(functionCall.get());
+    size_t nestedEnd = 0;
+    if (nodes.front()->id() == NodeID::FunctionCall) {
+        functionCall = std::move(nodes.front());
+        nestedEnd = 1;
+
+        ptr_node_v nestedCalls;
+        for (size_t i = 1; i < nodes.size(); ++i, ++nestedEnd) {
+            if (nodes[i]->id() == NodeID::NestedCall) {
+                nodes[i]->as<ASTNestedCallNode*>()->setFunctionCall(functionCall.get());
+                nestedCalls.push_back(std::move(nodes[i]));
+            }
+            else
+                break;
         }
         functionCall->as<ASTFunctionCallNode*>()->setNestedCalls(std::move(nestedCalls));
+        result = std::move(functionCall);
     }
+    else
+        result = std::move(nodes[nestedEnd++]);
 
-    ptr_node result;
-    if (expression.get<3>()->id() == ExpressionID::MemberAccess)
-        result = convertExpression(*expression.get<3>(), NodeID::NestedCall);
+    for (size_t i = nestedEnd; i < nodes.size(); ++i) {
+        auto& current = nodes[i];
 
-    ptr_node node;
-    if (expression.get<3>()->getTokens().front()->value == "x") {
-        auto x = convertExpression(*expression.get<3>(), NodeID::X);
-        x->as<ASTXNode*>()->setNode(convertExpression(*expression.get<1>()));
-        x->setLine(x->as<ASTXNode*>()->getLine());
-        node = std::move(x);
-    }
-    else if (expression.get<3>()->getTokens().front()->value == "y") {
-        auto y = convertExpression(*expression.get<3>(), NodeID::Y);
-        y->as<ASTYNode*>()->setNode(convertExpression(*expression.get<1>()));
-        y->setLine(y->as<ASTYNode*>()->getLine());
-        node = std::move(y);
-    }
-    else if (Token::stringToRotation(expression.get<3>()->getTokens().front()->value) != Rotation::Default) {
-        if (result != nullptr && result->id() == NodeID::Anchor) {
-            auto rotation = std::make_unique<ASTRotationNode>();
-            rotation->setRotation(Token::stringToRotation(expression.get<3>()->getTokens().front()->value));
-            rotation->setNode(convertExpression(*expression.get<1>()));
-            rotation->setLine(expression.get<3>()->getTokens().front()->line);
-            result->as<ASTAnchorNode*>()->setNode(std::move(rotation));
-            return result;
-        }
-        else {
-            auto rotation = convertExpression(*expression.get<3>(), NodeID::Rotation);
-            rotation->as<ASTRotationNode*>()->setNode(convertExpression(*expression.get<1>()));
-            rotation->setLine(rotation->as<ASTRotationNode*>()->getLine());
-            node = std::move(rotation);
-        }
-    }
-    else if (expression.get<3>()->getTokens().front()->value == KW::Rotate) {
-        auto rotate = std::make_unique<ASTRotateNode>();
-        if (result != nullptr && result->id() == NodeID::Rotation)
-            rotate->setRotation(result->as<ASTRotationNode*>()->getRotation());
-        rotate->setNode(convertExpression(*expression.get<1>()));
-        rotate->setLine(rotate->getNode()->getLine());
-        node = std::move(rotate);
-        return node;
-    }
-    else if (expression.get<3>()->getTokens().front()->value == KW::Anchor) {
-        auto anchor = std::make_unique<ASTAnchorNode>();
-        anchor->setNode(convertExpression(*expression.get<1>()));
-        anchor->setLine(anchor->getNode()->getLine());
-        node = std::move(anchor);
-    }
-    else if (expression.get<3>()->getTokens().front()->value == KW::Count) {
-        auto count = std::make_unique<ASTCountNode>();
-        count->setNode(convertExpression(*expression.get<1>()));
-        count->setLine(count->getNode()->getLine());
-        node = std::move(count);
-    }
-    else if (expression.get<3>()->getTokens().front()->value == KW::Last) {
-        auto last = std::make_unique<ASTLastNode>();
-        last->setNode(convertExpression(*expression.get<1>()));
-        last->setLine(last->getNode()->getLine());
-        node = std::move(last);
-    }   
-    else if ((expression.get<3>()->id() == ExpressionID::FunctionCall && (
-            Token::isBuiltin(static_cast<PTFunctionCallExpression&>(*expression.get<3>()).get<1>()->value)
-            ))
-        ) {
-        auto& functionExpr = static_cast<PTFunctionCallExpression&>(*expression.get<3>());
-        if (functionExpr.get<1>()->value == "push") {
-            auto pushcall = convertExpression(functionExpr, NodeID::PushCall);
-            pushcall->as<ASTPushCallNode*>()->setVariable(convertExpression(*expression.get<1>()));
-            pushcall->as<ASTPushCallNode*>()->setLine(functionExpr.get<1>()->line);
-            node = std::move(pushcall);
-        }
-        else if (functionExpr.get<1>()->value == "has") {
-            auto hascall = convertExpression(functionExpr, NodeID::HasCall);
-            hascall->as<ASTHasCallNode*>()->setVariable(convertExpression(*expression.get<1>()));
-            hascall->as<ASTHasCallNode*>()->setLine(functionExpr.get<1>()->line);
-            node = std::move(hascall);
-        }
-        else if (functionExpr.get<1>()->value == "unique") {
-            auto uniquecall = convertExpression(functionExpr, NodeID::UniqueCall);
-            uniquecall->as<ASTUniqueCallNode*>()->setVariable(convertExpression(*expression.get<1>()));
-            uniquecall->as<ASTUniqueCallNode*>()->setLine(functionExpr.get<1>()->line);
-            node = std::move(uniquecall);
-        }
-        else if (functionExpr.get<1>()->value == "str") {
-            auto strcall = convertExpression(functionExpr, NodeID::StrCall);
-            strcall->as<ASTStrCallNode*>()->setVariable(convertExpression(*expression.get<1>()));
-            strcall->as<ASTStrCallNode*>()->setLine(functionExpr.get<1>()->line);
-            node = std::move(strcall);
-        }
-        else if (functionExpr.get<1>()->value == "name") {
-            auto namecall = convertExpression(functionExpr, NodeID::NameCall);
-            namecall->as<ASTNameCallNode*>()->setVariable(convertExpression(*expression.get<1>()));
-            namecall->as<ASTNameCallNode*>()->setLine(functionExpr.get<1>()->line);
-            node = std::move(namecall);
-        }
-    }
+        switch (result->id()) {
+            case NodeID::Bool :
+            case NodeID::HasCall :
+            case NodeID::Float :
+            case NodeID::String :
+            case NodeID::NameCall :
+                if (current->id() == NodeID::StrCall)
+                    current->as<ASTStrCallNode*>()->setVariable(std::move(result));
+                result = std::move(current);
+                break;
 
-    if (functionCall != nullptr) {
-        if (result != nullptr) {
-            setMember(result.get(), std::move(functionCall));
-            return result;
+            case NodeID::Int :
+            case NodeID::OpRange :
+            case NodeID::Count :
+            case NodeID::Last :
+            case NodeID::X :
+            case NodeID::Y :
+                if (current->id() == NodeID::Rotation)
+                    current->as<ASTRotationNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Rotate)
+                    current->as<ASTRotateNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::StrCall)
+                    current->as<ASTStrCallNode*>()->setVariable(std::move(result));
+                result = std::move(current);
+                break;
+                
+            case NodeID::OpCoord :
+            case NodeID::Anchor :
+                if (current->id() == NodeID::X)
+                    current->as<ASTXNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Y)
+                    current->as<ASTYNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Rotation)
+                    current->as<ASTRotationNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Rotate)
+                    current->as<ASTRotateNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::StrCall)
+                    current->as<ASTStrCallNode*>()->setVariable(std::move(result));
+                result = std::move(current);
+                break;
+
+            case NodeID::Object :
+                if (current->id() == NodeID::Anchor)
+                    current->as<ASTAnchorNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Count)
+                    current->as<ASTCountNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Last)
+                    current->as<ASTLastNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Rotation)
+                    current->as<ASTRotationNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Rotate)
+                    current->as<ASTRotateNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::StrCall)
+                    current->as<ASTStrCallNode*>()->setVariable(std::move(result));
+                result = std::move(current);
+                break;
+
+            case NodeID::Array :
+            case NodeID::UniqueCall :
+                if (current->id() == NodeID::Count)
+                    current->as<ASTCountNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Last)
+                    current->as<ASTLastNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::PushCall)
+                    current->as<ASTPushCallNode*>()->setVariable(std::move(result));
+                else if (current->id() == NodeID::HasCall)
+                    current->as<ASTHasCallNode*>()->setVariable(std::move(result));
+                else if (current->id() == NodeID::UniqueCall)
+                    current->as<ASTUniqueCallNode*>()->setVariable(std::move(result));
+                else if (current->id() == NodeID::StrCall)
+                    current->as<ASTStrCallNode*>()->setVariable(std::move(result));
+                result = std::move(current);
+                break;
+
+            case NodeID::Variable :
+                if (current->id() == NodeID::Anchor)
+                    current->as<ASTAnchorNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Count)
+                    current->as<ASTCountNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Last)
+                    current->as<ASTLastNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::X)
+                    current->as<ASTXNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Y)
+                    current->as<ASTYNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Rotation)
+                    current->as<ASTRotationNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Rotate)
+                    current->as<ASTRotateNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::PushCall)
+                    current->as<ASTPushCallNode*>()->setVariable(std::move(result));
+                else if (current->id() == NodeID::HasCall)
+                    current->as<ASTHasCallNode*>()->setVariable(std::move(result));
+                else if (current->id() == NodeID::UniqueCall)
+                    current->as<ASTUniqueCallNode*>()->setVariable(std::move(result));
+                else if (current->id() == NodeID::StrCall)
+                    current->as<ASTStrCallNode*>()->setVariable(std::move(result));
+                else if (current->id() == NodeID::NameCall)
+                    current->as<ASTNameCallNode*>()->setVariable(std::move(result));
+                result = std::move(current);
+                break;
+
+            case NodeID::Rotation :
+                if (current->id() == NodeID::Anchor)
+                    current->as<ASTAnchorNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Count)
+                    current->as<ASTCountNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Last)
+                    current->as<ASTLastNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::X)
+                    current->as<ASTXNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Y)
+                    current->as<ASTYNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Rotate)
+                    current->as<ASTRotateNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::StrCall)
+                    current->as<ASTStrCallNode*>()->setVariable(std::move(result));
+                result = std::move(current);
+                break;
+
+            case NodeID::Rotate :
+                if (current->id() == NodeID::Rotation) {
+                    result->as<ASTRotateNode*>()->setRotation(current->as<ASTRotationNode*>()->getRotation());
+                    break;
+                }
+                if (current->id() == NodeID::StrCall)
+                    current->as<ASTStrCallNode*>()->setVariable(std::move(result));
+                result = std::move(current);
+                break;        
+                
+            case NodeID::ArraySubscript :
+                if (current->id() == NodeID::Anchor)
+                    current->as<ASTAnchorNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Count)
+                    current->as<ASTCountNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Last)
+                    current->as<ASTLastNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::X)
+                    current->as<ASTXNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Y)
+                    current->as<ASTYNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Rotation)
+                    current->as<ASTRotationNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Rotate)
+                    current->as<ASTRotateNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::StrCall)
+                    current->as<ASTStrCallNode*>()->setVariable(std::move(result));
+                result = std::move(current);
+                break;
+
+            case NodeID::FunctionCall :
+                if (current->id() == NodeID::Anchor)
+                    current->as<ASTAnchorNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Count)
+                    current->as<ASTCountNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Last)
+                    current->as<ASTLastNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::X)
+                    current->as<ASTXNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Y)
+                    current->as<ASTYNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Rotation)
+                    current->as<ASTRotationNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::Rotate)
+                    current->as<ASTRotateNode*>()->setNode(std::move(result));
+                else if (current->id() == NodeID::HasCall)
+                    current->as<ASTHasCallNode*>()->setVariable(std::move(result));
+                else if (current->id() == NodeID::UniqueCall)
+                    current->as<ASTUniqueCallNode*>()->setVariable(std::move(result));
+                else if (current->id() == NodeID::StrCall)
+                    current->as<ASTStrCallNode*>()->setVariable(std::move(result));
+                result = std::move(current);
+                break;
         }
-        else
-            return functionCall;
     }
-    if (expression.get<3>()->id() == ExpressionID::MemberAccess && id != NodeID::NestedCall) {
-        setMember(result.get(), std::move(node));
+    return result;
+}
+
+AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertExpressions(PTMemberAccessExpression& expression, NodeID id)
+{
+    ptr_node_v result;
+    result.push_back(convertLeft(expression, id));
+
+    if (result.back()->id() == NodeID::Insert)
         return result;
+
+    ptr_node_v nodes;
+    if (expression.get<3>()->id() == ExpressionID::MemberAccess) {
+        nodes = convertExpressions(static_cast<PTMemberAccessExpression&>(*expression.get<3>()), NodeID::NestedCall);
+        result.insert(result.end(), std::make_move_iterator(nodes.begin()), std::make_move_iterator(nodes.end()));
     }
-    return node;
+    else if (expression.get<1>()->id() == ExpressionID::FunctionCall && expression.get<3>()->id() == ExpressionID::FunctionCall)
+        result.push_back(convertRight(expression, NodeID::NestedCall));
+    else {
+        if (result.back()->id() != NodeID::PresetCall)
+            result.push_back(convertRight(expression, result.back()->id()));
+    }
+    
+    return result;
 }
 
 AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTErrorExpression& expression)
@@ -952,42 +1054,100 @@ InsertC AbstractSyntaxTree::convertInsertControl(PTMemberAccessExpression& expre
     return control;
 }
 
-AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertNestedCalls(PTMemberAccessExpression& expression, NodeID id)
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertLeft(PTMemberAccessExpression& expression, NodeID id)
 {
-    ptr_node_v result;
-    if (id == NodeID::FunctionCall) {
-        if (expression.get<3>()->id() == ExpressionID::MemberAccess)
-            result = convertNestedCalls(static_cast<PTMemberAccessExpression&>(*expression.get<3>()), NodeID::NestedCall);
-        else
-            result.push_back(convertExpression(*expression.get<3>(), NodeID::NestedCall));
+    if (expression.get<1>()->getLastToken()->value == KW::Insert) {
+        auto insert = std::make_unique<ASTInsertNode>();
+        insert->setControl(convertInsertControl(expression));
+        insert->setLine(expression.get<1>()->getLastToken()->line);
+        return insert;
     }
-    else {
-        result.push_back(convertExpression(*expression.get<1>(), NodeID::NestedCall));
-        if (expression.get<3>()->id() == ExpressionID::MemberAccess) {
-            ptr_node_v nestedCalls;
-            nestedCalls = convertNestedCalls(static_cast<PTMemberAccessExpression&>(*expression.get<3>()), NodeID::NestedCall);
-            result.insert(result.end(), std::make_move_iterator(nestedCalls.begin()), std::make_move_iterator(nestedCalls.end()));
+    
+    if (expression.get<1>()->getLastToken()->value == KW::Anchor)
+        return convertExpression(*expression.get<1>(), NodeID::Anchor);
+    else if (expression.get<1>()->getLastToken()->value == KW::Count)
+        return convertExpression(*expression.get<1>(), NodeID::Count);
+    else if (expression.get<1>()->getLastToken()->value == KW::Last)
+        return convertExpression(*expression.get<1>(), NodeID::Last);
+    else if (expression.get<1>()->getLastToken()->value == "x")
+        return convertExpression(*expression.get<1>(), NodeID::X);
+    else if (expression.get<1>()->getLastToken()->value == "y")
+        return convertExpression(*expression.get<1>(), NodeID::Y);
+    else if (Token::stringToRotation(expression.get<1>()->getTokens().front()->value) != Rotation::Default)
+        return convertExpression(*expression.get<1>(), NodeID::Rotation);
+    else if (expression.get<1>()->getTokens().front()->value == KW::Rotate)
+        return convertExpression(*expression.get<1>(), NodeID::Rotate);
+    else if (expression.get<1>()->getLastToken()->value == KW::Preset)
+        return convertExpression(*expression.get<3>(), NodeID::PresetCall);
+    else if (expression.get<1>()->id() == ExpressionID::FunctionCall) {
+        std::string_view functionName = static_cast<PTFunctionCallExpression&>(*expression.get<1>()).get<1>()->value;
+        if (Token::isBuiltin(functionName)) {
+            if (functionName == "push")
+                return convertExpression(*expression.get<1>(), NodeID::PushCall);
+            else if (functionName == "has")
+                return convertExpression(*expression.get<1>(), NodeID::HasCall);
+            else if (functionName == "unique")
+                return convertExpression(*expression.get<1>(), NodeID::UniqueCall);
+            else if (functionName == "str")
+                return convertExpression(*expression.get<1>(), NodeID::StrCall);
+            else if (functionName == "name")
+                return convertExpression(*expression.get<1>(), NodeID::NameCall);
+            else
+                return nullptr;
         }
+        else if (id == NodeID::NestedCall)
+            return convertExpression(*expression.get<1>(), NodeID::NestedCall);
         else
-            result.push_back(convertExpression(*expression.get<3>(), NodeID::NestedCall));
+            return convertExpression(*expression.get<1>(), NodeID::FunctionCall);
     }
-    return result;
+    else
+        return convertExpression(*expression.get<1>());
 }
 
-void AbstractSyntaxTree::setMember(IASTNode* node, ptr_node&& member)
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertRight(PTMemberAccessExpression& expression, NodeID left_id)
 {
-    if (node->id() == NodeID::Rotate)
-        node->as<ASTRotateNode*>()->setNode(std::move(member));
-    else if (node->id() == NodeID::X)
-        node->as<ASTXNode*>()->setNode(std::move(member));
-    else if (node->id() == NodeID::Y)
-        node->as<ASTYNode*>()->setNode(std::move(member));
-    else if (node->id() == NodeID::Rotation)
-        node->as<ASTRotationNode*>()->setNode(std::move(member));
-    else if (node->id() == NodeID::Anchor)
-        node->as<ASTAnchorNode*>()->setNode(std::move(member));
-    else if (node->id() == NodeID::Count)
-        node->as<ASTCountNode*>()->setNode(std::move(member));
-    else if (node->id() == NodeID::Last)
-        node->as<ASTLastNode*>()->setNode(std::move(member));
+    if (expression.get<3>()->id() == ExpressionID::MemberAccess)
+        return convertExpression(*expression.get<3>());
+
+    if (expression.get<3>()->getLastToken()->value == KW::Anchor)
+        return convertExpression(*expression.get<3>(), NodeID::Anchor);
+    else if (expression.get<3>()->getLastToken()->value == KW::Count)
+        return convertExpression(*expression.get<3>(), NodeID::Count);
+    else if (expression.get<3>()->getLastToken()->value == KW::Last)
+        return convertExpression(*expression.get<3>(), NodeID::Last);
+    else if (expression.get<3>()->getLastToken()->value == "x")
+        return convertExpression(*expression.get<3>(), NodeID::X);
+    else if (expression.get<3>()->getLastToken()->value == "y")
+        return convertExpression(*expression.get<3>(), NodeID::Y);
+    else if (Token::stringToRotation(expression.get<3>()->getTokens().front()->value) != Rotation::Default)
+        return convertExpression(*expression.get<3>(), NodeID::Rotation);
+    else if (expression.get<3>()->getTokens().front()->value == KW::Rotate)
+        return convertExpression(*expression.get<3>(), NodeID::Rotate);
+    else if (expression.get<3>()->getLastToken()->value == KW::Preset)
+        return convertExpression(*expression.get<3>(), NodeID::PresetCall);
+    else if (expression.get<3>()->id() == ExpressionID::FunctionCall) {
+        std::string_view functionName = static_cast<PTFunctionCallExpression&>(*expression.get<3>()).get<1>()->value;
+        if (Token::isBuiltin(functionName)) {
+            if (functionName == "push")
+                return convertExpression(*expression.get<3>(), NodeID::PushCall);
+            else if (functionName == "has")
+                return convertExpression(*expression.get<3>(), NodeID::HasCall);
+            else if (functionName == "unique")
+                return convertExpression(*expression.get<3>(), NodeID::UniqueCall);
+            else if (functionName == "str")
+                return convertExpression(*expression.get<3>(), NodeID::StrCall);
+            else if (functionName == "name")
+                return convertExpression(*expression.get<3>(), NodeID::NameCall);
+            else
+                return nullptr;
+        }
+        else if (left_id == NodeID::PresetCall)
+            return convertExpression(*expression.get<3>(), NodeID::PresetCall);
+        else if (left_id == NodeID::NestedCall)
+            return convertExpression(*expression.get<3>(), NodeID::NestedCall);
+        else
+            return convertExpression(*expression.get<3>(), NodeID::FunctionCall);
+    }
+    else
+        return convertExpression(*expression.get<3>());
 }

@@ -36,4 +36,5 @@ void Translator::run(AbstractSyntaxTree& abstractTree)
 
     m_automappers = std::move(evaluator.automappers());
     m_failed = evaluator.failed();
+    m_warnings = evaluator.warned();
 }
