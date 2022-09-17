@@ -85,6 +85,7 @@ private:
     ptr_node convertExpression(PTFunctionCallExpression& expression, NodeID id);
     ptr_node convertExpression(PTForRangeExpression& expression);
     ptr_node convertExpression(PTMemberAccessExpression& expression, NodeID id = NodeID::Null);
+    ptr_node_v convertExpressions(PTMemberAccessExpression& expression, NodeID id = NodeID::Null);
     ptr_node convertExpression(PTErrorExpression& expression);
     ptr_node convertExpression(PTWarningExpression& expression);
     ptr_node convertExpression(PTArraySubscriptExpression& expression);
@@ -98,8 +99,8 @@ private:
     ptr_node_v convertArguments(PTFunctionCallExpression& expression);
 
     InsertC convertInsertControl(PTMemberAccessExpression& expression);
-    ptr_node_v convertNestedCalls(PTMemberAccessExpression& expression, NodeID id);
-    void setMember(IASTNode* node, ptr_node&& member);
+    ptr_node convertLeft(PTMemberAccessExpression& expression, NodeID id = NodeID::Null);
+    ptr_node convertRight(PTMemberAccessExpression& expression, NodeID id = NodeID::Null);
 
     template <typename T>
     ptr_node convert(uint32_t line);

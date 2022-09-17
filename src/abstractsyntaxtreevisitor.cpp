@@ -462,6 +462,8 @@ void ASTNodeParser::parse(ASTOpCoordNode* node)
 
 void ASTNodeParser::parse(ASTErrorNode* node)
 {
+    node->getString()->accept(*this);
+
     std::unique_ptr<Error> error;
     if (node->getString()->getNodeType() != ValueType::String)
         error = std::make_unique<ErrIncorrectValueType>(node->getString()->getNodeType(), ValueType::String, node->getLine());
@@ -475,6 +477,8 @@ void ASTNodeParser::parse(ASTErrorNode* node)
 
 void ASTNodeParser::parse(ASTWarningNode* node)
 {
+    node->getString()->accept(*this);
+
     std::unique_ptr<Error> error;
     if (node->getString()->getNodeType() != ValueType::String)
         error = std::make_unique<ErrIncorrectValueType>(node->getString()->getNodeType(), ValueType::String, node->getLine());
@@ -560,30 +564,40 @@ void ASTNodeParser::parse(ASTArraySubscriptNode* node)
 
 void ASTNodeParser::parse(ASTPushCallNode* node)
 {
+    node->getVariable()->accept(*this);
+
     if (node->hasNextNode())
         node->getNextNode()->accept(*this);
 }
 
 void ASTNodeParser::parse(ASTHasCallNode* node)
 {
+    node->getVariable()->accept(*this);
+
     if (node->hasNextNode())
         node->getNextNode()->accept(*this);
 }
 
 void ASTNodeParser::parse(ASTUniqueCallNode* node)
 {
+    node->getVariable()->accept(*this);
+
     if (node->hasNextNode())
         node->getNextNode()->accept(*this);
 }
 
 void ASTNodeParser::parse(ASTStrCallNode* node)
 {
+    node->getVariable()->accept(*this);
+
     if (node->hasNextNode())
         node->getNextNode()->accept(*this);
 }
 
 void ASTNodeParser::parse(ASTNameCallNode* node)
 {
+    node->getVariable()->accept(*this);
+
     if (node->hasNextNode())
         node->getNextNode()->accept(*this);
 }
