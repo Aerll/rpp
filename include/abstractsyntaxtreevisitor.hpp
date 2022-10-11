@@ -367,8 +367,6 @@ public:
         { return m_automappers; }
     bool failed() const noexcept
         { return m_failed; }
-    bool warned() const noexcept
-        { return m_warnings; }
 
     virtual Value* evaluate(ASTNullNode* node) = 0;
     virtual Value* evaluate(ASTBoolNode* node) = 0;

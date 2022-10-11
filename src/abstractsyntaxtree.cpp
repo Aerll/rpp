@@ -1071,10 +1071,18 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertLeft(PTMemberAccessExpre
         return convertExpression(*expression.get<1>(), NodeID::Count);
     else if (expression.get<1>()->getLastToken()->value == KW::Last)
         return convertExpression(*expression.get<1>(), NodeID::Last);
-    else if (expression.get<1>()->getLastToken()->value == "x")
-        return convertExpression(*expression.get<1>(), NodeID::X);
-    else if (expression.get<1>()->getLastToken()->value == "y")
-        return convertExpression(*expression.get<1>(), NodeID::Y);
+    else if (expression.get<1>()->getLastToken()->value == "x") {
+        if (id == NodeID::NestedCall)
+            return convertExpression(*expression.get<1>(), NodeID::X);
+        else
+            return convertExpression(*expression.get<1>(), NodeID::Variable);
+    }
+    else if (expression.get<1>()->getLastToken()->value == "y") {
+        if (id == NodeID::NestedCall)
+            return convertExpression(*expression.get<1>(), NodeID::Y);
+        else
+            return convertExpression(*expression.get<1>(), NodeID::Variable);
+    }
     else if (Token::stringToRotation(expression.get<1>()->getTokens().front()->value) != Rotation::Default)
         return convertExpression(*expression.get<1>(), NodeID::Rotation);
     else if (expression.get<1>()->getTokens().front()->value == KW::Rotate)
