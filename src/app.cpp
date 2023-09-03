@@ -57,13 +57,21 @@ void* operator new[](std::size_t size) {
     return std::malloc(size);
 }
 
-void operator delete(void* data, std::size_t size) {
+void operator delete(void* data, std::size_t size) noexcept {
     memory -= size;
     std::free(data);
 }
 
-void operator delete[](void* data, std::size_t size) {
+void operator delete[](void* data, std::size_t size) noexcept {
     memory -= size;
+    std::free(data);
+}
+
+void operator delete(void* data) noexcept {
+    std::free(data);
+}
+
+void operator delete[](void* data) noexcept {
     std::free(data);
 }
 
