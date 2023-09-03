@@ -24,6 +24,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <vector>
 
 struct AutoMapper;
 struct Rule;

@@ -104,8 +104,8 @@ ParseTree::ptr_expr ParseTree::getUnaryExpressionNode(TokenStream& tokenStream, 
         return nullptr;
 
     NodeType expr;
-    expr.set<1>(&tokenStream.current(found));
-    expr.set<2>(getExpressionNode(tokenStream, found + 1, end));
+    expr.template set<1>(&tokenStream.current(found));
+    expr.template set<2>(getExpressionNode(tokenStream, found + 1, end));
     return std::make_unique<NodeType>(std::move(expr));
 }
 
@@ -122,9 +122,9 @@ ParseTree::ptr_expr ParseTree::getBinaryExpressionNode(TokenStream& tokenStream,
         return nullptr;
 
     NodeType expr;
-    expr.set<1>(getExpressionNode(tokenStream, beg, found));
-    expr.set<2>(&tokenStream.current(found));
-    expr.set<3>(getExpressionNode(tokenStream, found + 1, end));
+    expr.template set<1>(getExpressionNode(tokenStream, beg, found));
+    expr.template set<2>(&tokenStream.current(found));
+    expr.template set<3>(getExpressionNode(tokenStream, found + 1, end));
     return std::make_unique<NodeType>(std::move(expr));
 }
 
