@@ -27,8 +27,7 @@
 
 #include <iresult.hpp>
 #include <errorqueue.hpp>
-
-class Token;
+#include <token.hpp>
 
 class Preprocessor final : public ErrorQueue, public IResult {
     using iterator = std::vector<Token>::iterator;
