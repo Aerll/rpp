@@ -126,7 +126,7 @@ ParseTree::ptr_stat ParseTree::getForStatementNode(TokenStream& tokenStream) con
 
     tokenStream.skip(found + 1);
     while (tokenStream.currentIndex() < end)
-        stat.get<5>().push_back(std::move(getStatementNode(tokenStream, getNodeID(tokenStream))));
+        stat.get<5>().push_back(getStatementNode(tokenStream, getNodeID(tokenStream)));
 
     tokenStream.skip();
     return std::make_unique<PTForStatement>(std::move(stat));
@@ -157,7 +157,7 @@ ParseTree::ptr_stat ParseTree::getIfStatementNode(TokenStream& tokenStream) cons
 
     tokenStream.skip(found + 1);
     while (tokenStream.currentIndex() < end)
-        stat.get<5>().push_back(std::move(getStatementNode(tokenStream, getNodeID(tokenStream))));
+        stat.get<5>().push_back(getStatementNode(tokenStream, getNodeID(tokenStream)));
 
     tokenStream.skip();
     return std::make_unique<PTIfStatement>(std::move(stat));
@@ -202,7 +202,7 @@ ParseTree::ptr_stat ParseTree::getFunctionDefStatementNode(TokenStream& tokenStr
         stat.set<3>(std::make_unique<PTEmptyStatement>());
 
     while (tokenStream.currentIndex() < end)
-        stat.get<4>().push_back(std::move(getStatementNode(tokenStream, getNodeID(tokenStream))));
+        stat.get<4>().push_back(getStatementNode(tokenStream, getNodeID(tokenStream)));
 
     tokenStream.skip();
     return std::make_unique<PTFunctionDefStatement>(std::move(stat));
@@ -251,7 +251,7 @@ ParseTree::ptr_stat ParseTree::getNestedFunctionDefStatementNode(TokenStream& to
         stat.set<3>(std::make_unique<PTEmptyStatement>());
 
     while (tokenStream.currentIndex() < end)
-        stat.get<4>().push_back(std::move(getStatementNode(tokenStream, getNodeID(tokenStream))));
+        stat.get<4>().push_back(getStatementNode(tokenStream, getNodeID(tokenStream)));
 
     tokenStream.skip();
     return std::make_unique<PTNestedFunctionDefStatement>(std::move(stat));
@@ -320,7 +320,7 @@ ParseTree::ptr_stat ParseTree::getPresetDefStatementNode(TokenStream& tokenStrea
         stat.set<2>(std::make_unique<PTEmptyStatement>());
 
     while (tokenStream.currentIndex() < end)
-        stat.get<3>().push_back(std::move(getStatementNode(tokenStream, getNodeID(tokenStream))));
+        stat.get<3>().push_back(getStatementNode(tokenStream, getNodeID(tokenStream)));
 
     tokenStream.skip();
     return std::make_unique<PTPresetDefStatement>(std::move(stat));
