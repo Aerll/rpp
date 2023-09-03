@@ -43,9 +43,9 @@ public:
     }
 
     const T& current(int32_t offset = 0) const
-        { return m_current + offset < m_data.size() && m_current + offset >= 0 ? m_data.at(m_current + offset) : m_data.back(); }
+        { return (offset < 0 && m_current + offset < m_current) || (offset >= 0 && m_current + offset < m_data.size()) ? m_data.at(m_current + offset) : m_data.back(); }
     T& current(int32_t offset = 0)
-        { return m_current + offset < m_data.size() && m_current + offset >= 0 ? m_data.at(m_current + offset) : m_data.back(); }
+        { return (offset < 0 && m_current + offset < m_current) || (offset >= 0 && m_current + offset < m_data.size()) ? m_data.at(m_current + offset) : m_data.back(); }
 
     T& next() 
         { return m_current < m_data.size() ? m_data.at(m_current++) : m_data.back(); }

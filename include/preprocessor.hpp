@@ -39,12 +39,12 @@ public:
     Preprocessor& operator=(const Preprocessor&) = delete;
 
     Preprocessor(std::vector<Token>&& data)
-        : m_data(std::move(data))
+        : IResult()
+        , m_data(std::move(data))
         , m_curr(m_data.begin())
         , m_tileset("tileset")
         , m_path(std::filesystem::current_path())
         , m_stack(1024 * 1024 * 50)
-        , IResult()
     {
     }
 

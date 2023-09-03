@@ -68,8 +68,7 @@ inline uint32_t digitsCount(uint32_t val) noexcept
     if (val < 10000000u) return 7;
     if (val < 100000000u) return 8;
     if (val < 1000000000u) return 9;
-    if (val < 10000000000u) return 10;
-    return 0;
+    else return 10; // maximum value for an uint32_t is 2^32-1 = 4294967295 (10 digits)
 }
 
 template <typename Iterator>
