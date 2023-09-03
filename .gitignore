@@ -47,3 +47,7 @@ compile_flags.txt
 
 # CMake output
 build
+
+# ignore user-defined rules except base.r base.p
+rules++/*
+!rules++/base.*
