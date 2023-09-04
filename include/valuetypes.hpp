@@ -349,10 +349,10 @@ public:
     ~ObjectValue() = default;
 
     ObjectValue()
-        : value()
+        : Container()
+        , value()
         , rotation(Rotation::N)
         , anchor()
-        , Container()
     {
     }
     ObjectValue(const std::vector<IntValue>& value, Rotation rotation = Rotation::N)
@@ -441,8 +441,8 @@ public:
     ~ArrayValue() = default;
 
     ArrayValue()
-        : value()
-        , Array()
+        : Array()
+        , value()
     {
     }
     ArrayValue(const std::vector<T>& value)

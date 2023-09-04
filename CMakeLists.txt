@@ -72,4 +72,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC") # visual studio
     target_link_options(rpp PRIVATE /INCREMENTAL:NO /NODEFAULTLIB:MSVCRT)
 endif()
 
+set_property(TARGET rpp PROPERTY CXX_STANDARD 23)
+set_property(TARGET rpp PROPERTY CXX_STANDARD_REQUIRED On)
+set_property(TARGET rpp PROPERTY CXX_EXTENSIONS Off)
 target_compile_features(rpp PRIVATE cxx_std_23)

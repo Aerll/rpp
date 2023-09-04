@@ -44,6 +44,7 @@ bool Token::isKeyword(const std::string& s) noexcept
                 s == KW::Or ||
                 s == KW::To
                 ) return true;
+            break;
 
         case 3:
             if (s == KW::And ||
@@ -53,6 +54,7 @@ bool Token::isKeyword(const std::string& s) noexcept
                 s == KW::Not ||
                 s == KW::Pos
                 ) return true;
+            break;
 
         case 4:
             if (s == KW::Bool ||
@@ -63,6 +65,7 @@ bool Token::isKeyword(const std::string& s) noexcept
                 s == KW::True ||
                 s == KW::Type
                 ) return true;
+            break;
 
         case 5:
             if (s == KW::Array ||
@@ -77,6 +80,7 @@ bool Token::isKeyword(const std::string& s) noexcept
                 s == KW::Index ||
                 s == KW::Range
                 ) return true;
+            break;
 
         case 6:
             if (s == KW::Anchor ||
@@ -92,11 +96,13 @@ bool Token::isKeyword(const std::string& s) noexcept
                 s == KW::Rotate ||
                 s == KW::String
                 ) return true;
+            break;
 
         case 7:
             if (s == KW::Newrule ||
                 s == KW::Warning
                 ) return true;
+            break;
 
         case 8:
             if (s == KW::Continue ||
@@ -104,14 +110,17 @@ bool Token::isKeyword(const std::string& s) noexcept
                 s == KW::Notindex ||
                 s == KW::Operator
                 ) return true;
+            break;
 
         case 9:
             if (s == KW::Nodefault)
                 return true;
+            break;
 
         case 10:
             if (s == KW::Automapper) 
                 return true;
+            break;
     }
     return false;
 }

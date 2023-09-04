@@ -22,6 +22,7 @@
 #ifndef RPP_BASICSTREAM_HPP
 #define RPP_BASICSTREAM_HPP
 
+#include <utility>
 #include <vector>
 
 #include <utility.hpp>
@@ -43,9 +44,9 @@ public:
     }
 
     const T& current(int32_t offset = 0) const
-        { return m_current + offset < m_data.size() && m_current + offset >= 0 ? m_data.at(m_current + offset) : m_data.back(); }
+        { return std::cmp_less(m_current + offset, m_data.size()) && std::cmp_greater_equal(m_current + offset, 0) ? m_data.at(m_current + offset) : m_data.back(); }
     T& current(int32_t offset = 0)
-        { return m_current + offset < m_data.size() && m_current + offset >= 0 ? m_data.at(m_current + offset) : m_data.back(); }
+        { return std::cmp_less(m_current + offset, m_data.size()) && std::cmp_greater_equal(m_current + offset, 0) ? m_data.at(m_current + offset) : m_data.back(); }
 
     T& next() 
         { return m_current < m_data.size() ? m_data.at(m_current++) : m_data.back(); }

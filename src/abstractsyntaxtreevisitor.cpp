@@ -2043,8 +2043,9 @@ Value* ASTNodeEvaluator::evaluate(ASTOpAssignNode* node)
             left = node->getLeft()->accept(*this); _BreakIfFailed;
             left->as<IntValue*>()->value = value;
         }
-        else
+        else {
             left = node->getLeft()->accept(*this); _BreakIfFailed;
+        }
     }
 
     _TryEvaluateNextNodeAndClearStack;
