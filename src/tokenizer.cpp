@@ -55,9 +55,9 @@ void Tokenizer::run(InputStream& inputStream, bool ignoreLine)
     }
 }
 
-uint32_t Tokenizer::numberOfPuncAndOp(InputStream& inputStream) const noexcept
+uint64_t Tokenizer::numberOfPuncAndOp(InputStream& inputStream) const noexcept
 {
-    uint32_t count = 0;
+    uint64_t count = 0;
 
     bool oneLineComment = false;
     bool multiLineComment = false;

@@ -60,7 +60,7 @@ void Preprocessor::run(const std::filesystem::path& path)
                 m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
             }
             else if (line.at(1).value == ID::Stack) {
-                m_stack = std::stoi(line.at(3).value) * 1024 * 1024;
+                m_stack = static_cast<int64_t>(std::stoi(line.at(3).value)) * 1024 * 1024;
                 m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
             }
             else if (line.at(1).value == ID::Include) {

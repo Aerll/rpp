@@ -39,8 +39,8 @@
 #include <rulesgen.hpp>
 
 namespace {
-    long long memory = 0;
-    long long max_memory = 0;
+    int64_t memory = 0;
+    int64_t max_memory = 0;
 }
 
 void* operator new(std::size_t size) {

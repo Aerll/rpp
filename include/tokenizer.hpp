@@ -40,7 +40,7 @@ public:
         { return std::move(m_data); }
 
 private:
-    uint32_t numberOfPuncAndOp(InputStream& inputStream) const noexcept;
+    uint64_t numberOfPuncAndOp(InputStream& inputStream) const noexcept;
 
     Token nextToken(InputStream& inputStream);
     Token getNewToken(InputStream& inputStream);
