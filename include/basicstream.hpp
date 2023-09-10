@@ -43,10 +43,14 @@ public:
         m_data.push_back(T{});
     }
 
-    const T& current(int32_t offset = 0) const
-        { return std::cmp_less(static_cast<int32_t>(m_current + offset), m_data.size()) && std::cmp_greater_equal(static_cast<int32_t>(m_current + offset), 0) ? m_data.at(m_current + offset) : m_data.back(); }
-    T& current(int32_t offset = 0)
-        { return std::cmp_less(static_cast<int32_t>(m_current + offset), m_data.size()) && std::cmp_greater_equal(static_cast<int32_t>(m_current + offset), 0) ? m_data.at(m_current + offset) : m_data.back(); }
+    const T& current(int32_t offset = 0) const {
+        int32_t index = static_cast<int32_t>(m_current + offset);
+        return std::cmp_less(index, m_data.size()) && std::cmp_greater_equal(index, 0) ? m_data.at(index) : m_data.back();
+    }
+    T& current(int32_t offset = 0) {
+        int32_t index = static_cast<int32_t>(m_current + offset);
+        return std::cmp_less(index, m_data.size()) && std::cmp_greater_equal(index, 0) ? m_data.at(index) : m_data.back();
+    }
 
     T& next() 
         { return m_current < m_data.size() ? m_data.at(m_current++) : m_data.back(); }
