@@ -1283,6 +1283,47 @@ std::unique_ptr<Error> PTExpressionVisitor::parse(PTWarningExpression& node)
     return nullptr;
 }
 
+std::unique_ptr<Error> PTExpressionVisitor::parse(PTAssertExpression& node)
+{
+    node.get<3>()->accept(*this);
+
+    // 1
+    setCurrentToken(node.get<1>());
+
+    // 2
+    if (node.get<2>() == nullptr)
+        return std::make_unique<ErrMissingToken>(*getCurrentToken(), PU::FunctionCallOpen);
+
+    // 3
+    Token* exprLastToken = node.get<3>()->getLastToken();
+
+    if (node.get<3>()->id() == ExpressionID::Empty)
+        return std::make_unique<ErrMissingExpression>(node.getTokens());
+
+    if ((exprLastToken->cat == TIdentifier) ||
+        (node.get<3>()->id() == ExpressionID::Keyword && (
+            exprLastToken->value == KW::False ||
+            exprLastToken->value == KW::True
+            )) ||
+        (node.get<3>()->id() == ExpressionID::Comparison) ||
+        (node.get<3>()->id() == ExpressionID::Logical) ||
+        (node.get<3>()->id() == ExpressionID::UnaryLogical) ||
+        (node.get<3>()->id() == ExpressionID::FunctionCall) ||
+        (node.get<3>()->id() == ExpressionID::MemberAccess) ||
+        (node.get<3>()->id() == ExpressionID::ArraySubscript)
+        ) {} // valid
+    else {
+        return std::make_unique<ErrInvalidExpression>(node.get<3>()->getTokens());
+    }
+    setCurrentToken(exprLastToken);
+
+    // 4
+    if (node.get<4>() == nullptr)
+        return std::make_unique<ErrMissingToken>(*getCurrentToken(), PU::FunctionCallClose);
+
+    return nullptr;
+}
+
 std::unique_ptr<Error> PTExpressionVisitor::parse(PTArraySubscriptExpression& node)
 {
     node.get<1>()->accept(*this);
@@ -1640,6 +1681,13 @@ void PTExpressionVisitor::visit(PTErrorExpression& node)
 }
 
 void PTExpressionVisitor::visit(PTWarningExpression& node)
+{
+    auto error = parse(node);
+    if (error != nullptr)
+        m_errors.push(std::move(error));
+}
+
+void PTExpressionVisitor::visit(PTAssertExpression& node)
 {
     auto error = parse(node);
     if (error != nullptr)
@@ -2793,6 +2841,75 @@ std::vector<Token*> PTWarningExpression::getTokens() const
 }
 
 Token* PTWarningExpression::getLastToken() const
+{
+    if (this->right != nullptr)
+        return this->right;
+    if (this->expr->id() != ExpressionID::Empty)
+        return this->expr->getLastToken();
+    if (this->left != nullptr)
+        return this->left;
+
+    return this->keyword;
+}
+
+/*
+    PTAssertExpression
+*/
+bool PTAssertExpression::hasNode(ExpressionID id) const
+{
+    if (this->id() == id)
+        return true;
+
+    return this->expr->hasNode(id);
+}
+
+bool PTAssertExpression::hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const
+{
+    bool ignored = false;
+    for (auto id : ignore)
+        if (this->id() == id)
+            ignored = true;
+
+    if (!this->expr->hasOnlyNodes(ids, ignore))
+        return false;
+
+    if (ignored)
+        return true;
+
+    for (auto id : ids)
+        if (this->id() == id)
+            return true;
+
+    return false;
+}
+
+bool PTAssertExpression::hasKW(std::string_view kw_name) const
+{
+    if (this->keyword->value == kw_name)
+        return true;
+    if (this->expr->hasKW(kw_name))
+        return true;
+
+    return false;
+}
+
+std::vector<Token*> PTAssertExpression::getTokens() const
+{
+    std::vector<Token*> t;
+
+    auto exprV = this->expr->getTokens();
+
+    t.push_back(this->keyword);
+    if (this->left != nullptr)
+        t.push_back(this->left);
+    t.insert(t.end(), exprV.begin(), exprV.end());
+    if (this->right != nullptr)
+        t.push_back(this->right);
+
+    return t;
+}
+
+Token* PTAssertExpression::getLastToken() const
 {
     if (this->right != nullptr)
         return this->right;

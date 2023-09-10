@@ -11,7 +11,9 @@
         <KeyWord name="array" />
         <KeyWord name="automapper" />
         <KeyWord name="bool" />
+        <KeyWord name="break" />
         <KeyWord name="coord" />
+        <KeyWord name="continue" />
         <KeyWord name="count" />
         <KeyWord name="empty" />
         <KeyWord name="end" />
@@ -32,6 +34,7 @@
         <KeyWord name="newrun" />
         <KeyWord name="nocopy" />
         <KeyWord name="nodefault" />
+        <KeyWord name="not" />
         <KeyWord name="notindex" />
         <KeyWord name="null" />
         <KeyWord name="object" />
@@ -64,6 +67,15 @@
         <KeyWord name="warning" func="yes">
             <Overload retVal="null">
                 <Param name="string sMessage" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- assert -->
+        <KeyWord name="assert" func="yes">
+            <Overload retVal="null">
+                <Param name="bool bValue" />
             </Overload>
         </KeyWord>
         

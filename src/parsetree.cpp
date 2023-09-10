@@ -489,6 +489,11 @@ ParseTree::ptr_expr ParseTree::getExpressionNode(TokenStream& tokenStream, uint3
     if (expr != nullptr)
         return expr;
 
+    // assert
+    expr = getAssertExpressionNode(tokenStream, beg, end);
+    if (expr != nullptr)
+        return expr;
+
     // invalid
     std::vector<Token*> tokens;
     tokens.reserve(end - beg);
@@ -652,6 +657,25 @@ ParseTree::ptr_expr ParseTree::getWarningExpressionNode(TokenStream& tokenStream
     expr.set<3>(getExpressionNode(tokenStream, beg + 2, end - 1));
 
     return std::make_unique<PTWarningExpression>(std::move(expr));
+}
+
+ParseTree::ptr_expr ParseTree::getAssertExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const
+{
+    if (tokenStream.current(beg).value != KW::Assert)
+        return nullptr;
+
+    PTAssertExpression expr;
+    expr.set<1>(&tokenStream.current(beg));
+
+    if (tokenStream.current(beg + 1).value == PU::FunctionCallOpen)
+        expr.set<2>(&tokenStream.current(beg + 1));
+
+    if (tokenStream.current(end - 1).value == PU::FunctionCallClose)
+        expr.set<4>(&tokenStream.current(end - 1));
+
+    expr.set<3>(getExpressionNode(tokenStream, beg + 2, end - 1));
+
+    return std::make_unique<PTAssertExpression>(std::move(expr));
 }
 
 ParseTree::ptr_expr ParseTree::getDeclTypeExpressionNode(TokenStream& tokenStream, uint32_t beg, [[maybe_unused]] uint32_t end) const

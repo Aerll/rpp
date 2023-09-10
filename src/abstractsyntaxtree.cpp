@@ -379,6 +379,8 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(IPTExpression
             return convertExpression(static_cast<PTErrorExpression&>(expression));
         case ExpressionID::Warning:
             return convertExpression(static_cast<PTWarningExpression&>(expression));
+        case ExpressionID::Assert:
+            return convertExpression(static_cast<PTAssertExpression&>(expression));
         case ExpressionID::ArraySubscript:
             return convertExpression(static_cast<PTArraySubscriptExpression&>(expression));
         case ExpressionID::PercentLiteral:
@@ -875,6 +877,15 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTWarningExpr
 {
     auto node = std::make_unique<ASTWarningNode>();
     node->setString(convertExpression(*expression.get<3>()));
+    node->setLine(expression.get<1>()->line);
+
+    return node;
+}
+
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTAssertExpression& expression)
+{
+    auto node = std::make_unique<ASTAssertNode>();
+    node->setExpr(convertExpression(*expression.get<3>()));
     node->setLine(expression.get<1>()->line);
 
     return node;

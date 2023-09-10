@@ -490,6 +490,21 @@ void ASTNodeParser::parse(ASTWarningNode* node)
         node->getNextNode()->accept(*this);
 }
 
+void ASTNodeParser::parse(ASTAssertNode* node)
+{
+    node->getExpr()->accept(*this);
+
+    std::unique_ptr<Error> error;
+    if (node->getExpr()->getNodeType() != ValueType::Bool)
+        error = std::make_unique<ErrIncorrectValueType>(node->getExpr()->getNodeType(), ValueType::Bool, node->getLine());
+
+    if (error != nullptr)
+        errors().push(std::move(error));
+
+    if (node->hasNextNode())
+        node->getNextNode()->accept(*this);
+}
+
 void ASTNodeParser::parse(ASTReturnNode* node)
 {
     std::unique_ptr<Error> error;
@@ -1259,6 +1274,16 @@ void ASTNodeLinker::link(ASTWarningNode* node)
     node->attach(node->getPreviousNode());
 
     node->getString()->accept(*this);
+
+    if (node->hasNextNode())
+        node->getNextNode()->accept(*this);
+}
+
+void ASTNodeLinker::link(ASTAssertNode* node)
+{
+    node->attach(node->getPreviousNode());
+
+    node->getExpr()->accept(*this);
 
     if (node->hasNextNode())
         node->getNextNode()->accept(*this);
@@ -2550,6 +2575,21 @@ Value* ASTNodeEvaluator::evaluate(ASTWarningNode* node)
     return nullptr;
 }
 
+Value* ASTNodeEvaluator::evaluate(ASTAssertNode* node)
+{
+    _StackInit;
+    Value* result = node->getExpr()->accept(*this); _BreakIfFailed;
+    
+    if (!result->as<BoolValue*>()->value)
+        printAssert(node->getLine());
+    else {
+        _TryEvaluateNextNodeAndClearStack;
+    }
+
+    _StackPop;
+    return nullptr;
+}
+
 Value* ASTNodeEvaluator::evaluate(ASTReturnNode* node)
 {
     if (node->getNode() == nullptr) {
@@ -3313,6 +3353,15 @@ void ASTNodeEvaluator::printWarning(std::string_view message, uint32_t line)
     errorOutput::print::string(std::to_string(line));
     errorOutput::print::string(": Warning: ");
     errorOutput::print::string(message); errorOutput::print::newLine();
+}
+
+void ASTNodeEvaluator::printAssert(uint32_t line)
+{
+    m_failed = true;
+    errorOutput::print::string("> ");
+    errorOutput::print::string(std::to_string(line));
+    errorOutput::print::string(": Assertion failed! "); errorOutput::print::newLine();
+    errorOutput::print::stage("... Execution stopped"); errorOutput::print::newLine();
 }
 
 /*
@@ -4150,6 +4199,14 @@ void ASTErrorNode::attach(IASTNode* previous)
 void ASTWarningNode::attach(IASTNode* previous)
 {
     m_string->setPreviousNode(previous);
+}
+
+/*
+    ASTAssertNode
+*/
+void ASTAssertNode::attach(IASTNode* previous)
+{
+    m_expr->setPreviousNode(previous);
 }
 
 /*

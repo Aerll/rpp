@@ -73,6 +73,7 @@ private:
     ptr_expr getReturnTypeExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const;
     ptr_expr getErrorExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const;
     ptr_expr getWarningExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const;
+    ptr_expr getAssertExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const;
     ptr_expr getDeclTypeExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const;
     
     template <typename NodeType>

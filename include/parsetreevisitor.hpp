@@ -146,6 +146,7 @@ class PTForRangeExpression;
 class PTMemberAccessExpression;
 class PTErrorExpression;
 class PTWarningExpression;
+class PTAssertExpression;
 class PTArraySubscriptExpression;
 class PTPercentLiteralExpression;
 class PTStringLiteralExpression;
@@ -182,6 +183,7 @@ public:
     virtual std::unique_ptr<Error> parse(PTMemberAccessExpression& node) = 0;
     virtual std::unique_ptr<Error> parse(PTErrorExpression& node) = 0;
     virtual std::unique_ptr<Error> parse(PTWarningExpression& node) = 0;
+    virtual std::unique_ptr<Error> parse(PTAssertExpression& node) = 0;
     virtual std::unique_ptr<Error> parse(PTArraySubscriptExpression& node) = 0;
     virtual std::unique_ptr<Error> parse(PTPercentLiteralExpression& node) = 0;
     virtual std::unique_ptr<Error> parse(PTStringLiteralExpression& node) = 0;
@@ -206,6 +208,7 @@ public:
     virtual void visit(PTMemberAccessExpression& node) = 0;
     virtual void visit(PTErrorExpression& node) = 0;
     virtual void visit(PTWarningExpression& node) = 0;
+    virtual void visit(PTAssertExpression& node) = 0;
     virtual void visit(PTArraySubscriptExpression& node) = 0;
     virtual void visit(PTPercentLiteralExpression& node) = 0;
     virtual void visit(PTStringLiteralExpression& node) = 0;
@@ -1869,6 +1872,73 @@ private:
     Token* right;
 };
 
+class PTAssertExpression final : public IPTExpressionNode {
+public:
+    PTAssertExpression(const PTAssertExpression&) = delete;
+    PTAssertExpression& operator=(const PTAssertExpression&) = delete;
+
+    PTAssertExpression(PTAssertExpression&&) = default;
+    PTAssertExpression& operator=(PTAssertExpression&&) = default;
+
+    PTAssertExpression()
+        : keyword(nullptr)
+        , left(nullptr)
+        , expr()
+        , right(nullptr)
+    {
+    }
+    PTAssertExpression(Token* keyword, Token* left, ptr_expr&& expr, Token* right)
+        : keyword(keyword)
+        , left(left)
+        , expr(std::move(expr))
+        , right(right)
+    {
+    }
+
+    bool hasNode(ExpressionID id) const final;
+    bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const final;
+    bool hasKW(std::string_view kw_name) const final;
+    std::vector<Token*> getTokens() const final;
+    Token* getLastToken() const final;
+
+    void accept(IPTExpressionNodeVisitor& visitor) final 
+        { visitor.visit(*this); }
+    ExpressionID id() const noexcept final
+        { return ExpressionID::Assert; }
+    
+    template <uint32_t I> requires (I == 1)
+    Token* get() noexcept
+        { return keyword; }
+    template <uint32_t I> requires (I == 2)
+    Token* get() noexcept
+        { return left; }
+    template <uint32_t I> requires (I == 3)
+    ptr_expr&& get() noexcept
+        { return std::move(expr); }
+    template <uint32_t I> requires (I == 4)
+    Token* get() noexcept
+        { return right; }
+    
+    template <uint32_t I> requires (I == 1)
+    void set(Token* keyword) noexcept
+        { this->keyword = keyword; }
+    template <uint32_t I> requires (I == 2)
+    void set(Token* left) noexcept
+        { this->left = left; }
+    template <uint32_t I> requires (I == 3)
+    void set(ptr_expr&& expr) noexcept
+        { this->expr = std::move(expr); }
+    template <uint32_t I> requires (I == 4)
+    void set(Token* right) noexcept
+        { this->right = right; }
+
+private:
+    Token* keyword;
+    Token* left;
+    ptr_expr expr;
+    Token* right;
+};
+
 class PTArraySubscriptExpression final : public IPTExpressionNode {
 public:
     PTArraySubscriptExpression(const PTArraySubscriptExpression&) = delete;
@@ -2335,6 +2405,7 @@ public:
     std::unique_ptr<Error> parse(PTMemberAccessExpression& node) final;
     std::unique_ptr<Error> parse(PTErrorExpression& node) final;
     std::unique_ptr<Error> parse(PTWarningExpression& node) final;
+    std::unique_ptr<Error> parse(PTAssertExpression& node) final;
     std::unique_ptr<Error> parse(PTArraySubscriptExpression& node) final;
     std::unique_ptr<Error> parse(PTPercentLiteralExpression& node) final;
     std::unique_ptr<Error> parse(PTStringLiteralExpression& node) final;
@@ -2359,6 +2430,7 @@ public:
     void visit(PTMemberAccessExpression& node) final;
     void visit(PTErrorExpression& node) final;
     void visit(PTWarningExpression& node) final;
+    void visit(PTAssertExpression& node) final;
     void visit(PTArraySubscriptExpression& node) final;
     void visit(PTPercentLiteralExpression& node) final;
     void visit(PTStringLiteralExpression& node) final;
