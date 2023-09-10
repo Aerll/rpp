@@ -129,6 +129,15 @@
         
         
         
+        <!-- find -->
+        <KeyWord name="find" func="yes">
+            <Overload retVal="int">
+                <Param name="Values" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
         
         
         <!-- ******************************************************************
@@ -542,6 +551,15 @@
         
         
         
+        <!-- util:Found -->
+        <KeyWord name="util:Found" func="yes">
+            <Overload retVal="bool">
+                <Param name="int iResult" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
         <!-- util:Min -->
         <KeyWord name="util:Min" func="yes">
             <Overload retVal="int">
@@ -610,6 +628,15 @@
         <KeyWord name="util:ToProbabilities" func="yes">
             <Overload retVal="array float">
                 <Param name="array float aPercents" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:OppositeSide -->
+        <KeyWord name="util:OppositeSide" func="yes">
+            <Overload retVal="int">
+                <Param name="int iSide" />
             </Overload>
         </KeyWord>
         
@@ -977,6 +1004,25 @@
         <KeyWord name="IsOver" func="yes">
             <Overload retVal="bool">
                 <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- IsTouchingObjectAt -->
+        <KeyWord name="IsTouchingObjectAt" func="yes">
+            <Overload retVal="bool">
+                <Param name="object oObject" />
+                <Param name="int iSide" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- IsTouchingWallAt -->
+        <KeyWord name="IsTouchingWallAt" func="yes">
+            <Overload retVal="bool">
+                <Param name="int iSide" />
             </Overload>
         </KeyWord>
         

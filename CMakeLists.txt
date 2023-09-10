@@ -62,13 +62,11 @@ add_executable(rpp ${RPP_SOURCE_FILES} ${RPP_HEADER_FILES})
 target_include_directories(rpp PRIVATE "include")
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC") # visual studio
-    target_compile_options(rpp PUBLIC /W4)
+    target_compile_options(rpp PUBLIC /W4 /MT$<$<CONFIG:Debug>:d>)
     source_group(
         TREE ${CMAKE_CURRENT_SOURCE_DIR}
         FILES ${RPP_SOURCE_FILES} ${RPP_HEADER_FILES}
         )
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib")
-    target_compile_options(rpp PRIVATE /MT)
     target_link_options(rpp PRIVATE /INCREMENTAL:NO /NODEFAULTLIB:MSVCRT)
 endif()
 

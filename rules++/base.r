@@ -33,6 +33,17 @@ bool s:debug = true;
 
 
 ///////////////////////////////////////
+//
+int top         = 1000;
+int right       = 1001;
+int bottom      = 1002;
+int left        = 1003;
+int topLeft     = 1004;
+int topRight    = 1005;
+int bottomLeft  = 1006;
+int bottomRight = 1007;
+int all         = 1008;
+///////////////////////////////////////
 // utility functions
 ///////////////////////////////////////
 /******************************************************************************
@@ -917,6 +928,13 @@ end
 
 
 
+function->bool util:Found(int iResult)
+
+    return iResult != -1;
+end
+
+
+
 function->int util:Min(array int aValues)
 
     if (aValues.count == 0)
@@ -1085,6 +1103,27 @@ end
 
 
 
+function->int util:OppositeSide(int iSide)
+
+//
+    if (s:debug)
+        if (iSide < top or iSide > left)
+            error("util:OppositeSide(int iSide) -> value needs to be top, right, bottom or left.");
+        end
+    end
+//
+
+    int iResult = iSide + 2;
+    if (iResult > left)
+        return iResult - 4;
+    end
+    return iResult;
+end
+
+
+
+
+
 ///////////////////////////////////////
 //
 bool g:randomize = false;
@@ -1137,17 +1176,6 @@ end
 
 
 
-///////////////////////////////////////
-//
-int top         = 1000;
-int right       = 1001;
-int bottom      = 1002;
-int left        = 1003;
-int topLeft     = 1004;
-int topRight    = 1005;
-int bottomLeft  = 1006;
-int bottomRight = 1007;
-int all         = 1008;
 ///////////////////////////////////////
 // general functions
 ///////////////////////////////////////
@@ -2851,6 +2879,7 @@ function->bool Object()
     nested(
         TestIndices,
         HasSpace, Fits, IsOver,
+        IsTouchingObjectAt, IsTouchingWallAt,
         IsEdge, IsNotEdge,
         IsNextTo, IsNotNextTo,
         IsOverlapping, IsNotOverlapping
@@ -2995,6 +3024,119 @@ nested function->bool Object.IsOver(array object aObjects)
     for (i = 0 to aObjects.last)
         insert.rule.pos.type = index;
         insert.rule.pos.index = aObjects[i].anchor;
+    end
+    return true;
+end
+
+
+
+nested function->bool Object.IsTouchingObjectAt(object oObject, int iSide)
+
+    if (g:initObject)
+        return false;
+    end
+
+//
+    if (s:debug)
+        if (oObject.count == 0)
+            warning("Object.IsTouchingObjectAt(object oObject, int iSide) -> oObject was empty, function had no effect.");
+            return false;
+        end
+        if (iSide < top or iSide > left)
+            error("Object.IsTouchingObjectAt(object oObject, int iSide) -> iSide needs to be top, right, bottom or left.");
+        end
+    end
+//
+
+    array coord aFootprintPos = Footprint(g:vInsertObject, iSide);
+
+    array int aFootprintX;
+    array int aFootprintY;
+    array int aDistanceX;
+    array int aDistanceY;
+    for (i = 0 to aFootprintPos.last)
+        aFootprintX.push(aFootprintPos[i].x);
+        aFootprintY.push(aFootprintPos[i].y);
+        if (i > 0)
+            aDistanceX.push(aFootprintPos[i].x - aFootprintPos[i - 1].x);
+            aDistanceY.push(aFootprintPos[i].y - aFootprintPos[i - 1].y);
+        end
+    end
+
+    array coord aOtherFootprintPos = Footprint(oObject, util:OppositeSide(iSide));
+
+    if (aFootprintPos.count <= aOtherFootprintPos.count)
+        array int aOtherFootprintX;
+        array int aOtherFootprintY;
+        array int aOtherDistanceX;
+        array int aOtherDistanceY;
+        for (j = 0 to aOtherFootprintPos.last)
+            aOtherFootprintX.push(aOtherFootprintPos[j].x);
+            aOtherFootprintY.push(aOtherFootprintPos[j].y);
+            if (j > 0)
+                aOtherDistanceX.push(aOtherFootprintPos[j].x - aOtherFootprintPos[j - 1].x);
+                aOtherDistanceY.push(aOtherFootprintPos[j].y - aOtherFootprintPos[j - 1].y);
+            end
+        end
+        
+        int iMatchIndex = 0;
+        if (iSide == top or iSide == bottom)
+            iMatchIndex = aOtherDistanceX.find(aDistanceX);
+        end
+        if (iSide == left or iSide == right)
+            iMatchIndex = aOtherDistanceY.find(aDistanceY);
+        end
+
+        if (util:Found(iMatchIndex))
+            if (iSide == top)
+                insert.rule.pos = [aFootprintX[0] - aOtherFootprintX[0], util:Negate(aOtherFootprintPos[0].y)];
+            end
+            if (iSide == bottom)
+                insert.rule.pos = [aFootprintX[0] - aOtherFootprintX[0], aFootprintPos[0].y];
+            end
+            if (iSide == left)
+                insert.rule.pos = [util:Negate(aOtherFootprintPos[0].x), aFootprintY[0] - aOtherFootprintY[0]];
+            end
+            if (iSide == right)
+                insert.rule.pos = [aFootprintPos[0].x, aFootprintY[0] - aOtherFootprintY[0]];
+            end
+            insert.rule.pos.type = index;
+            insert.rule.pos.index = oObject.anchor;
+
+            return true;
+        end
+    end
+
+//
+    if (s:debug)
+        warning("Object.IsTouchingObjectAt(object oObject, int iSide) -> matching footprint was not found, function had no effect.");
+    end
+//
+    return false;
+end
+
+
+
+nested function->bool Object.IsTouchingWallAt(int iSide)
+
+    if (g:initObject)
+        return false;
+    end
+    
+//
+    if (s:debug)
+        if (iSide < top or iSide > left)
+            error("Object.IsTouchingWallAt(int iSide) -> value needs to be top, right, bottom or left.");
+        end
+    end
+//
+
+    object oObject = g:vInsertObject;
+
+    array coord aFootprintPos = Footprint(oObject, iSide);
+    for (i = 0 to aFootprintPos.last)
+        insert.rule.pos = aFootprintPos[i];
+        internal:TestIndicesFull();
     end
     return true;
 end

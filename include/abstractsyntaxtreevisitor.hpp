@@ -167,6 +167,7 @@ class ASTHasCallNode;
 class ASTUniqueCallNode;
 class ASTStrCallNode;
 class ASTNameCallNode;
+class ASTFindCallNode;
 class ASTFunctionCallNode;
 class ASTNestedCallNode;
 class ASTPresetCallNode;
@@ -245,6 +246,7 @@ public:
     virtual void parse(ASTUniqueCallNode* node) = 0;
     virtual void parse(ASTStrCallNode* node) = 0;
     virtual void parse(ASTNameCallNode* node) = 0;
+    virtual void parse(ASTFindCallNode* node) = 0;
     virtual void parse(ASTFunctionCallNode* node) = 0;
     virtual void parse(ASTNestedCallNode* node) = 0;
     virtual void parse(ASTPresetCallNode* node) = 0;
@@ -324,6 +326,7 @@ public:
     virtual void link(ASTUniqueCallNode* node) = 0;
     virtual void link(ASTStrCallNode* node) = 0;
     virtual void link(ASTNameCallNode* node) = 0;
+    virtual void link(ASTFindCallNode* node) = 0;
     virtual void link(ASTFunctionCallNode* node) = 0;
     virtual void link(ASTNestedCallNode* node) = 0;
     virtual void link(ASTPresetCallNode* node) = 0;
@@ -426,6 +429,7 @@ public:
     virtual Value* evaluate(ASTUniqueCallNode* node) = 0;
     virtual Value* evaluate(ASTStrCallNode* node) = 0;
     virtual Value* evaluate(ASTNameCallNode* node) = 0;
+    virtual Value* evaluate(ASTFindCallNode* node) = 0;
     virtual Value* evaluate(ASTFunctionCallNode* node) = 0;
     virtual Value* evaluate(ASTNestedCallNode* node) = 0;
     virtual Value* evaluate(ASTPresetCallNode* node) = 0;
@@ -2198,6 +2202,43 @@ private:
     ptr_node m_variable;
 };
 
+class ASTHasCallNode final : public IASTNode {
+public:
+    ASTHasCallNode(const ASTHasCallNode&) = delete;
+    ASTHasCallNode& operator=(const ASTHasCallNode&) = delete;
+
+    ASTHasCallNode(ASTHasCallNode&&) = default;
+    ASTHasCallNode& operator=(ASTHasCallNode&&) = default;
+
+    ASTHasCallNode() = default;
+
+    ValueType getNodeType() final;
+
+    void accept(IASTNodeParser& visitor) final
+        { visitor.parse(this); }
+    void accept(IASTNodeLinker& visitor) final
+        { visitor.link(this); }
+    Value* accept(IASTNodeEvaluator& visitor) final
+        { return visitor.evaluate(this); }
+    NodeID id() const noexcept final
+        { return NodeID::HasCall; }
+    void attach(IASTNode* previous) final;
+
+    const ptr_node_v& getArguments() const noexcept
+        { return m_arguments; }
+    IASTNode* getVariable() const noexcept
+        { return m_variable.get(); }
+
+    void setArguments(ptr_node_v&& arguments)
+        { m_arguments = std::move(arguments); }
+    void setVariable(ptr_node&& variable)
+        { m_variable = std::move(variable); }
+
+private:
+    ptr_node_v m_arguments;
+    ptr_node m_variable;
+};
+
 class ASTUniqueCallNode final : public IASTNode {
 public:
     ASTUniqueCallNode(const ASTUniqueCallNode&) = delete;
@@ -2309,15 +2350,15 @@ private:
     ptr_node m_variable;
 };
 
-class ASTHasCallNode final : public IASTNode {
+class ASTFindCallNode final : public IASTNode {
 public:
-    ASTHasCallNode(const ASTHasCallNode&) = delete;
-    ASTHasCallNode& operator=(const ASTHasCallNode&) = delete;
+    ASTFindCallNode(const ASTFindCallNode&) = delete;
+    ASTFindCallNode& operator=(const ASTFindCallNode&) = delete;
 
-    ASTHasCallNode(ASTHasCallNode&&) = default;
-    ASTHasCallNode& operator=(ASTHasCallNode&&) = default;
+    ASTFindCallNode(ASTFindCallNode&&) = default;
+    ASTFindCallNode& operator=(ASTFindCallNode&&) = default;
 
-    ASTHasCallNode() = default;
+    ASTFindCallNode() = default;
 
     ValueType getNodeType() final;
 
@@ -2328,7 +2369,7 @@ public:
     Value* accept(IASTNodeEvaluator& visitor) final
         { return visitor.evaluate(this); }
     NodeID id() const noexcept final
-        { return NodeID::HasCall; }
+        { return NodeID::FindCall; }
     void attach(IASTNode* previous) final;
 
     const ptr_node_v& getArguments() const noexcept
@@ -3024,6 +3065,7 @@ public:
     void parse(ASTUniqueCallNode* node) final;
     void parse(ASTStrCallNode* node) final;
     void parse(ASTNameCallNode* node) final;
+    void parse(ASTFindCallNode* node) final;
     void parse(ASTFunctionCallNode* node) final;
     void parse(ASTNestedCallNode* node) final;
     void parse(ASTPresetCallNode* node) final;
@@ -3107,6 +3149,7 @@ public:
     void link(ASTUniqueCallNode* node) final;
     void link(ASTStrCallNode* node) final;
     void link(ASTNameCallNode* node) final;
+    void link(ASTFindCallNode* node) final;
     void link(ASTFunctionCallNode* node) final;
     void link(ASTNestedCallNode* node) final;
     void link(ASTPresetCallNode* node) final;
@@ -3205,6 +3248,7 @@ public:
     Value* evaluate(ASTUniqueCallNode* node) final;
     Value* evaluate(ASTStrCallNode* node) final;
     Value* evaluate(ASTNameCallNode* node) final;
+    Value* evaluate(ASTFindCallNode* node) final;
     Value* evaluate(ASTFunctionCallNode* node) final;
     Value* evaluate(ASTNestedCallNode* node) final;
     Value* evaluate(ASTPresetCallNode* node) final;

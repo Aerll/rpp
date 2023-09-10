@@ -51,6 +51,7 @@ public:
 
     virtual ValueType type() const noexcept = 0;
     virtual ptr_value clone() const = 0;
+    virtual ptr_value makeNew() const = 0;
     virtual void reset() = 0;
 
     virtual std::string str() const = 0;
@@ -83,6 +84,8 @@ public:
         { return ValueType::Bool; }
     ptr_value clone() const final
         { return std::make_unique<BoolValue>(*this); }
+    ptr_value makeNew() const final
+        { return std::make_unique<BoolValue>(); }
     void reset() final
         { value = false; }
 
@@ -134,6 +137,8 @@ public:
         { return ValueType::Int; }
     ptr_value clone() const final
         { return std::make_unique<IntValue>(*this); }
+    ptr_value makeNew() const final
+        { return std::make_unique<IntValue>(); }
     void reset() final
         { value = 0; rotation = Rotation::Default; }
 
@@ -178,6 +183,8 @@ public:
         { return ValueType::Range; }
     ptr_value clone() const final
         { return std::make_unique<RangeValue>(*this); }
+    ptr_value makeNew() const final
+        { return std::make_unique<RangeValue>(); }
     void reset() final
         { from = 0; to = 0; rotation = Rotation::Default; }
 
@@ -222,6 +229,8 @@ public:
         { return ValueType::Coord; }
     ptr_value clone() const final
         { return std::make_unique<CoordValue>(*this); }
+    ptr_value makeNew() const final
+        { return std::make_unique<CoordValue>(); }
     void reset() final
         { x = {}; y = {}; rotation = Rotation::Default; }
 
@@ -279,6 +288,8 @@ public:
         { return ValueType::Float; }
     ptr_value clone() const final
         { return std::make_unique<FloatValue>(*this); }
+    ptr_value makeNew() const final
+        { return std::make_unique<FloatValue>(); }
     void reset() final
         { value = 0.0f; }
 
@@ -317,6 +328,8 @@ public:
         { return ValueType::String; }
     ptr_value clone() const final
         { return std::make_unique<StringValue>(*this); }
+    ptr_value makeNew() const final
+        { return std::make_unique<StringValue>(); }
     void reset() final
         { value = {}; }
 
@@ -379,6 +392,8 @@ public:
         { return ValueType::Object; }
     ptr_value clone() const final
         { return std::make_unique<ObjectValue>(*this); }
+    ptr_value makeNew() const final
+        { return std::make_unique<ObjectValue>(); }
     void reset() final
         { value.clear(); rotation = Rotation::N; anchor = {}; last.value = -1; count.value = 0; }
     Value* at(size_t index) final
@@ -465,6 +480,8 @@ public:
         { return ValueType::Array | subtype(); }
     ptr_value clone() const final
         { return std::make_unique<ArrayValue<T>>(*this); }
+    ptr_value makeNew() const final
+        { return std::make_unique<ArrayValue<T>>(); }
     void reset() final
         { value.clear(); last.value = -1; count.value = 0; }
     Value* at(size_t index) final
@@ -481,6 +498,8 @@ public:
 
     bool has(const T& val) const
         { return std::find(value.rbegin(), value.rend(), val) != value.rend(); }
+    void push(ArrayValue<T>* values) 
+        { value.insert(value.end(), values->value.begin(), values->value.end()); update(); }
     void unique() final
         { value.erase(util::removeDuplicates(value.begin(), value.end()), value.end()); update(); }
     std::string str() const final {
@@ -493,7 +512,10 @@ public:
         result += "}";
         return result;
     }
-
+    int32_t find(ArrayValue<T>* values) const { 
+        int32_t index = static_cast<int32_t>(std::distance(value.begin(), std::search(value.begin(), value.end(), values->value.begin(), values->value.end()))); 
+        return index != count.value ? index : -1;
+    }
     void update()
     {
         last.value = static_cast<int32_t>(value.size()) - 1;
