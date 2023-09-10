@@ -30,7 +30,9 @@ preset FillObjects(array object aObjects)
         for (j = 0 to aObjects[i].last)
             coord cRelativePos = util:RelativePos(cAnchor, aObjects[i][j]);
 
-            Insert(aObjects[i][j]).If(IndexAt([cRelativePos.x * -1, cRelativePos.y * -1]).Is(cAnchor)).NoDefaultPosRule();
+            Insert(aObjects[i][j]).If(
+                IndexAt([cRelativePos.x * -1, cRelativePos.y * -1]).Is(cAnchor)
+            ).NoDefaultPosRule();
         end
     end
 end
@@ -55,8 +57,12 @@ preset Checkerboard(int iIndex1, int iIndex2)
 
     OverrideLayer();
     Insert(iIndex1);
-    Insert(g:mask).If(IndexAt([0, 0]).IsEmpty(), IndexAt([-1, 0], [0, -1]).IsNot(g:mask, iIndex2));
-    Insert(iIndex2).If(IndexAt([0, 0]).Is(iIndex1), IndexAt([-1, 0], [0, -1]).IsNot(g:mask, iIndex2));
+    Insert(g:mask).If(
+        IndexAt([0, 0]).IsEmpty(), IndexAt([-1, 0], [0, -1]).IsNot(g:mask, iIndex2)
+    );
+    Insert(iIndex2).If(
+        IndexAt([0, 0]).Is(iIndex1), IndexAt([-1, 0], [0, -1]).IsNot(g:mask, iIndex2)
+    );
 
     NewRun();
     OverrideLayer();

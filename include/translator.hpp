@@ -35,8 +35,6 @@ public:
         { return m_automappers; }
     bool failed() const noexcept
         { return m_failed; }
-    bool warned() const noexcept
-        { return m_warnings; }
 
 private:
     std::vector<AutoMapper> m_automappers;

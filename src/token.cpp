@@ -377,7 +377,7 @@ bool Token::isPos(std::string_view s) noexcept
 
 bool Token::isBuiltin(std::string_view s) noexcept
 {
-    return s == "has" || s == "push" || s == "unique" || s == "str" || s == "name";
+    return s == "has" || s == "push" || s == "unique" || s == "str" || s == "name" || s == "find";
 }
 
 bool Token::isArray(ValueType type) noexcept

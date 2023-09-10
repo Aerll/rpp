@@ -84,9 +84,14 @@ int App::exec(int argc, char** argv) {
     try {
         using namespace std::chrono;
         auto beg = high_resolution_clock::now();
-        bool wait = false;
+        bool wait = true;
 
         for (int i = 1; i < argc; ++i) {
+            if (argv[i] == std::string_view{ "-p" }) {
+                wait = false;
+                continue;
+            }
+
             max_memory = 0;
 
             std::filesystem::path path = argv[i];
@@ -98,10 +103,8 @@ int App::exec(int argc, char** argv) {
 
             Preprocessor preprocessor(tokenizer.data());
             preprocessor.run(path);
-            if (preprocessor.failed()) {
-                wait = true;
+            if (preprocessor.failed())
                 continue;
-            }
 
             max_memory = preprocessor.stack(); // in megabytes
 
@@ -114,27 +117,19 @@ int App::exec(int argc, char** argv) {
 
                 Parser parser;
                 parser.parse(parseTree, tokenStream);
-                if (parser.failed()) {
-                    wait = true;
+                if (parser.failed())
                     continue;
-                }
 
                 abstractSyntaxTree.create(parseTree);
                 parser.parse(abstractSyntaxTree);
-                if (parser.failed()) {
-                    wait = true;
+                if (parser.failed())
                     continue;
-                }
             }
 
             Translator translator;
             translator.run(abstractSyntaxTree);
-            if (translator.failed()) {
-                wait = true;
+            if (translator.failed())
                 continue;
-            }
-            if (translator.warned())
-                wait = true;
 
             RulesGen::exec(translator.automappers(), preprocessor.path(), preprocessor.tileset());
         }
