@@ -34,7 +34,7 @@ void Tokenizer::run(InputStream& inputStream, bool ignoreLine)
     // thus approximately vector needs around twice that number of capacity.
     m_data.reserve(numberOfPuncAndOp(inputStream) * 2); // set approximate capacity
 
-    m_line = m_ignoreLine ? 0 : 1;
+    m_line = ignoreLine ? 0 : 1;
     m_enclosed = false;
     m_subtraction = false;
     m_ignoreLine = ignoreLine;

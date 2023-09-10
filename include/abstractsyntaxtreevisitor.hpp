@@ -157,6 +157,7 @@ class ASTOpRangeNode;
 class ASTOpCoordNode;
 class ASTErrorNode;
 class ASTWarningNode;
+class ASTAssertNode;
 class ASTReturnNode;
 class ASTBreakNode;
 class ASTContinueNode;
@@ -236,6 +237,7 @@ public:
     virtual void parse(ASTOpCoordNode* node) = 0;
     virtual void parse(ASTErrorNode* node) = 0;
     virtual void parse(ASTWarningNode* node) = 0;
+    virtual void parse(ASTAssertNode* node) = 0;
     virtual void parse(ASTReturnNode* node) = 0;
     virtual void parse(ASTBreakNode* node) = 0;
     virtual void parse(ASTContinueNode* node) = 0;
@@ -316,6 +318,7 @@ public:
     virtual void link(ASTOpCoordNode* node) = 0;
     virtual void link(ASTErrorNode* node) = 0;
     virtual void link(ASTWarningNode* node) = 0;
+    virtual void link(ASTAssertNode* node) = 0;
     virtual void link(ASTReturnNode* node) = 0;
     virtual void link(ASTBreakNode* node) = 0;
     virtual void link(ASTContinueNode* node) = 0;
@@ -419,6 +422,7 @@ public:
     virtual Value* evaluate(ASTOpCoordNode* node) = 0;
     virtual Value* evaluate(ASTErrorNode* node) = 0;
     virtual Value* evaluate(ASTWarningNode* node) = 0;
+    virtual Value* evaluate(ASTAssertNode* node) = 0;
     virtual Value* evaluate(ASTReturnNode* node) = 0;
     virtual Value* evaluate(ASTBreakNode* node) = 0;
     virtual Value* evaluate(ASTContinueNode* node) = 0;
@@ -2003,6 +2007,39 @@ private:
     ptr_node m_string;
 };
 
+class ASTAssertNode final : public IASTNode {
+public:
+    ASTAssertNode(const ASTAssertNode&) = delete;
+    ASTAssertNode& operator=(const ASTAssertNode&) = delete;
+
+    ASTAssertNode(ASTAssertNode&&) = default;
+    ASTAssertNode& operator=(ASTAssertNode&&) = default;
+
+    ASTAssertNode() = default;
+
+    void accept(IASTNodeParser& visitor) final
+        { visitor.parse(this); }
+    void accept(IASTNodeLinker& visitor) final
+        { visitor.link(this); }
+    Value* accept(IASTNodeEvaluator& visitor) final
+        { return visitor.evaluate(this); }
+    NodeID id() const noexcept final
+        { return NodeID::Assert; }
+    void attach(IASTNode* previous) final;
+
+    ptr_node&& moveExpr() noexcept
+        { return std::move(m_expr); }
+
+    IASTNode* getExpr() const noexcept
+        { return m_expr.get(); }
+
+    void setExpr(ptr_node&& left) noexcept
+        { m_expr = std::move(left); }
+
+private:
+    ptr_node m_expr;
+};
+
 class ASTReturnNode final : public IASTNode {
 public:
     ASTReturnNode(const ASTReturnNode&) = delete;
@@ -3055,6 +3092,7 @@ public:
     void parse(ASTOpCoordNode* node) final;
     void parse(ASTErrorNode* node) final;
     void parse(ASTWarningNode* node) final;
+    void parse(ASTAssertNode* node) final;
     void parse(ASTReturnNode* node) final;
     void parse(ASTBreakNode* node) final;
     void parse(ASTContinueNode* node) final;
@@ -3139,6 +3177,7 @@ public:
     void link(ASTOpCoordNode* node) final;
     void link(ASTErrorNode* node) final;
     void link(ASTWarningNode* node) final;
+    void link(ASTAssertNode* node) final;
     void link(ASTReturnNode* node) final;
     void link(ASTBreakNode* node) final;
     void link(ASTContinueNode* node) final;
@@ -3238,6 +3277,7 @@ public:
     Value* evaluate(ASTOpCoordNode* node) final;
     Value* evaluate(ASTErrorNode* node) final;
     Value* evaluate(ASTWarningNode* node) final;
+    Value* evaluate(ASTAssertNode* node) final;
     Value* evaluate(ASTReturnNode* node) final;
     Value* evaluate(ASTBreakNode* node) final;
     Value* evaluate(ASTContinueNode* node) final;
@@ -3275,6 +3315,7 @@ public:
 
     void printError(std::string_view message, uint32_t line);
     void printWarning(std::string_view message, uint32_t line);
+    void printAssert(uint32_t line);
 };
 
 #endif // RPP_ABSTRACTSYNTAXTREEVISITOR_HPP

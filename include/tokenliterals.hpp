@@ -41,6 +41,7 @@ namespace KW {
 constexpr std::string_view Anchor     = "anchor";
 constexpr std::string_view And        = "and";
 constexpr std::string_view Array      = "array";
+constexpr std::string_view Assert     = "assert";
 constexpr std::string_view Automapper = "automapper";
 constexpr std::string_view Bool       = "bool";
 constexpr std::string_view Break      = "break";

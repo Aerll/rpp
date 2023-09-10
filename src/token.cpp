@@ -84,6 +84,7 @@ bool Token::isKeyword(const std::string& s) noexcept
 
         case 6:
             if (s == KW::Anchor ||
+                s == KW::Assert ||
                 s == KW::Insert ||
                 s == KW::Invoke ||
                 s == KW::Nested ||
