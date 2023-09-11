@@ -64,13 +64,13 @@ void RulesGen::exec(std::vector<AutoMapper>& automappers, const std::filesystem:
                         RulesGen::removeOrPosRules(rule);
 
                         do {
-                            rulesFile << "Index " << rule.indexInfo.tileID << " ";
+                            rulesFile << "Index " << rule.indexInfo.tileID;
                             if ((rule.indexInfo.rotation & Rotation::V) != Rotation::Default)
-                                rulesFile << "XFLIP ";
+                                rulesFile << " XFLIP";
                             if ((rule.indexInfo.rotation & Rotation::H) != Rotation::Default)
-                                rulesFile << "YFLIP ";
+                                rulesFile << " YFLIP";
                             if ((rule.indexInfo.rotation & Rotation::R) != Rotation::Default)
-                                rulesFile << "ROTATE ";
+                                rulesFile << " ROTATE";
                             rulesFile << '\n';
 
                             for (auto& posRule : rule.posRules) {
@@ -103,28 +103,28 @@ void RulesGen::generatePosRule(PosRule& rule, bool runOptimize, std::ofstream& r
     if (runOptimize) // optimize only once
         RulesGen::optimize(rule);
 
-    rulesFile << "Pos " << rule.x << " " << rule.y << " ";
+    rulesFile << "Pos " << rule.x << " " << rule.y;
     switch (rule.ruleType) {
-        case PosRuleType::INDEX: rulesFile << "INDEX "; break;
-        case PosRuleType::NOTINDEX: rulesFile << "NOTINDEX "; break;
-        case PosRuleType::FULL: rulesFile << "FULL \n"; return;
-        case PosRuleType::EMPTY: rulesFile << "EMPTY \n"; return;
+        case PosRuleType::INDEX: rulesFile << " INDEX"; break;
+        case PosRuleType::NOTINDEX: rulesFile << " NOTINDEX"; break;
+        case PosRuleType::FULL: rulesFile << " FULL\n"; return;
+        case PosRuleType::EMPTY: rulesFile << " EMPTY\n"; return;
     }
 
     bool insertOr = false;
     for (const auto& indexInfo : rule.indexInfos) {
         if (insertOr)
-            rulesFile << "OR ";
-        rulesFile << indexInfo.tileID << " ";
+            rulesFile << " OR";
+        rulesFile << " " << indexInfo.tileID;
         if ((indexInfo.rotation & Rotation::N) != Rotation::Default)
-            rulesFile << "NONE ";
+            rulesFile << " NONE";
         else {
             if ((indexInfo.rotation & Rotation::V) != Rotation::Default)
-                rulesFile << "XFLIP ";
+                rulesFile << " XFLIP";
             if ((indexInfo.rotation & Rotation::H) != Rotation::Default)
-                rulesFile << "YFLIP ";
+                rulesFile << " YFLIP";
             if ((indexInfo.rotation & Rotation::R) != Rotation::Default)
-                rulesFile << "ROTATE ";
+                rulesFile << " ROTATE";
         }
         insertOr = true;
     }
