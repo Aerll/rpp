@@ -40,7 +40,7 @@ void RulesGen::exec(std::vector<AutoMapper>& automappers, const std::filesystem:
     std::ofstream rulesFile(path.string() + ".rules");
     if (rulesFile.is_open()) {
         for (auto& automapper : automappers) {
-            rulesFile << "[" << automapper.name << "]\n";
+            rulesFile << "[" << automapper.name << "]\n\n";
 
             for (size_t run_index = 0; run_index < automapper.runs.size(); ++run_index) {
                 auto& run = automapper.runs[run_index];
@@ -54,7 +54,8 @@ void RulesGen::exec(std::vector<AutoMapper>& automappers, const std::filesystem:
                         rulesFile << "NewRun\n";
                     if (run.overrideLayer)
                         rulesFile << "NoLayerCopy\n";
-                    rulesFile << '\n';
+                    if (run_index != 0)
+                        rulesFile << '\n';
 
                     for (auto& rule : run.rules) {
                         if (i == 0) // optimize only once
