@@ -274,7 +274,7 @@ ParseTree::ptr_stat ParseTree::getNestedFunctionDeclStatementNode(TokenStream& t
         stat.set<2>(&tokenStream.current());
 
     offset -= found;
-    stat.set<3>(getExpressionNode(tokenStream, 1, offset));
+    stat.set<3>(getExpressionNode(tokenStream, 1, std::max(1u, offset)));
 
     tokenStream.skip(offset + 1);
     return std::make_unique<PTNestedFunctionDeclStatement>(std::move(stat));
