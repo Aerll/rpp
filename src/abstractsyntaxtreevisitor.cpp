@@ -490,6 +490,21 @@ void ASTNodeParser::parse(ASTWarningNode* node)
         node->getNextNode()->accept(*this);
 }
 
+void ASTNodeParser::parse(ASTAssertNode* node)
+{
+    node->getExpr()->accept(*this);
+
+    std::unique_ptr<Error> error;
+    if (node->getExpr()->getNodeType() != ValueType::Bool)
+        error = std::make_unique<ErrIncorrectValueType>(node->getExpr()->getNodeType(), ValueType::Bool, node->getLine());
+
+    if (error != nullptr)
+        errors().push(std::move(error));
+
+    if (node->hasNextNode())
+        node->getNextNode()->accept(*this);
+}
+
 void ASTNodeParser::parse(ASTReturnNode* node)
 {
     std::unique_ptr<Error> error;
@@ -595,6 +610,14 @@ void ASTNodeParser::parse(ASTStrCallNode* node)
 }
 
 void ASTNodeParser::parse(ASTNameCallNode* node)
+{
+    node->getVariable()->accept(*this);
+
+    if (node->hasNextNode())
+        node->getNextNode()->accept(*this);
+}
+
+void ASTNodeParser::parse(ASTFindCallNode* node)
 {
     node->getVariable()->accept(*this);
 
@@ -1256,6 +1279,16 @@ void ASTNodeLinker::link(ASTWarningNode* node)
         node->getNextNode()->accept(*this);
 }
 
+void ASTNodeLinker::link(ASTAssertNode* node)
+{
+    node->attach(node->getPreviousNode());
+
+    node->getExpr()->accept(*this);
+
+    if (node->hasNextNode())
+        node->getNextNode()->accept(*this);
+}
+
 void ASTNodeLinker::link(ASTReturnNode* node)
 {
     node->attach(node->getPreviousNode());
@@ -1413,6 +1446,35 @@ void ASTNodeLinker::link(ASTNameCallNode* node)
         error = std::make_unique<ErrInvalidArguments>("name", node->getLine());
     else if (node->getVariable()->id() != NodeID::Variable)
         error = std::make_unique<ErrNameCallNotVariable>(node->getLine());
+
+    if (error != nullptr)
+        errors().push(std::move(error));
+
+    if (node->hasNextNode())
+        node->getNextNode()->accept(*this);
+}
+
+void ASTNodeLinker::link(ASTFindCallNode* node)
+{
+    node->attach(node->getPreviousNode());
+
+    node->getVariable()->accept(*this);
+    for (auto&& arg : node->getArguments())
+        arg->accept(*this);
+
+    Signature signature;
+    for (auto&& arg : node->getArguments())
+        signature.addType(arg->getNodeType());
+
+    std::unique_ptr<Error> error;
+    Signature signatureFind;
+    signatureFind.addType(node->getVariable()->getNodeType());
+    if (signatureFind.isVariadicConvertible(signature))
+        {} // valid
+    else if (!Token::isArray(node->getVariable()->getNodeType()))
+        error = std::make_unique<ErrNotAMemberOf>(std::string_view{ "find" }, node->getVariable()->getNodeType(), node->getLine());
+    else
+        error = std::make_unique<ErrInvalidArguments>("find", node->getLine());
 
     if (error != nullptr)
         errors().push(std::move(error));
@@ -2513,6 +2575,21 @@ Value* ASTNodeEvaluator::evaluate(ASTWarningNode* node)
     return nullptr;
 }
 
+Value* ASTNodeEvaluator::evaluate(ASTAssertNode* node)
+{
+    _StackInit;
+    Value* result = node->getExpr()->accept(*this); _BreakIfFailed;
+    
+    if (!result->as<BoolValue*>()->value)
+        printAssert(node->getLine());
+    else {
+        _TryEvaluateNextNodeAndClearStack;
+    }
+
+    _StackPop;
+    return nullptr;
+}
+
 Value* ASTNodeEvaluator::evaluate(ASTReturnNode* node)
 {
     if (node->getNode() == nullptr) {
@@ -2571,8 +2648,29 @@ Value* ASTNodeEvaluator::evaluate(ASTPushCallNode* node)
 {
     _StackInit;
     auto identifier = node->getVariable()->as<ASTVariableNode*>()->getIdentifier()->as<ASTIdentifierNode*>();
+    auto tempIdentifier = std::make_unique<ASTIdentifierNode>();
+    tempIdentifier->setType(identifier->getType());
+    tempIdentifier->setValue(identifier->getValue()->makeNew());
 
-    evaluatePush(node->getArguments(), identifier); _BreakIfFailed;
+    evaluateArgumentsVariadic(node->getArguments(), tempIdentifier.get()); _BreakIfFailed;
+
+    auto value = identifier->getValue();
+    ValueType type = value->type();
+    if (type == ValueType::ArrayBool)
+        value->as<ArrayValue<BoolValue>*>()->push(tempIdentifier->getValue()->as<ArrayValue<BoolValue>*>());
+    else if (type == ValueType::ArrayInt)
+        value->as<ArrayValue<IntValue>*>()->push(tempIdentifier->getValue()->as<ArrayValue<IntValue>*>());
+    else if (type == ValueType::ArrayRange)
+        value->as<ArrayValue<RangeValue>*>()->push(tempIdentifier->getValue()->as<ArrayValue<RangeValue>*>());
+    else if (type == ValueType::ArrayCoord)
+        value->as<ArrayValue<CoordValue>*>()->push(tempIdentifier->getValue()->as<ArrayValue<CoordValue>*>());
+    else if (type == ValueType::ArrayFloat)
+        value->as<ArrayValue<FloatValue>*>()->push(tempIdentifier->getValue()->as<ArrayValue<FloatValue>*>());
+    else if (type == ValueType::ArrayString)
+        value->as<ArrayValue<StringValue>*>()->push(tempIdentifier->getValue()->as<ArrayValue<StringValue>*>());
+    else
+        value->as<ArrayValue<ObjectValue>*>()->push(tempIdentifier->getValue()->as<ArrayValue<ObjectValue>*>());
+
     _TryEvaluateNextNodeAndClearStack;
     return nullptr;
 }
@@ -2636,8 +2734,42 @@ Value* ASTNodeEvaluator::evaluate(ASTNameCallNode* node)
 {
     _StackInit;
 
-    _TryEvaluateNextNodeAndClearStack;
     ptr_value result = std::make_unique<StringValue>(node->getVariable()->as<ASTVariableNode*>()->getName());
+    _TryEvaluateNextNodeAndClearStack;
+
+    _StackPush(result);
+    return _StackTop;
+}
+
+Value* ASTNodeEvaluator::evaluate(ASTFindCallNode* node)
+{
+    _StackInit;
+    auto identifier = node->getVariable()->as<ASTVariableNode*>()->getIdentifier()->as<ASTIdentifierNode*>();
+    auto tempIdentifier = std::make_unique<ASTIdentifierNode>();
+    tempIdentifier->setType(identifier->getType());
+    tempIdentifier->setValue(identifier->getValue()->makeNew());
+
+    evaluateArgumentsVariadic(node->getArguments(), tempIdentifier.get()); _BreakIfFailed;
+
+    auto value = identifier->getValue();
+    ptr_value result;
+    ValueType type = value->type();
+    if (type == ValueType::ArrayBool)
+        result = std::make_unique<IntValue>(value->as<ArrayValue<BoolValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<BoolValue>*>()));
+    else if (type == ValueType::ArrayInt)
+        result = std::make_unique<IntValue>(value->as<ArrayValue<IntValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<IntValue>*>()));
+    else if (type == ValueType::ArrayRange)
+        result = std::make_unique<IntValue>(value->as<ArrayValue<RangeValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<RangeValue>*>()));
+    else if (type == ValueType::ArrayCoord)
+        result = std::make_unique<IntValue>(value->as<ArrayValue<CoordValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<CoordValue>*>()));
+    else if (type == ValueType::ArrayFloat)
+        result = std::make_unique<IntValue>(value->as<ArrayValue<FloatValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<FloatValue>*>()));
+    else if (type == ValueType::ArrayString)
+        result = std::make_unique<IntValue>(value->as<ArrayValue<StringValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<StringValue>*>()));
+    else
+        result = std::make_unique<IntValue>(value->as<ArrayValue<ObjectValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<ObjectValue>*>()));
+
+    _TryEvaluateNextNodeAndClearStack;
 
     _StackPush(result);
     return _StackTop;
@@ -2991,122 +3123,6 @@ void ASTNodeEvaluator::evaluateArgumentsVariadic(const ptr_node_v& callArgs, AST
     }
 }
 
-void ASTNodeEvaluator::evaluatePush(const ptr_node_v& callArgs, ASTIdentifierNode* identifier)
-{
-    auto type = identifier->getNodeType();
-
-    if (type == ValueType::ArrayBool) {
-        auto array = identifier->getValue()->as<ArrayValue<BoolValue>*>();
-        for (const auto& arg : callArgs) {
-            auto value = arg->accept(*this); _BreakIfFailedVoid;
-            if (value->type() == ValueType::Bool)
-                array->value.push_back(*value->as<BoolValue*>());
-            else {
-                for (const auto& elem : value->as<ArrayValue<BoolValue>*>()->value)
-                    array->value.push_back(elem);
-            }
-        }
-        array->update();
-    }
-    else if (type == ValueType::ArrayInt) {
-        auto array = identifier->getValue()->as<ArrayValue<IntValue>*>();
-        for (const auto& arg : callArgs) {
-            auto value = arg->accept(*this); _BreakIfFailedVoid;
-            if (value->type() == ValueType::Int)
-                array->value.push_back(*value->as<IntValue*>());
-            else if (value->type() == ValueType::Range) {
-                RangeValue* range = value->as<RangeValue*>();
-
-                bool increment = range->from <= range->to;
-                for (int32_t i = range->from; increment ? i <= range->to : i >= range->to; increment ? ++i : --i)
-                    array->value.push_back({ i, range->rotation });
-            }
-            else if (value->type() == ValueType::Coord)
-                array->value.push_back(value->as<CoordValue*>()->toInt());
-            else if (value->type() == ValueType::Float)
-                array->value.push_back(value->as<FloatValue*>()->toInt());
-            else if (value->type() == ValueType::Object) {
-                for (auto elem : value->as<ObjectValue*>()->value)
-                    array->value.push_back(elem);
-            }
-            else {
-                for (const auto& elem : value->as<ArrayValue<IntValue>*>()->value)
-                    array->value.push_back(elem);
-            }
-        }
-        array->update();
-    }
-    else if (type == ValueType::ArrayRange) {
-        auto array = identifier->getValue()->as<ArrayValue<RangeValue>*>();
-        for (const auto& arg : callArgs) {
-            auto value = arg->accept(*this); _BreakIfFailedVoid;
-            if (value->type() == ValueType::Range)
-                array->value.push_back(*value->as<RangeValue*>());
-            else {
-                for (const auto& elem : value->as<ArrayValue<RangeValue>*>()->value)
-                    array->value.push_back(elem);
-            }
-        }
-        array->update();
-    }
-    else if (type == ValueType::ArrayCoord) {
-        auto array = identifier->getValue()->as<ArrayValue<CoordValue>*>();
-        for (const auto& arg : callArgs) {
-            auto value = arg->accept(*this); _BreakIfFailedVoid;
-            if (value->type() == ValueType::Int)
-                array->value.push_back(value->as<IntValue*>()->toCoord());
-            else if (value->type() == ValueType::Coord)
-                array->value.push_back(*value->as<CoordValue*>());
-            else {
-                for (const auto& elem : value->as<ArrayValue<CoordValue>*>()->value)
-                    array->value.push_back(elem);
-            }
-        }
-        array->update();
-    }
-    else if (type == ValueType::ArrayFloat) {
-        auto array = identifier->getValue()->as<ArrayValue<FloatValue>*>();
-        for (const auto& arg : callArgs) {
-            auto value = arg->accept(*this); _BreakIfFailedVoid;
-            if (value->type() == ValueType::Int)
-                array->value.push_back(value->as<IntValue*>()->toFloat());
-            else if (value->type() == ValueType::Float)
-                array->value.push_back(*value->as<FloatValue*>());
-            else {
-                for (const auto& elem : value->as<ArrayValue<FloatValue>*>()->value)
-                    array->value.push_back(elem);
-            }
-        }
-        array->update();
-    }
-    else if (type == ValueType::ArrayString) {
-        auto array = identifier->getValue()->as<ArrayValue<StringValue>*>();
-        for (const auto& arg : callArgs) {
-            auto value = arg->accept(*this); _BreakIfFailedVoid;
-            if (value->type() == ValueType::String)
-                array->value.push_back(*value->as<StringValue*>());
-            else {
-                for (const auto& elem : value->as<ArrayValue<StringValue>*>()->value)
-                    array->value.push_back(elem);
-            }
-        }
-        array->update();
-    }
-    else {
-        auto array = identifier->getValue()->as<ArrayValue<ObjectValue>*>();
-        for (const auto& arg : callArgs) {
-            auto value = arg->accept(*this); _BreakIfFailedVoid;
-            if (value->type() == ValueType::Object)
-                array->value.push_back(*value->as<ObjectValue*>());
-            else {
-                for (const auto& elem : value->as<ArrayValue<ObjectValue>*>()->value)
-                    array->value.push_back(elem);
-            }
-        }
-        array->update();
-    }
-}
-
 bool ASTNodeEvaluator::hasRotation(Value* value, Rotation rotation)
 {
     auto type = value->type();
@@ -3337,6 +3353,15 @@ void ASTNodeEvaluator::printWarning(std::string_view message, uint32_t line)
     errorOutput::print::string(std::to_string(line));
     errorOutput::print::string(": Warning: ");
     errorOutput::print::string(message); errorOutput::print::newLine();
+}
+
+void ASTNodeEvaluator::printAssert(uint32_t line)
+{
+    m_failed = true;
+    errorOutput::print::string("> ");
+    errorOutput::print::string(std::to_string(line));
+    errorOutput::print::string(": Assertion failed! "); errorOutput::print::newLine();
+    errorOutput::print::stage("... Execution stopped"); errorOutput::print::newLine();
 }
 
 /*
@@ -4177,6 +4202,14 @@ void ASTWarningNode::attach(IASTNode* previous)
 }
 
 /*
+    ASTAssertNode
+*/
+void ASTAssertNode::attach(IASTNode* previous)
+{
+    m_expr->setPreviousNode(previous);
+}
+
+/*
     ASTReturnNode
 */
 IASTNode* ASTReturnNode::getLastNode()
@@ -4302,6 +4335,21 @@ ValueType ASTNameCallNode::getNodeType()
 }
 
 void ASTNameCallNode::attach(IASTNode* previous)
+{
+    for (auto&& arg : m_arguments)
+        arg->setPreviousNode(previous);
+    m_variable->setPreviousNode(previous);
+}
+
+/*
+    ASTFindCallNode
+*/
+ValueType ASTFindCallNode::getNodeType()
+{
+    return ValueType::Int;
+}
+
+void ASTFindCallNode::attach(IASTNode* previous)
 {
     for (auto&& arg : m_arguments)
         arg->setPreviousNode(previous);

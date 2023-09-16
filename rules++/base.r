@@ -33,6 +33,17 @@ bool s:debug = true;
 
 
 ///////////////////////////////////////
+//
+int top         = 1000;
+int right       = 1001;
+int bottom      = 1002;
+int left        = 1003;
+int topLeft     = 1004;
+int topRight    = 1005;
+int bottomLeft  = 1006;
+int bottomRight = 1007;
+int all         = 1008;
+///////////////////////////////////////
 // utility functions
 ///////////////////////////////////////
 /******************************************************************************
@@ -689,7 +700,7 @@ function->bool util:Is(int iIndex)
 //
     if (s:debug)
         if (iIndex < -1 or iIndex > 255)
-            error("util:Is(int iIndex) -> iIndex needs to be in range [-1-255].");
+            error("util:Is(int " + iIndex.name() + ") -> " + iIndex.name() + " needs to be in range [-1-255].");
         end
     end
 //
@@ -707,13 +718,13 @@ function->bool util:Is(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            warning("util:Is(array int aIndices) -> aIndices was empty, function had no effect.");
+            warning("util:Is(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
             return false;
         end
 
         for (i = 0 to aIndices.last)
             if (aIndices[i] < -1 or aIndices[i] > 255)
-                error("util:Is(array int aIndices) -> values need to be in range [0-255].");
+                error("util:Is(array int " + aIndices.name() + ") -> values need to be in range [-1-255].");
             end
         end
     end
@@ -733,7 +744,7 @@ function->bool util:IsNot(int iIndex)
 //
     if (s:debug)
         if (iIndex < -1 or iIndex > 255)
-            error("util:IsNot(int iIndex) -> iIndex needs to be in range [-1-255].");
+            error("util:IsNot(int " + iIndex.name() + ") -> " + iIndex.name() + " needs to be in range [-1-255].");
         end
     end
 //
@@ -751,13 +762,13 @@ function->bool util:IsNot(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            warning("util:IsNot(array int aIndices) -> aIndices was empty, function had no effect.");
+            warning("util:IsNot(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
             return false;
         end
 
         for (i = 0 to aIndices.last)
             if (aIndices[i] < -1 or aIndices[i] > 255)
-                error("util:IsNot(array int aIndices) -> values need to be in range [0-255].");
+                error("util:IsNot(array int " + aIndices.name() + ") -> values need to be in range [-1-255].");
             end
         end
     end
@@ -825,7 +836,7 @@ function->null util:InsertIndex(int iIndex)
 //
     if (s:debug)
         if (iIndex < 0 or iIndex > 255)
-            error("util:InsertIndex(int iIndex) -> value needs to be in range [0-255].");
+            error("util:InsertIndex(int " + iIndex.name() + ") -> value needs to be in range [0-255].");
         end
     end
 //
@@ -849,54 +860,12 @@ end
 
 
 
-function->array coord util:PosRange(range rX, range rY)
-
-    array int aX = util:ArrayInt(rX);
-    array int aY = util:ArrayInt(rY);
-
-    array coord aResult;
-    for (i = 0 to aX.last)
-        for (j = 0 to aY.last)
-            aResult.push([aX[i], aY[j]]);
-        end
-    end
-    return aResult;
-end
-
-
-
-function->array coord util:PosRange(range rX, int iY)
-
-    array int aX = util:ArrayInt(rX);
-
-    array coord aResult;
-    for (i = 0 to aX.last)
-        aResult.push([aX[i], iY]);
-    end
-    return aResult;
-end
-
-
-
-function->array coord util:PosRange(int iX, range rY)
-
-    array int aY = util:ArrayInt(rY);
-
-    array coord aResult;
-    for (i = 0 to aY.last)
-        aResult.push([iX, aY[i]]);
-    end
-    return aResult;
-end
-
-
-
-function->array float util:Copies(float fValue, int iCopies)
+function->array float util:CopiesOf(int iCopies, float fValue)
 
 //
     if (s:debug)
         if (iCopies < 1)
-            error("util:Copies(float fValue, int iCopies) -> iCopies needs to be greater than 0.");
+            error("util:CopiesOf(int " + iCopies.name() + ", float " + fValue.name() + ") -> " + iCopies.name() + " needs to be greater than 0.");
         end
     end
 //
@@ -959,6 +928,13 @@ end
 
 
 
+function->bool util:Found(int iResult)
+
+    return iResult != -1;
+end
+
+
+
 function->int util:Min(array int aValues)
 
     if (aValues.count == 0)
@@ -998,7 +974,7 @@ function->array int util:Rect(object oObject)
 //
     if (s:debug)
         if (oObject.count == 0)
-            error("util:Rect(object oObject) -> oObject cannot be empty.");
+            error("util:Rect(object " + oObject.name() + ") -> " + oObject.name() + " cannot be empty.");
         end
     end
 //
@@ -1027,7 +1003,7 @@ function->coord util:Size(object oObject)
 //
     if (s:debug)
         if (oObject.count == 0)
-            error("util:Size(object oObject) -> oObject cannot be empty.");
+            error("util:Size(object " + oObject.name() + ") -> " + oObject.name() + " cannot be empty.");
         end
     end
 //
@@ -1043,7 +1019,7 @@ function->float util:SumOf(array float aValues)
 //
     if (s:debug)
         if (aValues.count == 0)
-            error("util:SumOf(array float aValues) -> aValues cannot be empty.");
+            error("util:SumOf(array float " + aValues.name() + ") -> " + aValues.name() + " cannot be empty.");
         end
     end
 //
@@ -1062,7 +1038,7 @@ function->array float util:Normalize(array float aValues, float fBound)
 //
     if (s:debug)
         if (aValues.count == 0)
-            error("util:Normalize(array float aValues, float fBound) -> aValues cannot be empty.");
+            error("util:Normalize(array float " + aValues.name() + ", float " + fBound.name() + ") -> " + aValues.name() + " cannot be empty.");
         end
     end
 //
@@ -1083,7 +1059,7 @@ function->array float util:Unbias(array float aProbabilities)
 //
     if (s:debug)
         if (aProbabilities.count == 0)
-            error("util:Unbias(array float aProbabilities) -> aProbabilities cannot be empty.");
+            error("util:Unbias(array float " + aProbabilities.name() + ") -> " + aProbabilities.name() + " cannot be empty.");
         end
     end
 //
@@ -1113,7 +1089,7 @@ function->array float util:ToProbabilities(array float aPercents)
 //
     if (s:debug)
         if (aPercents.count == 0)
-            error("util:ToProbabilities(array float aPercents) -> aPercents cannot be empty.");
+            error("util:ToProbabilities(array float " + aPercents.name() + ") -> " + aPercents.name() + " cannot be empty.");
         end
     end
 //
@@ -1124,6 +1100,27 @@ function->array float util:ToProbabilities(array float aPercents)
     end
     return aResult;
 end
+
+
+
+function->int util:OppositeSide(int iSide)
+
+//
+    if (s:debug)
+        if (iSide < top or iSide > left)
+            error("util:OppositeSide(int " + iSide.name() + ") -> value needs to be top, right, bottom or left.");
+        end
+    end
+//
+
+    int iResult = iSide + 2;
+    if (iResult > left)
+        return iResult - 4;
+    end
+    return iResult;
+end
+
+
 
 
 
@@ -1204,7 +1201,7 @@ function->null NewRun(int iCopies)
 //
     if (s:debug)
         if (iCopies < 1)
-            error("NewRun(int iCopies) -> iCopies needs to be greater than 0.");
+            error("NewRun(int " + iCopies.name() + ") -> " + iCopies.name() + " needs to be greater than 0.");
         end
     end
 //
@@ -1226,12 +1223,12 @@ function->object Indices(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            error("Indices(array int aIndices) -> aIndices was empty, object would be invalid.");
+            error("Indices(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, object would be invalid.");
         end
 
         for (i = 0 to aIndices.last)
-            if (aIndices[i] < 0 or aIndices[i] > 255)
-                error("Indices(array int aIndices) -> values need to be in range [0-255].");
+            if (aIndices[i] < 1 or aIndices[i] > 255)
+                error("Indices(array int " + aIndices.name() + ") -> values need to be in range [1-255].");
             end
         end
     end
@@ -1247,12 +1244,12 @@ function->object Rect(int iTopLeft, int iBottomRight)
 
 //
     if (s:debug)
-        if (iTopLeft < 0 or iTopLeft > 255)
-            error("Rect(int iTopLeft, int iBottomRight) -> iTopLeft needs to be in range [0-255].");
+        if (iTopLeft < 1 or iTopLeft > 255)
+            error("Rect(int " + iTopLeft.name() + ", int " + iBottomRight.name() + ") -> " + iTopLeft.name() + " needs to be in range [1-255].");
         end
 
-        if (iBottomRight < 0 or iBottomRight > 255)
-            error("Rect(int iTopLeft, int iBottomRight) -> iBottomRight needs to be in range [0-255].");
+        if (iBottomRight < 1 or iBottomRight > 255)
+            error("Rect(int " + iTopLeft.name() + ", int " + iBottomRight.name() + ") -> " + iBottomRight.name() + " needs to be in range [1-255].");
         end
     end
 //
@@ -1263,7 +1260,7 @@ function->object Rect(int iTopLeft, int iBottomRight)
 //
     if (s:debug)
         if (cTopLeft.x > cBottomRight.x or cTopLeft.y > cBottomRight.y)
-            warning("Rect(int iTopLeft, int iBottomRight) -> iTopLeft is not a top left corner of the rectangle.");
+            warning("Rect(int " + iTopLeft.name() + ", int " + iBottomRight.name() + ") -> " + iTopLeft.name() + " is not the top left corner of the rectangle.");
         end
     end
 //
@@ -1277,6 +1274,93 @@ function->object Rect(int iTopLeft, int iBottomRight)
 
     object oResult = aIndices;
     return oResult;
+end
+
+
+
+function->array coord Area(coord cPos, coord cSize)
+
+//
+    if (s:debug)
+        if (cSize.x < 1 or cSize.y < 1)
+            error("Area(coord " + cPos.name() + ", coord " + cSize.name() + ") -> " + cSize.name() + " needs to be greater than 0.");
+        end
+    end
+//
+
+    array coord aResult;
+    
+    for (x = cPos.x to cPos.x + cSize.x - 1)
+        for (y = cPos.y to cPos.y + cSize.y - 1)
+            aResult.push([x, y]);
+        end
+    end    
+    return aResult;
+end
+
+
+
+function->array coord Radius(coord cPos, int iRadius)
+
+//
+    if (s:debug)
+        if (iRadius < 0)
+            error("Radius(coord " + cPos.name() + ", int " + iRadius.name() + ") -> " + iRadius.name() + " needs to be greater than or equal to 0.");
+        end
+    end
+//
+
+    array coord aResult;
+
+    for (x = util:Negate(iRadius) to iRadius)
+        for (y = util:Negate(iRadius) to iRadius)
+            int iDiffX = cPos.x - x;
+            int iDiffY = cPos.y - y;
+            
+            if (iDiffX * iDiffX + iDiffY * iDiffY <= iRadius * iRadius)
+                aResult.push([x, y]);
+            end
+        end
+    end
+    return aResult;
+end
+
+
+
+function->array coord Footprint(object oObject, int iOrientation)
+
+//
+    if (s:debug)
+        if (oObject.count == 0)
+            error("Footprint(object " + oObject.name() + ", int " + iOrientation.name() + ") -> " + oObject.name() + " cannot be empty.");
+        end
+
+        if (iOrientation < top or iOrientation > left)
+            error("Footprint(object " + oObject.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be top, right, bottom or left.");
+        end
+    end
+//
+
+    array coord aResult;
+    array int aRect = util:Rect(oObject);
+
+    for (i = 0 to oObject.last)
+        coord cRelativePos = util:RelativePos(oObject.anchor, oObject[i]);
+
+        if (iOrientation == top and cRelativePos.y == aRect[0])
+            aResult.push([cRelativePos.x, cRelativePos.y - 1]);
+        end
+        if (iOrientation == right and cRelativePos.x == aRect[1])
+            aResult.push([cRelativePos.x + 1, cRelativePos.y]);
+        end
+        if (iOrientation == bottom and cRelativePos.y == aRect[2])
+            aResult.push([cRelativePos.x, cRelativePos.y + 1]);
+        end
+        if (iOrientation == left and cRelativePos.x == aRect[3])
+            aResult.push([cRelativePos.x - 1, cRelativePos.y]);
+        end
+    end
+    return aResult;
 end
 
 
@@ -1346,13 +1430,13 @@ function->null Insert(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            warning("Insert(array int aIndices) -> aIndices was empty, function had no effect.");
+            warning("Insert(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
             return;
         end
 
         for (i = 0 to aIndices.last)
             if (aIndices[i] < 0 or aIndices[i] > 255)
-                error("Insert(array int aIndices) -> values need to be in range [0-255].");
+                error("Insert(array int " + aIndices.name() + ") -> values need to be in range [0-255].");
             end
         end
     end
@@ -1398,11 +1482,11 @@ nested function->null Insert.At(coord cPos)
 //
     if (s:debug)
         if (cPos.x < 0)
-            warning("Insert.At(coord cPos) -> cPos.x was negative, function had no effect.");
+            warning("Insert.At(coord " + cPos.name() + ") -> " + cPos.name() + ".x was negative, function had no effect.");
             return;
         end
         if (cPos.y < 0)
-            warning("Insert.At(coord cPos) -> cPos.y was negative, function had no effect.");
+            warning("Insert.At(coord " + cPos.name() + ") -> " + cPos.name() + ".y was negative, function had no effect.");
             return;
         end
     end
@@ -1442,8 +1526,14 @@ nested function->null Insert.Chance(array float aProbabilities)
 //
     if (s:debug)
         if (aProbabilities.count == 0)
-            warning("Insert.Chance(array float aProbabilities) -> aProbabilities was empty, function had no effect.");
+            warning("Insert.Chance(array float " + aProbabilities.name() + ") -> " + aProbabilities.name() + " was empty, function had no effect.");
             return;
+        end
+
+        for (i = 0 to aProbabilities.last)
+            if (aProbabilities[i] <= 0)
+                error("Insert.Chance(array float " + aProbabilities.name() + ") -> values need to be greater than 0.");
+            end
         end
     end
 //
@@ -1487,15 +1577,7 @@ int g:borderTopRight    = 1;
 int g:borderBottomLeft  = 1;
 int g:borderBottomRight = 1;
 
-int top         = 100;
-int right       = 101;
-int bottom      = 102;
-int left        = 103;
-int topLeft     = 104;
-int topRight    = 105;
-int bottomLeft  = 106;
-int bottomRight = 107;
-int this        = 99999;
+int this = 99999;
 /******************************************************************************
 
 */
@@ -1556,6 +1638,7 @@ function->bool IndexAt(array coord aCoords)
     nested(
         TestIndices,
         Is, IsNot, IsEmpty, IsEmptyAt, IsFull, IsFullAt, IsOut, IsNotOut,
+        IsWithinArea, IsNotWithinArea,
         IsWithinRadius, IsNotWithinRadius,
         IsEdge, IsNotEdge,
         IsNextTo, IsNotNextTo,
@@ -1567,7 +1650,7 @@ function->bool IndexAt(array coord aCoords)
 //
     if (s:debug)
         if (aCoords.count == 0)
-            warning("IndexAt(array coord aCoords) -> aCoords was empty, function had no effect.");
+            warning("IndexAt(array coord " + aCoords.name() + ") -> " + aCoords.name() + " was empty, function had no effect.");
             return false;
         end
     end
@@ -1603,13 +1686,13 @@ nested function->bool IndexAt.TestIndices(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            warning("Insert.TestIndices(array int aIndices) -> aIndices was empty, function had no effect.");
+            warning("IndexAt.TestIndices(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
             return false;
         end
 
         for (i = 0 to aIndices.last)
             if (aIndices[i] < 0 or aIndices[i] > 255)
-                error("Insert.TestIndices(array int aIndices) -> values need to be in range [0-255].");
+                error("IndexAt.TestIndices(array int " + aIndices.name() + ") -> values need to be in range [0-255].");
             end
         end
     end
@@ -1633,13 +1716,13 @@ nested function->bool IndexAt.Is(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            warning("IndexAt.Is(array int aIndices) -> aIndices was empty, function had no effect.");
+            warning("IndexAt.Is(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
             return false;
         end
 
         for (i = 0 to aIndices.last)
             if ((aIndices[i] < -1 or aIndices[i] > 255) and aIndices[i] != this)
-                error("IndexAt.Is(array int aIndices) -> values need to be in range [-1-255].");
+                error("IndexAt.Is(array int " + aIndices.name() + ") -> values need to be in range [-1-255].");
             end
         end
     end
@@ -1666,13 +1749,13 @@ nested function->bool IndexAt.IsNot(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            warning("IndexAt.IsNot(array int aIndices) -> aIndices was empty, function had no effect.");
+            warning("IndexAt.IsNot(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
             return false;
         end
 
         for (i = 0 to aIndices.last)
             if ((aIndices[i] < -1 or aIndices[i] > 255) and aIndices[i] != this)
-                error("IndexAt.IsNot(array int aIndices) -> values need to be in range [-1-255].");
+                error("IndexAt.IsNot(array int " + aIndices.name() + ") -> values need to be in range [-1-255].");
             end
         end
     end
@@ -1712,8 +1795,14 @@ nested function->bool IndexAt.IsEmptyAt(array int aOrientations)
 //
     if (s:debug)
         if (aOrientations.count == 0)
-            warning("IndexAt.IsEmptyAt(array int aOrientations) -> aOrientations was empty, function had no effect.");
+            warning("IndexAt.IsEmptyAt(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
             return false;
+        end
+
+        for (i = 0 to aOrientations.last)
+            if (aOrientations[i] < top or aOrientations[i] > bottomRight)
+                error("IndexAt.IsEmptyAt(array int " + aOrientations.name() + ") -> values need to be top, right, bottom, left, topLeft, topRight, bottomLeft or bottomRight.");
+            end
         end
     end
 //
@@ -1784,8 +1873,14 @@ nested function->bool IndexAt.IsFullAt(array int aOrientations)
 //
     if (s:debug)
         if (aOrientations.count == 0)
-            warning("IndexAt.IsFullAt(array int aOrientations) -> aOrientations was empty, function had no effect.");
+            warning("IndexAt.IsFullAt(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
             return false;
+        end
+
+        for (i = 0 to aOrientations.last)
+            if (aOrientations[i] < top or aOrientations[i] > bottomRight)
+                error("IndexAt.IsFullAt(array int " + aOrientations.name() + ") -> values need to be top, right, bottom, left, topLeft, topRight, bottomLeft or bottomRight.");
+            end
         end
     end
 //
@@ -1862,6 +1957,72 @@ end
 
 
 
+nested function->bool IndexAt.IsWithinArea(int iWidth, int iHeight)
+
+    if (g:initIndexAt)
+        return false;
+    end
+
+//
+    if (s:debug)
+        if (iWidth < 1)
+            error("IndexAt.IsWithinArea(int " + iWidth.name() + ", int " + iHeight.name() + ") -> " + iWidth.name() + " needs to be greater than 0.");
+        end
+        if (iHeight < 1)
+            error("IndexAt.IsWithinArea(int " + iWidth.name() + ", int " + iHeight.name() + ") -> " + iHeight.name() + " needs to be greater than 0.");
+        end
+    end
+//
+
+    int iX = g:posIndexAt.x;
+    int iY = g:posIndexAt.y;
+    
+    for (x = iX to iX + iWidth - 1)
+        for (y = iY to iY + iHeight - 1)            
+            insert.rule.pos = [x, y];
+            internal:TestIndicesFull();
+            insert.rule.pos.operator = g:or;
+            insert.rule.pos.group = g:group;
+        end
+    end
+    
+    g:group = g:group + 1;
+    return true;
+end
+
+
+
+nested function->bool IndexAt.IsNotWithinArea(int iWidth, int iHeight)
+
+    if (g:initIndexAt)
+        return false;
+    end
+
+//
+    if (s:debug)
+        if (iWidth < 1)
+            error("IndexAt.IsNotWithinArea(int " + iWidth.name() + ", int " + iHeight.name() + ") -> " + iWidth.name() + " needs to be greater than 0.");
+        end
+        if (iHeight < 1)
+            error("IndexAt.IsNotWithinArea(int " + iWidth.name() + ", int " + iHeight.name() + ") -> " + iHeight.name() + " needs to be greater than 0.");
+        end
+    end
+//
+
+    int iX = g:posIndexAt.x;
+    int iY = g:posIndexAt.y;
+    
+    for (x = iX to iX + iWidth - 1)
+        for (y = iY to iY + iHeight - 1)            
+            insert.rule.pos = [x, y];
+            internal:TestIndicesEmpty();
+        end
+    end
+    return true;
+end
+
+
+
 nested function->bool IndexAt.IsWithinRadius(int iRadius)
 
     if (g:initIndexAt)
@@ -1871,8 +2032,7 @@ nested function->bool IndexAt.IsWithinRadius(int iRadius)
 //
     if (s:debug)
         if (iRadius < 0)
-            warning("IndexAt.IsWithinRadius(int iRadius) -> iRadius needs to be greater than or equal to 0.");
-            return false;
+            error("IndexAt.IsWithinRadius(int " + iRadius.name() + ") -> " + iRadius.name() + " needs to be greater than or equal to 0.");
         end
     end
 //
@@ -1909,8 +2069,7 @@ nested function->bool IndexAt.IsNotWithinRadius(int iRadius)
 //
     if (s:debug)
         if (iRadius < 0)
-            warning("IndexAt.IsNotWithinRadius(int iRadius) -> iRadius needs to be greater than or equal to 0.");
-            return false;
+            error("IndexAt.IsNotWithinRadius(int " + iRadius.name() + ") -> " + iRadius.name() + " needs to be greater than or equal to 0.");
         end
     end
 //
@@ -1939,6 +2098,14 @@ nested function->bool IndexAt.IsEdge(int iOrientation)
     if (g:initIndexAt)
         return false;
     end
+    
+//
+    if (s:debug)
+        if (iOrientation < top or iOrientation > bottomRight)
+            error("IndexAt.IsEdge(int " + iOrientation.name() + ") -> value needs to be top, right, bottom, left, topLeft, topRight, bottomLeft or bottomRight.");
+        end
+    end
+//
 
     int iX = g:posIndexAt.x;
     int iY = g:posIndexAt.y;
@@ -2013,8 +2180,14 @@ nested function->bool IndexAt.IsNotEdge(array int aOrientations)
 //
     if (s:debug)
         if (aOrientations.count == 0)
-            warning("IndexAt.IsNotEdge(array int aOrientations) -> aOrientations was empty, function had no effect.");
+            warning("IndexAt.IsNotEdge(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
             return false;
+        end
+        
+        for (i = 0 to aOrientations.last)
+            if ((aOrientations[i] < top or aOrientations[i] > left) and aOrientations[i] != all)
+                error("IndexAt.IsNotEdge(array int " + aOrientations.name() + ") -> values need to be top, right, bottom, left or all.");
+            end
         end
     end
 //
@@ -2023,22 +2196,22 @@ nested function->bool IndexAt.IsNotEdge(array int aOrientations)
     int iY = g:posIndexAt.y;
 
     for (i = 0 to aOrientations.last)
-        if (aOrientations[i] == top)
+        if (aOrientations[i] == top or aOrientations[i] == all)
             insert.rule.pos = [iX, iY - 1];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
         end
-        if (aOrientations[i] == right)
+        if (aOrientations[i] == right or aOrientations[i] == all)
             insert.rule.pos = [iX + 1, iY];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
         end
-        if (aOrientations[i] == bottom)
+        if (aOrientations[i] == bottom or aOrientations[i] == all)
             insert.rule.pos = [iX, iY + 1];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
         end
-        if (aOrientations[i] == left)
+        if (aOrientations[i] == left or aOrientations[i] == all)
             insert.rule.pos = [iX - 1, iY];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
@@ -2058,13 +2231,13 @@ nested function->bool IndexAt.IsNextTo(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            warning("IndexAt.IsNextTo(array int aIndices) -> aIndices was empty, function had no effect.");
+            warning("IndexAt.IsNextTo(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
             return false;
         end
 
         for (i = 0 to aIndices.last)
             if ((aIndices[i] < -1 or aIndices[i] > 255) and aIndices[i] != this)
-                error("IndexAt.IsNextTo(array int aIndices) -> values need to be in range [-1-255].");
+                error("IndexAt.IsNextTo(array int " + aIndices.name() + ") -> values need to be in range [-1-255].");
             end
         end
     end
@@ -2120,13 +2293,13 @@ nested function->bool IndexAt.IsNotNextTo(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            warning("IndexAt.IsNotNextTo(array int aIndices) -> aIndices was empty, function had no effect.");
+            warning("IndexAt.IsNotNextTo(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
             return false;
         end
 
         for (i = 0 to aIndices.last)
             if ((aIndices[i] < -1 or aIndices[i] > 255) and aIndices[i] != this)
-                error("IndexAt.IsNotNextTo(array int aIndices) -> values need to be in range [-1-255].");
+                error("IndexAt.IsNotNextTo(array int " + aIndices.name() + ") -> values need to be in range [-1-255].");
             end
         end
     end
@@ -2172,8 +2345,14 @@ nested function->bool IndexAt.IsWall(array int aOrientations)
 //
     if (s:debug)
         if (aOrientations.count == 0)
-            warning("IndexAt.IsWall(array int aOrientations) -> aOrientations was empty, function had no effect.");
+            warning("IndexAt.IsWall(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
             return false;
+        end
+        
+        for (i = 0 to aOrientations.last)
+            if (aOrientations[i] < top or aOrientations[i] > left)
+                error("IndexAt.IsWall(array int " + aOrientations.name() + ") -> values need to be top, right, bottom or left.");
+            end
         end
     end
 //
@@ -2217,8 +2396,14 @@ nested function->bool IndexAt.IsOuterCorner(array int aOrientations)
 //
     if (s:debug)
         if (aOrientations.count == 0)
-            warning("IndexAt.IsOuterCorner(array int aOrientations) -> aOrientations was empty, function had no effect.");
+            warning("IndexAt.IsOuterCorner(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
             return false;
+        end
+
+        for (i = 0 to aOrientations.last)
+            if (aOrientations[i] < topLeft or aOrientations[i] > bottomRight)
+                error("IndexAt.IsOuterCorner(array int " + aOrientations.name() + ") -> values need to be topLeft, topRight, bottomLeft or bottomRight.");
+            end
         end
     end
 //
@@ -2270,8 +2455,14 @@ nested function->bool IndexAt.IsInnerCorner(array int aOrientations)
 //
     if (s:debug)
         if (aOrientations.count == 0)
-            warning("IndexAt.IsInnerCorner(array int aOrientations) -> aOrientations was empty, function had no effect.");
+            warning("IndexAt.IsInnerCorner(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
             return false;
+        end
+
+        for (i = 0 to aOrientations.last)
+            if (aOrientations[i] < topLeft or aOrientations[i] > bottomRight)
+                error("IndexAt.IsInnerCorner(array int " + aOrientations.name() + ") -> values need to be topLeft, topRight, bottomLeft or bottomRight.");
+            end
         end
     end
 //
@@ -2307,7 +2498,7 @@ nested function->bool IndexAt.HasSpaceFor(object oObject)
 //
     if (s:debug)
         if (oObject.count == 0)
-            warning("IndexAt.HasSpaceFor(object oObject) -> oObject was empty, function had no effect.");
+            warning("IndexAt.HasSpaceFor(object " + oObject.name() + ") -> " + oObject.name() + " was empty, function had no effect.");
             return false;
         end
     end
@@ -2336,7 +2527,7 @@ nested function->bool IndexAt.IsOverlapping(array object aObjects)
 //
     if (s:debug)
         if (aObjects.count == 0)
-            warning("IndexAt.IsOverlapping(array object aObjects) -> aObjects was empty, function had no effect.");
+            warning("IndexAt.IsOverlapping(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
             return false;
         end
     end
@@ -2374,7 +2565,7 @@ nested function->bool IndexAt.IsNotOverlapping(array object aObjects)
 //
     if (s:debug)
         if (aObjects.count == 0)
-            warning("IndexAt.IsNotOverlapping(array object aObjects) -> aObjects was empty, function had no effect.");
+            warning("IndexAt.IsNotOverlapping(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
             return false;
         end
     end
@@ -2410,11 +2601,11 @@ function->null Replace(int iFrom, int iTo)
 //
     if (s:debug)
         if (iFrom < 0 or iFrom > 255)
-            error("Replace(int iFrom, int iTo) -> iFrom needs to be in range [0-255].");
+            error("Replace(int " + iFrom.name() + ", int " + iTo.name() + ") -> " + iFrom.name() + " needs to be in range [0-255].");
         end
 
         if (iTo < 0 or iTo > 255)
-            error("Replace(int iFrom, int iTo) -> iTo needs to be in range [0-255].");
+            error("Replace(int " + iFrom.name() + ", int " + iTo.name() + ") -> " + iTo.name() + " needs to be in range [0-255].");
         end
     end
 //
@@ -2426,6 +2617,14 @@ end
 
 
 nested function->null Replace.Chance(float fProbability)
+
+//
+    if (s:debug)
+        if (fProbability <= 0)
+            error("Replace.Chance(float " + fProbability.name() + ") -> " + fProbability.name() + " needs to be greater than 0.");
+        end
+    end
+//
 
     util:Chance(fProbability);
 end
@@ -2443,11 +2642,11 @@ function->null ReplaceNot(int iNot, int iTo)
 //
     if (s:debug)
         if (iNot < 0 or iNot > 255)
-            error("ReplaceNot(int iNot, int iTo) -> iNot needs to be in range [0-255].");
+            error("ReplaceNot(int " + iNot.name() + ", int " + iTo.name() + ") -> " + iNot.name() + " needs to be in range [0-255].");
         end
 
         if (iTo < 0 or iTo > 255)
-            error("ReplaceNot(int iNot, int iTo) -> iTo needs to be in range [0-255].");
+            error("ReplaceNot(int " + iNot.name() + ", int " + iTo.name() + ") -> " + iTo.name() + " needs to be in range [0-255].");
         end
     end
 //
@@ -2459,6 +2658,14 @@ end
 
 
 nested function->null ReplaceNot.Chance(float fProbability)
+
+//
+    if (s:debug)
+        if (fProbability <= 0)
+            error("ReplaceNot.Chance(float " + fProbability.name() + ") -> " + fProbability.name() + " needs to be greater than 0.");
+        end
+    end
+//
 
     util:Chance(fProbability);
 end
@@ -2479,13 +2686,13 @@ function->null Shift(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            warning("Shift(array int aIndices) -> aIndices was empty, function had no effect.");
+            warning("Shift(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
             return;
         end
 
         for (i = 0 to aIndices.last)
             if (aIndices[i] < 0 or aIndices[i] > 255)
-                error("Shift(array int aIndices) -> values need to be in range [0-255].");
+                error("Shift(array int " + aIndices.name() + ") -> values need to be in range [0-255].");
             end
         end
     end
@@ -2523,7 +2730,7 @@ function->null InsertObject(array object aObjects)
 //
     if (s:debug)
         if (aObjects.count == 0)
-            warning("InsertObject(array object aObjects) -> aObjects was empty, function had no effect.");
+            warning("InsertObject(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
             return;
         end
     end
@@ -2570,11 +2777,11 @@ nested function->null InsertObject.At(coord cPos)
 //
     if (s:debug)
         if (cPos.x < 0)
-            warning("InsertObject.At(coord cPos) -> cPos.x was negative, function had no effect.");
+            warning("InsertObject.At(coord " + cPos.name() + ") -> " + cPos.name() + ".x was negative, function had no effect.");
             return;
         end
         if (cPos.y < 0)
-            warning("InsertObject.At(coord cPos) -> cPos.y was negative, function had no effect.");
+            warning("InsertObject.At(coord " + cPos.name() + ") -> " + cPos.name() + ".y was negative, function had no effect.");
             return;
         end
     end
@@ -2614,8 +2821,14 @@ nested function->null InsertObject.Chance(array float aProbabilities)
 //
     if (s:debug)
         if (aProbabilities.count == 0)
-            warning("InsertObject.Chance(array float aProbabilities) -> aProbabilities was empty, function had no effect.");
+            warning("InsertObject.Chance(array float " + aProbabilities.name() + ") -> " + aProbabilities.name() + " was empty, function had no effect.");
             return;
+        end
+
+        for (i = 0 to aProbabilities.last)
+            if (aProbabilities[i] <= 0)
+                error("InsertObject.Chance(array float " + aProbabilities.name() + ") -> values need to be greater than 0.");
+            end
         end
     end
 //
@@ -2666,6 +2879,7 @@ function->bool Object()
     nested(
         TestIndices,
         HasSpace, Fits, IsOver,
+        IsTouchingObjectAt, IsTouchingWallAt,
         IsEdge, IsNotEdge,
         IsNextTo, IsNotNextTo,
         IsOverlapping, IsNotOverlapping
@@ -2703,13 +2917,13 @@ nested function->bool Object.TestIndices(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            warning("InsertObject.TestIndices(array int aIndices) -> aIndices was empty, function had no effect.");
+            warning("InsertObject.TestIndices(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
             return false;
         end
 
         for (i = 0 to aIndices.last)
             if (aIndices[i] < 0 or aIndices[i] > 255)
-                error("InsertObject.TestIndices(array int aIndices) -> values need to be in range [0-255].");
+                error("InsertObject.TestIndices(array int " + aIndices.name() + ") -> values need to be in range [0-255].");
             end
         end
     end
@@ -2800,7 +3014,7 @@ nested function->bool Object.IsOver(array object aObjects)
 //
     if (s:debug)
         if (aObjects.count == 0)
-            warning("Object.IsOver(array object aObjects) -> aObjects was empty, function had no effect.");
+            warning("Object.IsOver(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
             return false;
         end
     end
@@ -2816,11 +3030,132 @@ end
 
 
 
+nested function->bool Object.IsTouchingObjectAt(object oObject, int iSide)
+
+    if (g:initObject)
+        return false;
+    end
+
+//
+    if (s:debug)
+        if (oObject.count == 0)
+            warning("Object.IsTouchingObjectAt(object " + oObject.name() + ", int " + iSide.name() + ") -> " + oObject.name() + " was empty, function had no effect.");
+            return false;
+        end
+        if (iSide < top or iSide > left)
+            error("Object.IsTouchingObjectAt(object " + oObject.name() + ", int " + iSide.name() + ") -> " + iSide.name() + " needs to be top, right, bottom or left.");
+        end
+    end
+//
+
+    array coord aFootprintPos = Footprint(g:vInsertObject, iSide);
+
+    array int aFootprintX;
+    array int aFootprintY;
+    array int aDistanceX;
+    array int aDistanceY;
+    for (i = 0 to aFootprintPos.last)
+        aFootprintX.push(aFootprintPos[i].x);
+        aFootprintY.push(aFootprintPos[i].y);
+        if (i > 0)
+            aDistanceX.push(aFootprintPos[i].x - aFootprintPos[i - 1].x);
+            aDistanceY.push(aFootprintPos[i].y - aFootprintPos[i - 1].y);
+        end
+    end
+
+    array coord aOtherFootprintPos = Footprint(oObject, util:OppositeSide(iSide));
+
+    if (aFootprintPos.count <= aOtherFootprintPos.count)
+        array int aOtherFootprintX;
+        array int aOtherFootprintY;
+        array int aOtherDistanceX;
+        array int aOtherDistanceY;
+        for (j = 0 to aOtherFootprintPos.last)
+            aOtherFootprintX.push(aOtherFootprintPos[j].x);
+            aOtherFootprintY.push(aOtherFootprintPos[j].y);
+            if (j > 0)
+                aOtherDistanceX.push(aOtherFootprintPos[j].x - aOtherFootprintPos[j - 1].x);
+                aOtherDistanceY.push(aOtherFootprintPos[j].y - aOtherFootprintPos[j - 1].y);
+            end
+        end
+        
+        int iMatchIndex = 0;
+        if (iSide == top or iSide == bottom)
+            iMatchIndex = aOtherDistanceX.find(aDistanceX);
+        end
+        if (iSide == left or iSide == right)
+            iMatchIndex = aOtherDistanceY.find(aDistanceY);
+        end
+
+        if (util:Found(iMatchIndex))
+            if (iSide == top)
+                insert.rule.pos = [aFootprintX[0] - aOtherFootprintX[0], util:Negate(aOtherFootprintPos[0].y)];
+            end
+            if (iSide == bottom)
+                insert.rule.pos = [aFootprintX[0] - aOtherFootprintX[0], aFootprintPos[0].y];
+            end
+            if (iSide == left)
+                insert.rule.pos = [util:Negate(aOtherFootprintPos[0].x), aFootprintY[0] - aOtherFootprintY[0]];
+            end
+            if (iSide == right)
+                insert.rule.pos = [aFootprintPos[0].x, aFootprintY[0] - aOtherFootprintY[0]];
+            end
+            insert.rule.pos.type = index;
+            insert.rule.pos.index = oObject.anchor;
+
+            return true;
+        end
+    end
+
+//
+    if (s:debug)
+        warning("Object.IsTouchingObjectAt(object " + oObject.name() + ", int " + iSide.name() + ") -> matching footprint was not found, function had no effect.");
+    end
+//
+    return false;
+end
+
+
+
+nested function->bool Object.IsTouchingWallAt(int iSide)
+
+    if (g:initObject)
+        return false;
+    end
+    
+//
+    if (s:debug)
+        if (iSide < top or iSide > left)
+            error("Object.IsTouchingWallAt(int " + iSide.name() + ") -> value needs to be top, right, bottom or left.");
+        end
+    end
+//
+
+    object oObject = g:vInsertObject;
+
+    array coord aFootprintPos = Footprint(oObject, iSide);
+    for (i = 0 to aFootprintPos.last)
+        insert.rule.pos = aFootprintPos[i];
+        internal:TestIndicesFull();
+    end
+    return true;
+end
+
+
+
 nested function->bool Object.IsEdge(int iOrientation)
 
     if (g:initObject)
         return false;
     end
+    
+//
+    if (s:debug)
+        if (iOrientation < top or iOrientation > bottomRight)
+            error("Object.IsEdge(int " + iOrientation.name() + ") -> value needs to be top, right, bottom, left, topLeft, topRight, bottomLeft or bottomRight.");
+        end
+    end
+//
 
     if (iOrientation == top)
         insert.rule.pos = [0, g:vObjectTop - 1];
@@ -2908,29 +3243,35 @@ nested function->bool Object.IsNotEdge(array int aOrientations)
 //
     if (s:debug)
         if (aOrientations.count == 0)
-            warning("Object.IsNotEdge(array int aOrientations) -> aOrientations was empty, function had no effect.");
+            warning("Object.IsNotEdge(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
             return false;
+        end
+        
+        for (i = 0 to aOrientations.last)
+            if ((aOrientations[i] < top or aOrientations[i] > left) and aOrientations[i] != all)
+                error("Object.IsNotEdge(array int " + aOrientations.name() + ") -> values need to be top, right, bottom, left or all.");
+            end
         end
     end
 //
 
     for (i = 0 to aOrientations.last)
-        if (aOrientations[i] == top)
+        if (aOrientations[i] == top or aOrientations[i] == all)
             insert.rule.pos = [0, g:vObjectTop - 1];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
         end
-        if (aOrientations[i] == right)
+        if (aOrientations[i] == right or aOrientations[i] == all)
             insert.rule.pos = [g:vObjectRight + 1, 0];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
         end
-        if (aOrientations[i] == bottom)
+        if (aOrientations[i] == bottom or aOrientations[i] == all)
             insert.rule.pos = [0, g:vObjectBottom + 1];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
         end
-        if (aOrientations[i] == left)
+        if (aOrientations[i] == left or aOrientations[i] == all)
             insert.rule.pos = [g:vObjectLeft - 1, 0];
             insert.rule.pos.type = notindex;
             insert.rule.pos.index = -1;
@@ -2950,7 +3291,7 @@ nested function->bool Object.IsNextTo(array object aObjects)
 //
     if (s:debug)
         if (aObjects.count == 0)
-            warning("Object.IsNextTo(array object aObjects) -> aObjects was empty, function had no effect.");
+            warning("Object.IsNextTo(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
             return false;
         end
     end
@@ -3036,7 +3377,7 @@ nested function->bool Object.IsNotNextTo(array object aObjects)
 //
     if (s:debug)
         if (aObjects.count == 0)
-            warning("Object.IsNotNextTo(array object aObjects) -> aObjects was empty, function had no effect.");
+            warning("Object.IsNotNextTo(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
             return false;
         end
     end
@@ -3096,7 +3437,7 @@ nested function->bool Object.IsOverlapping(array object aObjects)
 //
     if (s:debug)
         if (aObjects.count == 0)
-            warning("Object.IsOverlapping(array object aObjects) -> aObjects was empty, function had no effect.");
+            warning("Object.IsOverlapping(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
             return false;
         end
     end
@@ -3140,7 +3481,7 @@ nested function->bool Object.IsNotOverlapping(array object aObjects)
 //
     if (s:debug)
         if (aObjects.count == 0)
-            warning("Object.IsNotOverlapping(array object aObjects) -> aObjects was empty, function had no effect.");
+            warning("Object.IsNotOverlapping(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
             return false;
         end
     end

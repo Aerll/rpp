@@ -41,8 +41,8 @@
 #include <rulesgen.hpp>
 
 namespace {
-    long long memory = 0;
-    long long max_memory = 0; // in megabytes
+    int64_t memory = 0;
+    int64_t max_memory = 0;
 }
 
 void* operator new(std::size_t size) {
@@ -90,7 +90,7 @@ static void showHelp(char const* prog) {
         << "  --stack <megabytes>  Override #stack with <megabytes>." << std::endl
         << "  --include <file>     Additional #include file." << std::endl
         << "  --skip-preprocessor  Skip preprocessor pass." << std::endl
-        << "  --silent             Do not write to stdout." << std::endl;
+        << "  -p                   Do not pause after execution." << std::endl;
 }
 
 static void exitWithError(char const* prog, char const* err) {
@@ -136,8 +136,8 @@ Cli App::parseCli(int argc, char** argv) {
             else if (arg == "--skip-preprocessor") {
                 cli.skipPreprocessor = true;
             }
-            else if (arg == "--silent") {
-                cli.silent = true;
+            else if (arg == "-p") {
+                cli.pause = false;
             }
             else {
                 std::cerr << "Warning: unrecognized flag: " << arg << std::endl;
@@ -159,7 +159,6 @@ int App::exec(const Cli& cli) {
     try {
         using namespace std::chrono;
         auto beg = high_resolution_clock::now();
-        bool wait = false;
 
         for (auto const& input : cli.inputFiles) {
             max_memory = 0;
@@ -176,7 +175,6 @@ int App::exec(const Cli& cli) {
                 Preprocessor preprocessor(std::move(tokens));
                 preprocessor.run(input);
                 if (preprocessor.failed()) {
-                    wait = true;
                     continue;
                 }
                 tokens = preprocessor.data();
@@ -195,27 +193,19 @@ int App::exec(const Cli& cli) {
 
                 Parser parser;
                 parser.parse(parseTree, tokenStream);
-                if (parser.failed()) {
-                    wait = true;
+                if (parser.failed())
                     continue;
-                }
 
                 abstractSyntaxTree.create(parseTree);
                 parser.parse(abstractSyntaxTree);
-                if (parser.failed()) {
-                    wait = true;
+                if (parser.failed())
                     continue;
-                }
             }
 
             Translator translator;
             translator.run(abstractSyntaxTree);
-            if (translator.failed()) {
-                wait = true;
+            if (translator.failed())
                 continue;
-            }
-            if (translator.warned())
-                wait = true;
 
             RulesGen::exec(translator.automappers(), outputFile);
         }
@@ -226,7 +216,7 @@ int App::exec(const Cli& cli) {
         std::cout << "\n\n";
         std::cout << "Finished in: " << time << "s\n";
 
-        if (wait)
+        if (cli.pause)
             pause();
         return 0;
     }

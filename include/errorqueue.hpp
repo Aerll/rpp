@@ -51,7 +51,7 @@ protected:
 
 protected:
     std::queue<std::unique_ptr<Error>> m_errors;
-    uint32_t m_count;
+    uint32_t m_count = 0;
 };
 
 #endif // RPP_ERRORQUEUE_HPP

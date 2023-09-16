@@ -5,14 +5,15 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 struct Cli {
     std::vector<std::filesystem::path> inputFiles;
     std::optional<std::filesystem::path> output;
-    std::optional<long long> stack;
+    std::optional<int64_t> stack;
     std::vector<std::filesystem::path> includes;
     bool skipPreprocessor;
-    bool silent;
+    bool pause = true;
 };
 
 class App final {

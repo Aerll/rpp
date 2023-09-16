@@ -8,11 +8,12 @@
         -->
         <KeyWord name="anchor" />
         <KeyWord name="and" />
-        <KeyWord name="any" />
         <KeyWord name="array" />
         <KeyWord name="automapper" />
         <KeyWord name="bool" />
+        <KeyWord name="break" />
         <KeyWord name="coord" />
+        <KeyWord name="continue" />
         <KeyWord name="count" />
         <KeyWord name="empty" />
         <KeyWord name="end" />
@@ -33,6 +34,7 @@
         <KeyWord name="newrun" />
         <KeyWord name="nocopy" />
         <KeyWord name="nodefault" />
+        <KeyWord name="not" />
         <KeyWord name="notindex" />
         <KeyWord name="null" />
         <KeyWord name="object" />
@@ -65,6 +67,15 @@
         <KeyWord name="warning" func="yes">
             <Overload retVal="null">
                 <Param name="string sMessage" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- assert -->
+        <KeyWord name="assert" func="yes">
+            <Overload retVal="null">
+                <Param name="bool bValue" />
             </Overload>
         </KeyWord>
         
@@ -125,6 +136,15 @@
         <!-- name -->
         <KeyWord name="name" func="yes">
             <Overload retVal="string">
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- find -->
+        <KeyWord name="find" func="yes">
+            <Overload retVal="int">
+                <Param name="Values" />
             </Overload>
         </KeyWord>
         
@@ -511,29 +531,11 @@
         
         
         
-        <!-- util:PosRange -->
-        <KeyWord name="util:PosRange" func="yes">
-            <Overload retVal="array coord">
-                <Param name="range rX" />
-                <Param name="range rY" />
-            </Overload>
-            <Overload retVal="array coord">
-                <Param name="range rX" />
-                <Param name="int iY" />
-            </Overload>
-            <Overload retVal="array coord">
-                <Param name="int iX" />
-                <Param name="range rY" />
-            </Overload>
-        </KeyWord>
-        
-        
-        
-        <!-- util:Copies -->
-        <KeyWord name="util:Copies" func="yes">
+        <!-- util:CopiesOf -->
+        <KeyWord name="util:CopiesOf" func="yes">
             <Overload retVal="array float">
-                <Param name="float fValue" />
                 <Param name="int iCopies" />
+                <Param name="float fValue" />
             </Overload>
         </KeyWord>
         
@@ -556,6 +558,15 @@
             <Overload retVal="coord">
                 <Param name="coord cAnchor" />
                 <Param name="int iIndex" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:Found -->
+        <KeyWord name="util:Found" func="yes">
+            <Overload retVal="bool">
+                <Param name="int iResult" />
             </Overload>
         </KeyWord>
         
@@ -634,11 +645,30 @@
         
         
         
+        <!-- util:OppositeSide -->
+        <KeyWord name="util:OppositeSide" func="yes">
+            <Overload retVal="int">
+                <Param name="int iSide" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
         
         
         <!-- ******************************************************************
             functions
         -->
+        
+        <KeyWord name="top" />
+        <KeyWord name="right" />
+        <KeyWord name="bottom" />
+        <KeyWord name="left" />
+        <KeyWord name="topLeft" />
+        <KeyWord name="topRight" />
+        <KeyWord name="bottomLeft" />
+        <KeyWord name="bottomRight" />
+        <KeyWord name="all" />
         
         <!-- AutoMapper -->
         <KeyWord name="AutoMapper" func="yes">
@@ -685,6 +715,36 @@
         
         
         
+        <!-- Area -->
+        <KeyWord name="Area" func="yes">
+            <Overload retVal="array coord">
+                <Param name="coord cPos" />
+                <Param name="coord cSize" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- Radius -->
+        <KeyWord name="Radius" func="yes">
+            <Overload retVal="array coord">
+                <Param name="coord cPos" />
+                <Param name="int iRadius" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- Footprint -->
+        <KeyWord name="Footprint" func="yes">
+            <Overload retVal="array coord">
+                <Param name="object oObject" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
         
         
         <!-- ******************************************************************
@@ -706,14 +766,6 @@
             function IndexAt
         -->
         
-        <KeyWord name="top" />
-        <KeyWord name="right" />
-        <KeyWord name="bottom" />
-        <KeyWord name="left" />
-        <KeyWord name="topLeft" />
-        <KeyWord name="topRight" />
-        <KeyWord name="bottomLeft" />
-        <KeyWord name="bottomRight" />
         <KeyWord name="this" />
         
         <!-- IndexAt -->
@@ -785,6 +837,43 @@
         <!-- IsNotOut -->
         <KeyWord name="IsNotOut" func="yes">
             <Overload retVal="bool" />
+        </KeyWord>
+        
+
+
+        
+        <!-- IsWithinArea -->
+        <KeyWord name="IsWithinArea" func="yes">
+            <Overload retVal="bool">
+                <Param name="int iWidth" />
+                <Param name="int iHeight" />
+            </Overload>
+        </KeyWord>
+        
+        
+        <!-- IsNotWithinArea -->
+        <KeyWord name="IsNotWithinArea" func="yes">
+            <Overload retVal="bool">
+                <Param name="int iWidth" />
+                <Param name="int iHeight" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- IsWithinRadius -->
+        <KeyWord name="IsWithinRadius" func="yes">
+            <Overload retVal="bool">
+                <Param name="int iRadius" />
+            </Overload>
+        </KeyWord>
+        
+        
+        <!-- IsNotWithinRadius -->
+        <KeyWord name="IsNotWithinRadius" func="yes">
+            <Overload retVal="bool">
+                <Param name="int iRadius" />
+            </Overload>
         </KeyWord>
         
         
@@ -927,6 +1016,25 @@
         <KeyWord name="IsOver" func="yes">
             <Overload retVal="bool">
                 <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- IsTouchingObjectAt -->
+        <KeyWord name="IsTouchingObjectAt" func="yes">
+            <Overload retVal="bool">
+                <Param name="object oObject" />
+                <Param name="int iSide" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- IsTouchingWallAt -->
+        <KeyWord name="IsTouchingWallAt" func="yes">
+            <Overload retVal="bool">
+                <Param name="int iSide" />
             </Overload>
         </KeyWord>
         

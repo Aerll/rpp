@@ -56,7 +56,7 @@ public:
         { return m_tileset; }
     const std::filesystem::path& path() const noexcept
         { return m_path; }
-    long long stack() const noexcept
+    int64_t stack() const noexcept
         { return m_stack; }
 
 private:
@@ -69,7 +69,7 @@ private:
 
     std::string m_tileset;
     std::filesystem::path m_path;
-    long long m_stack;
+    int64_t m_stack;
 };
 
 #endif // RPP_PREPROCESSOR_HPP

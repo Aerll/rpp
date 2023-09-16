@@ -379,6 +379,8 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(IPTExpression
             return convertExpression(static_cast<PTErrorExpression&>(expression));
         case ExpressionID::Warning:
             return convertExpression(static_cast<PTWarningExpression&>(expression));
+        case ExpressionID::Assert:
+            return convertExpression(static_cast<PTAssertExpression&>(expression));
         case ExpressionID::ArraySubscript:
             return convertExpression(static_cast<PTArraySubscriptExpression&>(expression));
         case ExpressionID::PercentLiteral:
@@ -589,6 +591,12 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTFunctionCal
         node->setLine(expression.get<1>()->line);
         return node;
     }
+    else if (id == NodeID::FindCall) {
+        auto node = std::make_unique<ASTFindCallNode>();
+        node->setArguments(convertArguments(expression));
+        node->setLine(expression.get<1>()->line);
+        return node;
+    }
     else {
         if (expression.get<1>() == nullptr)
             return convertExpression(*expression.get<3>());
@@ -665,6 +673,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAcces
             case NodeID::Last :
             case NodeID::X :
             case NodeID::Y :
+            case NodeID::FindCall :
                 if (current->id() == NodeID::Rotation)
                     current->as<ASTRotationNode*>()->setNode(std::move(result));
                 else if (current->id() == NodeID::Rotate)
@@ -719,6 +728,8 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAcces
                     current->as<ASTUniqueCallNode*>()->setVariable(std::move(result));
                 else if (current->id() == NodeID::StrCall)
                     current->as<ASTStrCallNode*>()->setVariable(std::move(result));
+                else if (current->id() == NodeID::FindCall)
+                    current->as<ASTFindCallNode*>()->setVariable(std::move(result));
                 result = std::move(current);
                 break;
 
@@ -747,6 +758,8 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAcces
                     current->as<ASTStrCallNode*>()->setVariable(std::move(result));
                 else if (current->id() == NodeID::NameCall)
                     current->as<ASTNameCallNode*>()->setVariable(std::move(result));
+                else if (current->id() == NodeID::FindCall)
+                    current->as<ASTFindCallNode*>()->setVariable(std::move(result));
                 result = std::move(current);
                 break;
 
@@ -819,6 +832,8 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAcces
                     current->as<ASTUniqueCallNode*>()->setVariable(std::move(result));
                 else if (current->id() == NodeID::StrCall)
                     current->as<ASTStrCallNode*>()->setVariable(std::move(result));
+                else if (current->id() == NodeID::FindCall)
+                    current->as<ASTFindCallNode*>()->setVariable(std::move(result));
                 result = std::move(current);
                 break;
         }
@@ -862,6 +877,15 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTWarningExpr
 {
     auto node = std::make_unique<ASTWarningNode>();
     node->setString(convertExpression(*expression.get<3>()));
+    node->setLine(expression.get<1>()->line);
+
+    return node;
+}
+
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTAssertExpression& expression)
+{
+    auto node = std::make_unique<ASTAssertNode>();
+    node->setExpr(convertExpression(*expression.get<3>()));
     node->setLine(expression.get<1>()->line);
 
     return node;
@@ -1071,10 +1095,18 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertLeft(PTMemberAccessExpre
         return convertExpression(*expression.get<1>(), NodeID::Count);
     else if (expression.get<1>()->getLastToken()->value == KW::Last)
         return convertExpression(*expression.get<1>(), NodeID::Last);
-    else if (expression.get<1>()->getLastToken()->value == "x")
-        return convertExpression(*expression.get<1>(), NodeID::X);
-    else if (expression.get<1>()->getLastToken()->value == "y")
-        return convertExpression(*expression.get<1>(), NodeID::Y);
+    else if (expression.get<1>()->getLastToken()->value == "x") {
+        if (id == NodeID::NestedCall)
+            return convertExpression(*expression.get<1>(), NodeID::X);
+        else
+            return convertExpression(*expression.get<1>(), NodeID::Variable);
+    }
+    else if (expression.get<1>()->getLastToken()->value == "y") {
+        if (id == NodeID::NestedCall)
+            return convertExpression(*expression.get<1>(), NodeID::Y);
+        else
+            return convertExpression(*expression.get<1>(), NodeID::Variable);
+    }
     else if (Token::stringToRotation(expression.get<1>()->getTokens().front()->value) != Rotation::Default)
         return convertExpression(*expression.get<1>(), NodeID::Rotation);
     else if (expression.get<1>()->getTokens().front()->value == KW::Rotate)
@@ -1094,6 +1126,8 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertLeft(PTMemberAccessExpre
                 return convertExpression(*expression.get<1>(), NodeID::StrCall);
             else if (functionName == "name")
                 return convertExpression(*expression.get<1>(), NodeID::NameCall);
+            else if (functionName == "find")
+                return convertExpression(*expression.get<1>(), NodeID::FindCall);
             else
                 return nullptr;
         }
@@ -1140,6 +1174,8 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertRight(PTMemberAccessExpr
                 return convertExpression(*expression.get<3>(), NodeID::StrCall);
             else if (functionName == "name")
                 return convertExpression(*expression.get<3>(), NodeID::NameCall);
+            else if (functionName == "find")
+                return convertExpression(*expression.get<3>(), NodeID::FindCall);
             else
                 return nullptr;
         }

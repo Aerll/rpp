@@ -84,6 +84,7 @@ bool Token::isKeyword(const std::string& s) noexcept
 
         case 6:
             if (s == KW::Anchor ||
+                s == KW::Assert ||
                 s == KW::Insert ||
                 s == KW::Invoke ||
                 s == KW::Nested ||
@@ -377,7 +378,7 @@ bool Token::isPos(std::string_view s) noexcept
 
 bool Token::isBuiltin(std::string_view s) noexcept
 {
-    return s == "has" || s == "push" || s == "unique" || s == "str" || s == "name";
+    return s == "has" || s == "push" || s == "unique" || s == "str" || s == "name" || s == "find";
 }
 
 bool Token::isArray(ValueType type) noexcept

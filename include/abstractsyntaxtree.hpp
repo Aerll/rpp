@@ -88,6 +88,7 @@ private:
     ptr_node_v convertExpressions(PTMemberAccessExpression& expression, NodeID id = NodeID::Null);
     ptr_node convertExpression(PTErrorExpression& expression);
     ptr_node convertExpression(PTWarningExpression& expression);
+    ptr_node convertExpression(PTAssertExpression& expression);
     ptr_node convertExpression(PTArraySubscriptExpression& expression);
     ptr_node convertExpression(PTPercentLiteralExpression& expression);
     ptr_node convertExpression(PTStringLiteralExpression& expression);
