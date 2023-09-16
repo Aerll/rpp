@@ -28,6 +28,9 @@
 #include <token.hpp>
 #include <expect.hpp>
 #include <externalresource.hpp>
+#include <io.hpp>
+#include <inputstream.hpp>
+#include <tokenizer.hpp>
 
 /*
     Preprocessor
@@ -71,7 +74,13 @@ void Preprocessor::run(const std::filesystem::path& path)
                     std::filesystem::status(filePath).type() == std::filesystem::file_type::regular &&
                     !ExternalResource::get().isLoaded(filePath)
                     ) {
-                    auto tokens = ExternalResource::get().load(filePath, currentLine);
+                    InputStream inputStream(FileR::read(filePath));
+                    Tokenizer tokenizer;
+                    tokenizer.run(inputStream, true);
+                    Preprocessor preprocessor(tokenizer.data());
+                    preprocessor.run(filePath);
+                    auto tokens = preprocessor.data();
+                    auto info = ExternalResource::get().load(filePath, currentLine, tokens.back().line);
 
                     m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
                     m_curr = m_data.insert(m_curr, std::make_move_iterator(tokens.begin()), std::make_move_iterator(tokens.end()));
@@ -79,7 +88,7 @@ void Preprocessor::run(const std::filesystem::path& path)
                         if (it < m_curr + tokens.size())
                             it->line += currentLine;
                         else
-                            it->line += ExternalResource::get().info().back().linesCount - 1;
+                            it->line += info.linesCount - 1;
                     }
                 }
                 else {

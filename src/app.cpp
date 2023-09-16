@@ -26,6 +26,7 @@
 #include <fstream>
 #include <chrono>
 #include <iostream>
+#include <iterator>
 #include <utility>
 
 #include <io.hpp>
@@ -39,6 +40,7 @@
 #include <translator.hpp>
 #include <automapper.hpp>
 #include <rulesgen.hpp>
+#include <externalresource.hpp>
 
 namespace {
     int64_t memory = 0;
@@ -161,15 +163,37 @@ int App::exec(const Cli& cli) {
         auto beg = high_resolution_clock::now();
 
         for (auto const& input : cli.inputFiles) {
-            max_memory = 0;
+            max_memory = 1024 * 1024 * 50;
+            ExternalResource::get().clear();
+            auto outputFile = cli.output.value_or(std::filesystem::current_path() / "tileset.rules");
 
             InputStream inputStream(FileR::read(input));
 
             Tokenizer tokenizer;
             tokenizer.run(inputStream);
-            std::vector<Token> tokens = tokenizer.data();
+            auto tokens = tokenizer.data();
 
-            std::filesystem::path outputFile = cli.output.value_or(std::filesystem::current_path() / "tileset.rules");
+            for (auto const& include : cli.includes) {
+                if (ExternalResource::get().isLoaded(include))
+                    continue;
+
+                InputStream inputStream(FileR::read(include));
+
+                Tokenizer tokenizer;
+                tokenizer.run(inputStream, true);
+                auto includeTokens = tokenizer.data();
+
+                if (!cli.skipPreprocessor) {
+                    Preprocessor preprocessor(std::move(includeTokens));
+                    preprocessor.run(include);
+                    if (preprocessor.failed())
+                        continue;
+                    includeTokens = preprocessor.data();
+                }
+                
+                ExternalResource::get().load(include, 0, includeTokens.back().line);
+                tokens.insert(tokens.begin(), std::make_move_iterator(includeTokens.begin()), std::make_move_iterator(includeTokens.end()));
+            }
 
             if (!cli.skipPreprocessor) {
                 Preprocessor preprocessor(std::move(tokens));

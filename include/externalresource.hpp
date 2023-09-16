@@ -22,6 +22,7 @@
 #ifndef RPP_EXTERNALPRESET_HPP
 #define RPP_EXTERNALPRESET_HPP
 
+#include <cstdint>
 #include <filesystem>
 #include <vector>
 
@@ -40,11 +41,14 @@ class ExternalResource final {
 public:
     static ExternalResource& get();
 
-    std::vector<Token> load(const std::filesystem::path& path, uint32_t beg);
+    const Info& load(const std::filesystem::path& path, uint32_t beg, uint32_t lines);
     bool isLoaded(const std::filesystem::path& path) const;
 
     const std::vector<Info>& info() const noexcept
         { return m_info; }
+
+    void clear() noexcept
+        { m_info.clear(); }
 
 private:
     void addInfo(Info&& info);
