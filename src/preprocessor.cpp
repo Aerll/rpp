@@ -62,8 +62,8 @@ void Preprocessor::run(const std::filesystem::path& path)
                 m_tileset = line.at(3).value;
                 m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
             }
-            else if (line.at(1).value == ID::Stack) {
-                m_stack = static_cast<int64_t>(std::stoi(line.at(3).value)) * 1024 * 1024;
+            else if (line.at(1).value == ID::Memory) {
+                m_memory = std::stoll(line.at(3).value) * 1024 * 1024;
                 m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
             }
             else if (line.at(1).value == ID::Include) {

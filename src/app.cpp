@@ -44,7 +44,7 @@
 
 namespace {
     int64_t memory = 0;
-    int64_t max_memory = 0;
+    int64_t max_memory = 0; // in megabytes
 }
 
 void* operator new(std::size_t size) {
@@ -87,22 +87,22 @@ void operator delete[](void* data) noexcept {
 static void showHelp(char const* prog) {
     std::cout
         << "Usage: " << prog << " [options] file...\n"
-        << "  --help               Display the help.\n"
-        << "  --output <file>      Write to <file> (override #path and #tileset).\n"
-        << "  --stack <megabytes>  Override #stack with <megabytes>.\n"
-        << "  --include <file>     Additional #include file.\n"
-        << "  --skip-preprocessor  Skip preprocessor pass.\n"
-        << "  -p                   Do not pause after execution.\n";
+        << "      --help               Display the help.\n"
+        << "  -o, --output <file>      Write to <file> (override #path and #tileset).\n"
+        << "      --memory <megabytes> Override #memory with <megabytes>.\n"
+        << "      --include <file>     Additional #include file.\n"
+        << "      --skip-preprocessor  Skip preprocessor pass.\n"
+        << "  -p                       Do not pause after execution.\n";
 }
 
 static void exitWithError(char const* prog, char const* err) {
     std::cerr << "Error: " << err << "\n\n";
     showHelp(prog);
-    exit(1);
+    std::exit(1);
 }
 
-Cli App::parseCli(int argc, char** argv) {
-    Cli cli{};
+CLI App::parseCLI(int argc, char** argv) {
+    CLI cli{};
 
     for (int i = 1; i < argc; ++i) {
         std::string_view arg = argv[i];
@@ -110,7 +110,7 @@ Cli App::parseCli(int argc, char** argv) {
         if (arg[0] == '-') {
             if (arg == "--help") {
                 showHelp(argv[0]);
-                exit(0);
+                std::exit(0);
             }
             else if (arg == "--output" || arg == "-o") {
                 if (i + 1 >= argc)
@@ -124,15 +124,15 @@ Cli App::parseCli(int argc, char** argv) {
 
                 cli.includes.push_back(argv[++i]);
             }
-            else if (arg == "--stack") {
+            else if (arg == "--memory") {
                 if (i + 1 >= argc)
-                    exitWithError(argv[0], "missing value after --stack");
+                    exitWithError(argv[0], "missing value after --memory");
 
                 try {
-                    cli.stack = std::stoll(argv[++i]);
+                    cli.memory = std::stoll(argv[++i]) * 1024 * 1024;
                 }
                 catch (...) {
-                    exitWithError(argv[0], "--stack: value is not an integer");
+                    exitWithError(argv[0], "--memory: value is not an integer");
                 }
             }
             else if (arg == "--skip-preprocessor") {
@@ -142,7 +142,7 @@ Cli App::parseCli(int argc, char** argv) {
                 cli.pause = false;
             }
             else {
-                std::cerr << "Warning: unrecognized flag: " << arg << "\n";
+                std::cerr << "Warning: unrecognized flag: " << arg << '\n';
             }
         }
         else {
@@ -157,7 +157,7 @@ Cli App::parseCli(int argc, char** argv) {
     return cli;
 }
 
-int App::exec(const Cli& cli) {
+int App::exec(const CLI& cli) {
     try {
         using namespace std::chrono;
         auto beg = high_resolution_clock::now();
@@ -202,11 +202,11 @@ int App::exec(const Cli& cli) {
                     continue;
 
                 tokens = preprocessor.data();
-                max_memory = preprocessor.stack();
+                max_memory = preprocessor.memory();
                 outputFile = cli.output.value_or(preprocessor.path() / (preprocessor.tileset() + ".rules"));
             }
 
-            max_memory = cli.stack.value_or(max_memory);
+            max_memory = cli.memory.value_or(max_memory);
 
             AbstractSyntaxTree abstractSyntaxTree;
             {

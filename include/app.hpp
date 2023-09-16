@@ -7,10 +7,10 @@
 #include <vector>
 #include <cstdint>
 
-struct Cli {
+struct CLI {
     std::vector<std::filesystem::path> inputFiles;
     std::optional<std::filesystem::path> output;
-    std::optional<int64_t> stack;
+    std::optional<int64_t> memory;
     std::vector<std::filesystem::path> includes;
     bool skipPreprocessor;
     bool pause = true;
@@ -18,8 +18,8 @@ struct Cli {
 
 class App final {
 public:
-    static Cli parseCli(int argc, char** argv);
-    static int exec(const Cli& cli);
+    static CLI parseCLI(int argc, char** argv);
+    static int exec(const CLI& cli);
     static void pause();
 };
 

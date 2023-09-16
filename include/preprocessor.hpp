@@ -43,7 +43,7 @@ public:
         , m_curr(m_data.begin())
         , m_tileset("tileset")
         , m_path(std::filesystem::current_path())
-        , m_stack(1024 * 1024 * 50)
+        , m_memory(1024 * 1024 * 50)
     {
     }
 
@@ -56,8 +56,8 @@ public:
         { return m_tileset; }
     const std::filesystem::path& path() const noexcept
         { return m_path; }
-    int64_t stack() const noexcept
-        { return m_stack; }
+    int64_t memory() const noexcept
+        { return m_memory; }
 
 private:
     std::filesystem::path getPath(const std::string& value) const;
@@ -69,7 +69,7 @@ private:
 
     std::string m_tileset;
     std::filesystem::path m_path;
-    int64_t m_stack;
+    int64_t m_memory;
 };
 
 #endif // RPP_PREPROCESSOR_HPP
