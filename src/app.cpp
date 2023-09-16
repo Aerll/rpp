@@ -84,17 +84,17 @@ void operator delete[](void* data) noexcept {
 */
 static void showHelp(char const* prog) {
     std::cout
-        << "Usage: " << prog << " [options] file..." << std::endl
-        << "  --help               Display the help." << std::endl
-        << "  --output <file>      Write to <file> (override #path and #tileset)." << std::endl
-        << "  --stack <megabytes>  Override #stack with <megabytes>." << std::endl
-        << "  --include <file>     Additional #include file." << std::endl
-        << "  --skip-preprocessor  Skip preprocessor pass." << std::endl
-        << "  -p                   Do not pause after execution." << std::endl;
+        << "Usage: " << prog << " [options] file...\n"
+        << "  --help               Display the help.\n"
+        << "  --output <file>      Write to <file> (override #path and #tileset).\n"
+        << "  --stack <megabytes>  Override #stack with <megabytes>.\n"
+        << "  --include <file>     Additional #include file.\n"
+        << "  --skip-preprocessor  Skip preprocessor pass.\n"
+        << "  -p                   Do not pause after execution.\n";
 }
 
 static void exitWithError(char const* prog, char const* err) {
-    std::cerr << "Error: " << err << std::endl << std::endl;
+    std::cerr << "Error: " << err << "\n\n";
     showHelp(prog);
     exit(1);
 }
@@ -111,21 +111,21 @@ Cli App::parseCli(int argc, char** argv) {
                 exit(0);
             }
             else if (arg == "--output" || arg == "-o") {
-                if (i + 1 >= argc) {
+                if (i + 1 >= argc)
                     exitWithError(argv[0], "missing filename after --output");
-                }
+
                 cli.output = argv[++i];
             }
             else if (arg == "--include") {
-                if (i + 1 >= argc) {
+                if (i + 1 >= argc)
                     exitWithError(argv[0], "missing filename after --include");
-                }
+
                 cli.includes.push_back(argv[++i]);
             }
             else if (arg == "--stack") {
-                if (i + 1 >= argc) {
+                if (i + 1 >= argc)
                     exitWithError(argv[0], "missing value after --stack");
-                }
+
                 try {
                     cli.stack = std::stoll(argv[++i]);
                 }
@@ -140,7 +140,7 @@ Cli App::parseCli(int argc, char** argv) {
                 cli.pause = false;
             }
             else {
-                std::cerr << "Warning: unrecognized flag: " << arg << std::endl;
+                std::cerr << "Warning: unrecognized flag: " << arg << "\n";
             }
         }
         else {
@@ -174,9 +174,9 @@ int App::exec(const Cli& cli) {
             if (!cli.skipPreprocessor) {
                 Preprocessor preprocessor(std::move(tokens));
                 preprocessor.run(input);
-                if (preprocessor.failed()) {
+                if (preprocessor.failed())
                     continue;
-                }
+
                 tokens = preprocessor.data();
                 max_memory = preprocessor.stack();
                 outputFile = cli.output.value_or(preprocessor.path() / (preprocessor.tileset() + ".rules"));
