@@ -1208,6 +1208,16 @@ std::unique_ptr<Error> PTExpressionVisitor::parse(PTMemberAccessExpression& node
             return std::make_unique<ErrInvalidExpression>(node.getTokens());
     }
 
+    // literal.name()
+    if (((node.get<1>()->id() == ExpressionID::Literal ||
+        node.get<1>()->id() == ExpressionID::RangeLiteral ||
+        node.get<1>()->id() == ExpressionID::StringLiteral ||
+        node.get<1>()->id() == ExpressionID::CoordLiteral) && (
+            node.get<3>()->id() == ExpressionID::FunctionCall && 
+            node.get<3>()->getTokens()[0]->value == "name"
+            ))
+        ) return std::make_unique<ErrInvalidExpression>(node.getTokens());
+
     return nullptr;
 }
 
