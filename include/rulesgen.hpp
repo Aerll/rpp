@@ -32,7 +32,7 @@ struct PosRule;
 
 class RulesGen final {
 public:
-    static void exec(std::vector<AutoMapper>& automappers, const std::filesystem::path& outputPath, const std::filesystem::path& tileset);
+    static void exec(std::vector<AutoMapper>& automappers, const std::filesystem::path& outputFile);
 
 private:
     static void generatePosRule(PosRule& rule, bool runOptimize, std::ofstream& rulesFile);

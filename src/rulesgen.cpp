@@ -27,17 +27,16 @@
 /*
     RulesGen
 */
-void RulesGen::exec(std::vector<AutoMapper>& automappers, const std::filesystem::path& outputPath, const std::filesystem::path& tileset)
+void RulesGen::exec(std::vector<AutoMapper>& automappers, const std::filesystem::path& outputFile)
 {
     if (automappers.empty()) {
         errorOutput::print::stage("No rules to generate");
         return;
     }
 
-    std::filesystem::path path = outputPath / tileset;
-    errorOutput::print::stage("Generating rules", path.string() + ".rules");
+    errorOutput::print::stage("Generating rules", outputFile.string());
 
-    std::ofstream rulesFile(path.string() + ".rules");
+    std::ofstream rulesFile(outputFile.string());
     if (rulesFile.is_open()) {
         for (auto& automapper : automappers) {
             rulesFile << "[" << automapper.name << "]\n\n";

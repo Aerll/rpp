@@ -21,10 +21,12 @@
 //
 #include <app.hpp>
 
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <chrono>
 #include <iostream>
+#include <utility>
 
 #include <io.hpp>
 #include <inputstream.hpp>
@@ -40,7 +42,7 @@
 
 namespace {
     long long memory = 0;
-    long long max_memory = 0;
+    long long max_memory = 0; // in megabytes
 }
 
 void* operator new(std::size_t size) {
@@ -80,34 +82,113 @@ void operator delete[](void* data) noexcept {
 /*
     App
 */
-int App::exec(int argc, char** argv) {
+static void showHelp(char const* prog) {
+    std::cout
+        << "Usage: " << prog << " [options] file..." << std::endl
+        << "  --help               Display the help." << std::endl
+        << "  --output <file>      Write to <file> (override #path and #tileset)." << std::endl
+        << "  --stack <megabytes>  Override #stack with <megabytes>." << std::endl
+        << "  --include <file>     Additional #include file." << std::endl
+        << "  --skip-preprocessor  Skip preprocessor pass." << std::endl
+        << "  --silent             Do not write to stdout." << std::endl;
+}
+
+static void exitWithError(char const* prog, char const* err) {
+    std::cerr << "Error: " << err << std::endl << std::endl;
+    showHelp(prog);
+    exit(1);
+}
+
+Cli App::parseCli(int argc, char** argv) {
+    Cli cli{};
+
+    for (int i = 1; i < argc; ++i) {
+        std::string_view arg = argv[i];
+
+        if (arg[0] == '-') {
+            if (arg == "--help") {
+                showHelp(argv[0]);
+                exit(0);
+            }
+            else if (arg == "--output" || arg == "-o") {
+                if (i + 1 >= argc) {
+                    exitWithError(argv[0], "missing filename after --output");
+                }
+                cli.output = argv[++i];
+            }
+            else if (arg == "--include") {
+                if (i + 1 >= argc) {
+                    exitWithError(argv[0], "missing filename after --include");
+                }
+                cli.includes.push_back(argv[++i]);
+            }
+            else if (arg == "--stack") {
+                if (i + 1 >= argc) {
+                    exitWithError(argv[0], "missing value after --stack");
+                }
+                try {
+                    cli.stack = std::stoll(argv[++i]);
+                }
+                catch (...) {
+                    exitWithError(argv[0], "--stack: value is not an integer");
+                }
+            }
+            else if (arg == "--skip-preprocessor") {
+                cli.skipPreprocessor = true;
+            }
+            else if (arg == "--silent") {
+                cli.silent = true;
+            }
+            else {
+                std::cerr << "Warning: unrecognized flag: " << arg << std::endl;
+            }
+        }
+        else {
+            std::filesystem::path input(arg);
+            if (!std::filesystem::is_regular_file(input)) {
+                exitWithError(argv[0], "input file not found");
+            }
+            cli.inputFiles.push_back(arg);
+        }
+    }
+
+    return cli;
+}
+
+int App::exec(const Cli& cli) {
     try {
         using namespace std::chrono;
         auto beg = high_resolution_clock::now();
         bool wait = false;
 
-        for (int i = 1; i < argc; ++i) {
+        for (auto const& input : cli.inputFiles) {
             max_memory = 0;
 
-            std::filesystem::path path = argv[i];
-
-            InputStream inputStream(FileR::read(path));
+            InputStream inputStream(FileR::read(input));
 
             Tokenizer tokenizer;
             tokenizer.run(inputStream);
+            std::vector<Token> tokens = tokenizer.data();
 
-            Preprocessor preprocessor(tokenizer.data());
-            preprocessor.run(path);
-            if (preprocessor.failed()) {
-                wait = true;
-                continue;
+            std::filesystem::path outputFile = cli.output.value_or(std::filesystem::current_path() / "tileset.rules");
+
+            if (!cli.skipPreprocessor) {
+                Preprocessor preprocessor(std::move(tokens));
+                preprocessor.run(input);
+                if (preprocessor.failed()) {
+                    wait = true;
+                    continue;
+                }
+                tokens = preprocessor.data();
+                max_memory = preprocessor.stack();
+                outputFile = cli.output.value_or(preprocessor.path() / (preprocessor.tileset() + ".rules"));
             }
 
-            max_memory = preprocessor.stack(); // in megabytes
+            max_memory = cli.stack.value_or(max_memory);
 
             AbstractSyntaxTree abstractSyntaxTree;
             {
-                TokenStream tokenStream(preprocessor.data());
+                TokenStream tokenStream(std::move(tokens));
 
                 ParseTree parseTree;
                 parseTree.create(tokenStream);
@@ -136,7 +217,7 @@ int App::exec(int argc, char** argv) {
             if (translator.warned())
                 wait = true;
 
-            RulesGen::exec(translator.automappers(), preprocessor.path(), preprocessor.tileset());
+            RulesGen::exec(translator.automappers(), outputFile);
         }
 
         auto end = high_resolution_clock::now();
