@@ -184,15 +184,13 @@ int App::exec(int argc, char** argv) {
             max_memory = 0;
             ExternalResource::get().clear();
 
-            std::filesystem::path path = input;
-
-            InputStream inputStream(FileR::read(path));
+            InputStream inputStream(FileR::read(input));
 
             Tokenizer tokenizer;
             tokenizer.run(inputStream);
 
             Preprocessor preprocessor(tokenizer.data());
-            preprocessor.run(path, cli);
+            preprocessor.run(input, cli);
             if (preprocessor.failed())
                 continue;
 
