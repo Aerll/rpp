@@ -340,13 +340,24 @@ ErrFileNotFound::ErrFileNotFound(const Token& t)
         m_err = strIncorrectPath(t.value);
 }
 
+ErrFileNotFound::ErrFileNotFound(const std::string& path, uint32_t line)
+{
+    m_line = line;
+
+    std::filesystem::path file_path = path;
+    if (std::filesystem::status(file_path).type() == std::filesystem::file_type::regular)
+        m_err = strFileNotFound(path);
+    else
+        m_err = strIncorrectPath(path);
+}
+
 /*
     ErrInvalidOutPath
 */
-ErrInvalidOutPath::ErrInvalidOutPath(const Token& t)
+ErrInvalidOutPath::ErrInvalidOutPath(const std::string& path, uint32_t line)
 {
-    m_line = t.line;
-    m_err = strInvalidOutPath(t.value);
+    m_line = line;
+    m_err = strInvalidOutPath(path);
 }
 
 /*

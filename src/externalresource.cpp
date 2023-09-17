@@ -25,6 +25,12 @@
 #include <filesystem>
 #include <cstdint>
 
+#include <cli.hpp>
+#include <io.hpp>
+#include <inputstream.hpp>
+#include <tokenizer.hpp>
+#include <preprocessor.hpp>
+
 /*
     ExternalResource
 */
@@ -34,21 +40,22 @@ ExternalResource& ExternalResource::get()
     return instance;
 }
 
-const ExternalResource::Info& ExternalResource::load(const std::filesystem::path& path, uint32_t beg, uint32_t lines)
+std::vector<Token> ExternalResource::load(const std::filesystem::path& path, const CLI& cli)
 {
-    Info info;
-    info.fileName = std::filesystem::canonical(path.filename()).string();
-    info.beginLine = beg;
-    info.linesCount = lines;
-    addInfo(std::move(info));
+    InputStream inputStream(FileR::read(path));
+    Tokenizer tokenizer;
+    tokenizer.run(inputStream, false);
+
+    Preprocessor preprocessor(tokenizer.data());
+    preprocessor.run(path, cli);
     
-    return m_info.back();
+    return preprocessor.data();
 }
 
 bool ExternalResource::isLoaded(const std::filesystem::path& path) const
 {
     auto fileName = std::filesystem::canonical(path.filename()).string();
-    return std::find_if(info().begin(), info().end(), [&](const Info& i)->bool {
+    return std::find_if(info().begin(), info().end(), [&](const Info& i) -> bool {
         return i.fileName == fileName;
     }) != info().end();
 }

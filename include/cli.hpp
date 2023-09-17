@@ -19,41 +19,21 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 //
-#ifndef RPP_EXTERNALPRESET_HPP
-#define RPP_EXTERNALPRESET_HPP
+#ifndef RPP_CLI_HPP
+#define RPP_CLI_HPP
 
 #include <cstdint>
-#include <filesystem>
 #include <vector>
+#include <optional>
+#include <filesystem>
 
-#include <utility.hpp>
-
-struct CLI;
-class Token;
-
-class ExternalResource final {
-    ExternalResource() = default;
-
-public:
-    struct Info {
-        std::string fileName;
-        uint32_t lineCount;
-    };
-
-    static ExternalResource& get();
-
-    std::vector<Token> load(const std::filesystem::path& path, const CLI& cli);
-    bool isLoaded(const std::filesystem::path& path) const;
-    
-    void addInfo(Info&& info);
-    const std::vector<Info>& info() const noexcept
-        { return m_info; }
-
-    void clear() noexcept
-        { m_info.clear(); }
-
-private:
-    std::vector<Info> m_info;
+struct CLI {
+    std::vector<std::filesystem::path> inputFiles;
+    std::optional<std::filesystem::path> output;
+    std::optional<int64_t> memory;
+    std::vector<std::filesystem::path> includes;
+    bool skipPreprocessor = false;
+    bool pause = true;
 };
 
-#endif // RPP_EXTERNALPRESET_HPP
+#endif // RPP_CLI_HPP

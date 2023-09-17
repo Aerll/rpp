@@ -110,11 +110,12 @@ public:
 class ErrFileNotFound final : public Error {
 public:
     ErrFileNotFound(const Token& t);
+    ErrFileNotFound(const std::string& path, uint32_t line);
 };
 
 class ErrInvalidOutPath final : public Error {
 public:
-    ErrInvalidOutPath(const Token& t);
+    ErrInvalidOutPath(const std::string& path, uint32_t line);
 };
 
 class ErrPreprocNotIdentifier final : public Error {

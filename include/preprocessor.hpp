@@ -29,6 +29,8 @@
 #include <errorqueue.hpp>
 #include <token.hpp>
 
+struct CLI;
+
 class Preprocessor final : public ErrorQueue, public IResult {
     using iterator = std::vector<Token>::iterator;
 
@@ -41,21 +43,18 @@ public:
         : IResult()
         , m_data(std::move(data))
         , m_curr(m_data.begin())
-        , m_tileset("tileset")
-        , m_path(std::filesystem::current_path())
+        , m_output(std::filesystem::current_path() / "tileset.rules")
         , m_memory(1024 * 1024 * 50)
     {
     }
 
-    void run(const std::filesystem::path& path);
+    void run(const std::filesystem::path& path, const CLI& cli);
 
     std::vector<Token>&& data() noexcept
         { return std::move(m_data); }
 
-    const std::string& tileset() const noexcept
-        { return m_tileset; }
-    const std::filesystem::path& path() const noexcept
-        { return m_path; }
+    const std::filesystem::path& output() const noexcept
+        { return m_output; }
     int64_t memory() const noexcept
         { return m_memory; }
 
@@ -67,8 +66,7 @@ private:
     std::vector<Token> m_data;
     iterator m_curr;
 
-    std::string m_tileset;
-    std::filesystem::path m_path;
+    std::filesystem::path m_output;
     int64_t m_memory;
 };
 

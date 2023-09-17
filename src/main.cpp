@@ -23,6 +23,5 @@
 
 int main(int argc, char** argv)
 {
-    CLI cli = App::parseCLI(argc, argv);
-    return App::exec(cli);
+    return App::exec(argc, argv);
 }
