@@ -19,6 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 //
+#include "enums.hpp"
+#include "error.hpp"
 #include <preprocessor.hpp>
 
 #include <algorithm>
@@ -51,20 +53,23 @@ void Preprocessor::run(const std::filesystem::path& path)
         auto line = getLine();
 
         if (!line.empty()) {
+            m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
+
             if (line.at(1).value == ID::Path) {
                 m_path = getPath(line.at(3).value);
                 if (!std::filesystem::exists(m_path))
                     pushError(std::make_unique<ErrInvalidOutPath>(line.at(3)));
-
-                m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
             }
             else if (line.at(1).value == ID::Tileset) {
                 m_tileset = line.at(3).value;
-                m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
             }
             else if (line.at(1).value == ID::Memory) {
-                m_memory = std::stoll(line.at(3).value) * 1024 * 1024;
-                m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
+                try {
+                    m_memory = std::stoll(line.at(3).value) * 1024 * 1024;
+                }
+                catch (...) {
+                    pushError(std::make_unique<ErrIncorrectValueType>(ValueType::String, ValueType::Int, line.at(3).line));
+                }
             }
             else if (line.at(1).value == ID::Include) {
                 auto currentLine = line.back().line - 1;
@@ -82,7 +87,6 @@ void Preprocessor::run(const std::filesystem::path& path)
                     auto tokens = preprocessor.data();
                     auto info = ExternalResource::get().load(filePath, currentLine, tokens.back().line);
 
-                    m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
                     m_curr = m_data.insert(m_curr, std::make_move_iterator(tokens.begin()), std::make_move_iterator(tokens.end()));
                     for (auto it = m_curr; it != m_data.end(); ++it) {
                         if (it < m_curr + tokens.size())
@@ -94,7 +98,6 @@ void Preprocessor::run(const std::filesystem::path& path)
                 else {
                     if (!ExternalResource::get().isLoaded(filePath))
                         pushError(std::make_unique<ErrFileNotFound>(line.at(3)));
-                    m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
                 }
             }
         }
@@ -147,11 +150,11 @@ std::vector<Token> Preprocessor::getLine()
     if (!Expect::identifierTPreproc(t1))
         pushError(std::make_unique<ErrPreprocNotIdentifier>(t1));
     else if (!Expect::punctuatorT(t2, PU::CharStringLiteral))
-        pushError(std::make_unique<ErrUnexpectedToken>(t2));
+        pushError(std::make_unique<ErrUnexpectedToken>(t2, std::string(1, PU::CharStringLiteral)));
     else if (!Expect::literalT(t3, { ValueType::String }))
         pushError(std::make_unique<ErrIncorrectLiteralType>(t3, ValueType::String));
     else if (!Expect::punctuatorT(t4, PU::CharStringLiteral))
-        pushError(std::make_unique<ErrMissingToken>(t3.line, PU::StringLiteral));
+        pushError(std::make_unique<ErrMissingToken>(t3, PU::StringLiteral));
 
     if (prevTotalCount != totalCount()) {
         std::advance(m_curr, 1);

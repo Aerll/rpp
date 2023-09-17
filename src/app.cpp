@@ -21,6 +21,7 @@
 //
 #include <app.hpp>
 
+#include <cstdint>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -44,20 +45,30 @@
 
 namespace {
     int64_t memory = 0;
-    int64_t max_memory = 0; // in megabytes
+    int64_t max_memory = 0; // in bytes
 }
 
 void* operator new(std::size_t size) {
+    if (max_memory != 0 && memory + size > max_memory) {
+        int64_t tmp_max_memory = max_memory;
+        max_memory = 0; // allow allocating beyond max_memory for the error
+        auto err = std::overflow_error("Memory overflow");
+        max_memory = tmp_max_memory;
+        throw err;
+    }
     memory += size;
-    if (max_memory != 0 && memory > max_memory)
-        throw std::overflow_error("Memory overflow");
     return std::malloc(size);
 }
 
 void* operator new[](std::size_t size) {
+    if (max_memory != 0 && memory + size > max_memory) {
+        int64_t tmp_max_memory = max_memory;
+        max_memory = 0; // allow allocating beyond max_memory for the error
+        auto err = std::overflow_error("Memory overflow");
+        max_memory = tmp_max_memory;
+        throw err;
+    }
     memory += size;
-    if (max_memory != 0 && memory > max_memory)
-        throw std::overflow_error("Memory overflow");
     return std::malloc(size);
 }
 

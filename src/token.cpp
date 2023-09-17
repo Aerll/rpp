@@ -126,11 +126,12 @@ bool Token::isKeyword(const std::string& s) noexcept
     return false;
 }
 
-bool Token::isIdentifier(const std::string& s) noexcept
+bool Token::isPreprocIdentifier(const std::string& s) noexcept
 {
     if (s == ID::Include ||
         s == ID::Path ||
-        s == ID::Tileset
+        s == ID::Tileset ||
+        s == ID::Memory
         ) return true;
 
     return false;

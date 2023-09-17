@@ -355,9 +355,9 @@ ErrInvalidOutPath::ErrInvalidOutPath(const Token& t)
 ErrPreprocNotIdentifier::ErrPreprocNotIdentifier(const Token& t)
 {
     m_line = t.line;
-    if (Token::isIdentifier(t.value))
+    if (t.cat == TIdentifier && !Token::isPreprocIdentifier(t.value))
         m_err = Error::strIncorrectIdentifier(t.value);
-    else if (Token::isKeyword(t.value))
+    else if (t.cat == TKeyword)
         m_err = Error::strKeywordNotAllowed(t.value);
     else
         m_err = Error::strUnexpectedToken(t.value);
