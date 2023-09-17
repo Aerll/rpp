@@ -79,8 +79,7 @@ void Preprocessor::run(const std::filesystem::path& path, const CLI& cli)
                     auto currentLine = line.back().line - 1;
                     auto filePath = getPath(line.at(3).value);
 
-                    if (std::filesystem::exists(filePath) && 
-                        std::filesystem::status(filePath).type() == std::filesystem::file_type::regular &&
+                    if (std::filesystem::is_regular_file(filePath) &&
                         !ExternalResource::get().isLoaded(filePath)
                         ) {
                         auto tokens = ExternalResource::get().load(filePath, cli);
@@ -122,8 +121,7 @@ void Preprocessor::run(const std::filesystem::path& path, const CLI& cli)
             m_memory = cli.memory.value();
 
         for (const auto& include : cli.includes) {
-            if (std::filesystem::exists(include) && 
-                std::filesystem::status(include).type() == std::filesystem::file_type::regular &&
+            if (std::filesystem::is_regular_file(include) &&
                 !ExternalResource::get().isLoaded(include)
                 ) {
                 auto tokens = ExternalResource::get().load(include, cli);
