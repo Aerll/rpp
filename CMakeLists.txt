@@ -8,6 +8,7 @@ set(RPP_HEADER_FILES
     "include/app.hpp"
     "include/automapper.hpp"
     "include/basicstream.hpp"
+    "include/cli.hpp"
     "include/enums.hpp"
     "include/error.hpp"
     "include/erroroutput.hpp"

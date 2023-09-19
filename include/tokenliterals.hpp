@@ -95,9 +95,8 @@ constexpr std::string_view Warning    = "warning";
 namespace ID {
 
 constexpr std::string_view Include = "include";
-constexpr std::string_view Path    = "path";
-constexpr std::string_view Tileset = "tileset";
-constexpr std::string_view Stack   = "stack";
+constexpr std::string_view Memory  = "memory";
+constexpr std::string_view Output  = "output";
 
 }
 

@@ -56,7 +56,7 @@ public:
 
     // checks
     static bool isKeyword(const std::string& s) noexcept;
-    static bool isIdentifier(const std::string& s) noexcept;
+    static bool isPreprocIdentifier(const std::string& s) noexcept;
     static bool isPunctuator(const std::string& s) noexcept;
     static bool isPunctuator(char c) noexcept;
     static bool isOperator(const std::string& s) noexcept;

@@ -33,7 +33,7 @@ bool Expect::identifierT(const Token& t) noexcept
 
 bool Expect::identifierTPreproc(const Token& t) noexcept
 {
-    return t.cat == TIdentifier;
+    return t.cat == TIdentifier && Token::isPreprocIdentifier(t.value);
 }
 
 bool Expect::keywordT(const Token& t) noexcept

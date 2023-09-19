@@ -21,10 +21,15 @@
 //
 #include <app.hpp>
 
+#include <algorithm>
+#include <cstdint>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <chrono>
 #include <iostream>
+#include <iterator>
+#include <utility>
 
 #include <io.hpp>
 #include <inputstream.hpp>
@@ -37,23 +42,34 @@
 #include <translator.hpp>
 #include <automapper.hpp>
 #include <rulesgen.hpp>
+#include <externalresource.hpp>
 
 namespace {
     int64_t memory = 0;
-    int64_t max_memory = 0;
+    int64_t max_memory = 0; // in bytes
 }
 
 void* operator new(std::size_t size) {
+    if (max_memory != 0 && memory + size > max_memory) {
+        int64_t tmp_max_memory = max_memory;
+        max_memory = 0; // allow allocating beyond max_memory for the error
+        auto err = std::overflow_error("Memory overflow");
+        max_memory = tmp_max_memory;
+        throw err;
+    }
     memory += size;
-    if (max_memory != 0 && memory > max_memory)
-        throw std::overflow_error("Memory overflow");
     return std::malloc(size);
 }
 
 void* operator new[](std::size_t size) {
+    if (max_memory != 0 && memory + size > max_memory) {
+        int64_t tmp_max_memory = max_memory;
+        max_memory = 0; // allow allocating beyond max_memory for the error
+        auto err = std::overflow_error("Memory overflow");
+        max_memory = tmp_max_memory;
+        throw err;
+    }
     memory += size;
-    if (max_memory != 0 && memory > max_memory)
-        throw std::overflow_error("Memory overflow");
     return std::malloc(size);
 }
 
@@ -80,33 +96,105 @@ void operator delete[](void* data) noexcept {
 /*
     App
 */
+static void showHelp(char const* prog) {
+    std::cout
+        << "Usage: " << prog << "[options] file...\n"
+        << "      --help               Display the help.\n"
+        << "  -o, --output <file>      Write to <file> (same as #tileset).\n"
+        << "  -i, --include <file>     A file to include (same as #include).\n"
+        << "  -m, --memory <megabytes> Memory limit in <megabytes> (same as #memory).\n"
+        << "  -p, --no-pause           Do not pause after execution.\n"
+        << "Options -o, -i, -m disable preprocessor stage. All directives will be ignored.\n";
+}
+
+static void exitWithError(char const* prog, char const* err) {
+    std::cerr << "Error: " << err << "\n\n";
+    showHelp(prog);
+    std::exit(1);
+}
+
+CLI App::parseCLI(int argc, char** argv) {
+    CLI cli = {};
+
+    for (int i = 1; i < argc; ++i) {
+        std::string_view arg = argv[i];
+
+        if (arg[0] == '-') {
+            if (arg == "--help") {
+                showHelp(argv[0]);
+                std::exit(0);
+            }
+            else if (arg == "--output" || arg == "-o") {
+                if (i + 1 >= argc)
+                    exitWithError(argv[0], "missing filename after --output");
+
+                cli.output = argv[++i];
+                cli.skipPreprocessor = true;
+            }
+            else if (arg == "--include" || arg == "-i") {
+                if (i + 1 >= argc)
+                    exitWithError(argv[0], "missing filename after --include");
+
+                cli.includes.push_back(argv[++i]);
+                cli.skipPreprocessor = true;
+            }
+            else if (arg == "--memory" || arg == "-m") {
+                if (i + 1 >= argc)
+                    exitWithError(argv[0], "missing value after --memory");
+
+                try {
+                    cli.memory = std::stoll(argv[++i]) * 1024 * 1024;
+                    cli.skipPreprocessor = true;
+                }
+                catch (...) {
+                    exitWithError(argv[0], "--memory: value is not an integer");
+                }
+            }
+            else if (arg == "--no-pause" || arg == "-p") {
+                cli.pause = false;
+            }
+            else {
+                std::cerr << "Warning: unrecognized flag: " << arg << '\n';
+            }
+        }
+        else {
+            std::filesystem::path input(arg);
+            if (!std::filesystem::is_regular_file(input))
+                exitWithError(argv[0], "input file not found");
+
+            cli.inputFiles.push_back(arg);
+        }
+    }
+
+    if (cli.inputFiles.size() > 1 && cli.skipPreprocessor)
+        exitWithError(argv[0], "too many input files");
+
+    std::reverse(cli.includes.begin(), cli.includes.end());
+    return cli;
+}
+
 int App::exec(int argc, char** argv) {
+    CLI cli = parseCLI(argc, argv);
+
     try {
         using namespace std::chrono;
         auto beg = high_resolution_clock::now();
-        bool wait = true;
 
-        for (int i = 1; i < argc; ++i) {
-            if (argv[i] == std::string_view{ "-p" }) {
-                wait = false;
-                continue;
-            }
-
+        for (auto const& input : cli.inputFiles) {
             max_memory = 0;
+            ExternalResource::get().clear();
 
-            std::filesystem::path path = argv[i];
-
-            InputStream inputStream(FileR::read(path));
+            InputStream inputStream(FileR::read(input));
 
             Tokenizer tokenizer;
             tokenizer.run(inputStream);
 
             Preprocessor preprocessor(tokenizer.data());
-            preprocessor.run(path);
+            preprocessor.run(input, cli);
             if (preprocessor.failed())
                 continue;
 
-            max_memory = preprocessor.stack(); // in megabytes
+            max_memory = preprocessor.memory();
 
             AbstractSyntaxTree abstractSyntaxTree;
             {
@@ -131,7 +219,7 @@ int App::exec(int argc, char** argv) {
             if (translator.failed())
                 continue;
 
-            RulesGen::exec(translator.automappers(), preprocessor.path(), preprocessor.tileset());
+            RulesGen::exec(translator.automappers(), preprocessor.output());
         }
 
         auto end = high_resolution_clock::now();
@@ -140,7 +228,7 @@ int App::exec(int argc, char** argv) {
         std::cout << "\n\n";
         std::cout << "Finished in: " << time << "s\n";
 
-        if (wait)
+        if (cli.pause)
             pause();
         return 0;
     }

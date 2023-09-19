@@ -24,78 +24,115 @@
 #include <algorithm>
 #include <iterator>
 
+#include <cli.hpp>
+#include <enums.hpp>
+#include <error.hpp>
 #include <tokenliterals.hpp>
 #include <token.hpp>
 #include <expect.hpp>
 #include <externalresource.hpp>
+#include <io.hpp>
+#include <inputstream.hpp>
+#include <tokenizer.hpp>
 
 /*
     Preprocessor
 */
-void Preprocessor::run(const std::filesystem::path& path)
+void Preprocessor::run(const std::filesystem::path& path, const CLI& cli)
 {
     errorOutput::print::stage("Preprocessing file", path.filename().string());
+    
+    ExternalResource::Info info;
+    info.fileName = std::filesystem::canonical(path.filename()).string();
+    info.lineCount = m_data.back().line;
+    ExternalResource::get().addInfo(std::move(info));
 
-    auto lastPreproc = std::find_if(m_data.rbegin(), m_data.rend(), 
-        [](const Token& token) {
-            return token.cat == TPunctuator && token.value == PU::Preproc;
-        }
-    );
-    if (lastPreproc == m_data.rend())
-        return;
-
-    while (m_curr != m_data.end()) {
-        auto line = getLine();
-
-        if (!line.empty()) {
-            if (line.at(1).value == ID::Path) {
-                m_path = getPath(line.at(3).value);
-                if (!std::filesystem::exists(m_path))
-                    pushError(std::make_unique<ErrInvalidOutPath>(line.at(3)));
-
-                m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
+    if (!cli.skipPreprocessor) {
+        auto lastPreproc = std::find_if(m_data.rbegin(), m_data.rend(), 
+            [](const Token& token) {
+                return token.cat == TPunctuator && token.value == PU::Preproc;
             }
-            else if (line.at(1).value == ID::Tileset) {
-                m_tileset = line.at(3).value;
-                m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
-            }
-            else if (line.at(1).value == ID::Stack) {
-                m_stack = static_cast<int64_t>(std::stoi(line.at(3).value)) * 1024 * 1024;
-                m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
-            }
-            else if (line.at(1).value == ID::Include) {
-                auto currentLine = line.back().line - 1;
-                auto filePath = getPath(line.at(3).value);
+        );
+        if (lastPreproc == m_data.rend())
+            return;
 
-                if (std::filesystem::exists(filePath) && 
-                    std::filesystem::status(filePath).type() == std::filesystem::file_type::regular &&
-                    !ExternalResource::get().isLoaded(filePath)
-                    ) {
-                    auto tokens = ExternalResource::get().load(filePath, currentLine);
+        while (m_curr != m_data.end()) {
+            auto line = getLine();
 
-                    m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
-                    m_curr = m_data.insert(m_curr, std::make_move_iterator(tokens.begin()), std::make_move_iterator(tokens.end()));
-                    for (auto it = m_curr; it != m_data.end(); ++it) {
-                        if (it < m_curr + tokens.size())
-                            it->line += currentLine;
-                        else
-                            it->line += ExternalResource::get().info().back().linesCount - 1;
+            if (!line.empty()) {
+                m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
+
+                if (line.at(1).value == ID::Output) {
+                    m_output = getPath(line.at(3).value);
+                    if (!std::filesystem::exists(m_output.parent_path()))
+                        pushError(std::make_unique<ErrInvalidOutPath>(m_output.parent_path().string(), line.at(3).line));
+                }
+                else if (line.at(1).value == ID::Memory) {
+                    try {
+                        m_memory = std::stoll(line.at(3).value) * 1024 * 1024;
+                    }
+                    catch (...) {
+                        pushError(std::make_unique<ErrIncorrectValueType>(ValueType::String, ValueType::Int, line.at(3).line));
                     }
                 }
-                else {
-                    if (!ExternalResource::get().isLoaded(filePath))
+                else if (line.at(1).value == ID::Include) {
+                    auto currentLine = line.back().line - 1;
+                    auto filePath = getPath(line.at(3).value);
+
+                    if (std::filesystem::is_regular_file(filePath) &&
+                        !ExternalResource::get().isLoaded(filePath)
+                        ) {
+                        auto tokens = ExternalResource::get().load(filePath, cli);
+
+                        m_curr = m_data.insert(m_curr, std::make_move_iterator(tokens.begin()), std::make_move_iterator(tokens.end()));
+                        for (auto it = m_curr; it != m_data.end(); ++it) {
+                            if (it < m_curr + tokens.size())
+                                it->line += currentLine;
+                            else
+                                it->line += ExternalResource::get().info().back().lineCount - 1;
+                        }
+                    }
+                    else if (!ExternalResource::get().isLoaded(filePath))
                         pushError(std::make_unique<ErrFileNotFound>(line.at(3)));
-                    m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
                 }
             }
         }
-    }
 
-    if (hasErrors()) {
-        m_failed = true;
-        printErrors(util::digitsCount(m_errors.back()->line()));
-        errorOutput::print::summary(totalCount(), failed());
-        resetCount();
+        if (hasErrors()) {
+            m_failed = true;
+            printErrors(util::digitsCount(m_errors.back()->line()));
+            errorOutput::print::summary(totalCount(), failed());
+            resetCount();
+        }
+    }
+    else {
+        while (m_curr != m_data.end()) {
+            auto line = getLine();
+            if (!line.empty())
+                m_curr = m_data.erase(m_curr, std::next(m_curr, 5));
+        }
+
+        if (cli.output.has_value()) {
+            m_output = cli.output.value();
+            if (m_output.has_parent_path() && !std::filesystem::exists(m_output.parent_path()))
+                pushError(std::make_unique<ErrInvalidOutPath>(m_output.parent_path().string(), 0));
+        }
+        if (cli.memory.has_value())
+            m_memory = cli.memory.value();
+
+        for (const auto& include : cli.includes) {
+            if (std::filesystem::is_regular_file(include) &&
+                !ExternalResource::get().isLoaded(include)
+                ) {
+                auto tokens = ExternalResource::get().load(include, cli);
+                
+                m_curr = m_data.insert(m_data.begin(), std::make_move_iterator(tokens.begin()), std::make_move_iterator(tokens.end()));
+                for (auto it = m_curr; it != m_data.end(); ++it)
+                    it->line += ExternalResource::get().info().back().lineCount - 1;
+            }
+            else if (!ExternalResource::get().isLoaded(include))
+                pushError(std::make_unique<ErrFileNotFound>(include.string(), 0));
+        }
     }
 }
 
@@ -138,11 +175,11 @@ std::vector<Token> Preprocessor::getLine()
     if (!Expect::identifierTPreproc(t1))
         pushError(std::make_unique<ErrPreprocNotIdentifier>(t1));
     else if (!Expect::punctuatorT(t2, PU::CharStringLiteral))
-        pushError(std::make_unique<ErrUnexpectedToken>(t2));
+        pushError(std::make_unique<ErrUnexpectedToken>(t2, std::string(1, PU::CharStringLiteral)));
     else if (!Expect::literalT(t3, { ValueType::String }))
         pushError(std::make_unique<ErrIncorrectLiteralType>(t3, ValueType::String));
     else if (!Expect::punctuatorT(t4, PU::CharStringLiteral))
-        pushError(std::make_unique<ErrMissingToken>(t3.line, PU::StringLiteral));
+        pushError(std::make_unique<ErrMissingToken>(t3, PU::StringLiteral));
 
     if (prevTotalCount != totalCount()) {
         std::advance(m_curr, 1);

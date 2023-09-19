@@ -340,13 +340,24 @@ ErrFileNotFound::ErrFileNotFound(const Token& t)
         m_err = strIncorrectPath(t.value);
 }
 
+ErrFileNotFound::ErrFileNotFound(const std::string& path, uint32_t line)
+{
+    m_line = line;
+
+    std::filesystem::path file_path = path;
+    if (std::filesystem::status(file_path).type() == std::filesystem::file_type::regular)
+        m_err = strFileNotFound(path);
+    else
+        m_err = strIncorrectPath(path);
+}
+
 /*
     ErrInvalidOutPath
 */
-ErrInvalidOutPath::ErrInvalidOutPath(const Token& t)
+ErrInvalidOutPath::ErrInvalidOutPath(const std::string& path, uint32_t line)
 {
-    m_line = t.line;
-    m_err = strInvalidOutPath(t.value);
+    m_line = line;
+    m_err = strInvalidOutPath(path);
 }
 
 /*
@@ -355,9 +366,9 @@ ErrInvalidOutPath::ErrInvalidOutPath(const Token& t)
 ErrPreprocNotIdentifier::ErrPreprocNotIdentifier(const Token& t)
 {
     m_line = t.line;
-    if (Token::isIdentifier(t.value))
+    if (t.cat == TIdentifier && !Token::isPreprocIdentifier(t.value))
         m_err = Error::strIncorrectIdentifier(t.value);
-    else if (Token::isKeyword(t.value))
+    else if (t.cat == TKeyword)
         m_err = Error::strKeywordNotAllowed(t.value);
     else
         m_err = Error::strUnexpectedToken(t.value);
