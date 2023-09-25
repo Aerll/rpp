@@ -56,6 +56,7 @@ set(RPP_SOURCE_FILES
     "src/tokenh.cpp"
     "src/tokenizer.cpp"
     "src/translator.cpp"
+    "src/utility.cpp"
     "src/valuetypes.cpp"
 )
 

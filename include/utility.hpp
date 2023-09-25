@@ -26,7 +26,11 @@
 #include <type_traits>
 #include <algorithm>
 
+enum class Rotation;
+
 namespace util {
+
+Rotation toVHR(Rotation rotation) noexcept;
 
 template <typename Type>
     concept _Enum = std::is_enum_v<Type>;

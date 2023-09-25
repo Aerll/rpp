@@ -107,9 +107,9 @@ void ObjectValue::update(bool sort)
         IntValue* result = nullptr;
         if (rotation == Rotation::Default || rotation == Rotation::N)
             result = &value.front();
-        else if (rotation == Rotation::VH)
+        else if (rotation == Rotation::VH || rotation == Rotation::XY)
             result = &value.back();
-        else if (rotation == Rotation::V) {
+        else if (rotation == Rotation::V || rotation == Rotation::X) {
             result = &value.front();
             for (auto& index : value) {
                 if (index.value / 16 > result->value / 16)
@@ -117,7 +117,7 @@ void ObjectValue::update(bool sort)
                 result = &index;
             }
         }
-        else if (rotation == Rotation::H) {
+        else if (rotation == Rotation::H || rotation == Rotation::Y) {
             result = &value.back();
             for (auto it = value.rbegin(); it != value.rend(); ++it) {
                 if (it->value / 16 < result->value / 16)
@@ -138,7 +138,7 @@ void ObjectValue::update(bool sort)
                 }
             }
         }
-        else if (rotation == Rotation::VR) {
+        else if (rotation == Rotation::VR || rotation == Rotation::XR) {
             int32_t last_col = std::numeric_limits<int32_t>::min();
             for (auto index : value)
                 if (index.value % 16 > last_col)
@@ -151,7 +151,7 @@ void ObjectValue::update(bool sort)
                 }
             }
         }
-        else if (rotation == Rotation::HR) {
+        else if (rotation == Rotation::HR || rotation == Rotation::YR) {
             int32_t first_col = std::numeric_limits<int32_t>::max();
             for (auto index : value)
                 if (index.value % 16 < first_col)

@@ -199,6 +199,14 @@ enum class Rotation {
     VR      = V | R,
     HR      = H | R,
     VHR     = V | H | R,
+
+    X       = 1 << 4, // XFLIP
+    Y       = 1 << 5, // YFLIP
+
+    XY      = X | Y,
+    XR      = X | R,
+    YR      = Y | R,
+    XYR     = X | Y | R,
 };
 
 inline Rotation operator|(Rotation lhs, Rotation rhs) noexcept

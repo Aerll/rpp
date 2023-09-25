@@ -3123,21 +3123,21 @@ void ASTNodeEvaluator::evaluateArgumentsVariadic(const ptr_node_v& callArgs, AST
     }
 }
 
-bool ASTNodeEvaluator::hasRotation(Value* value, Rotation rotation)
+bool ASTNodeEvaluator::hasRotation(Value* value, Rotation rotation) const
 {
     auto type = value->type();
 
     if (type == ValueType::Int)
-        return (util::enum_b(value->as<IntValue*>()->rotation & rotation));
+        return (util::enum_b(util::toVHR(value->as<IntValue*>()->rotation) & util::toVHR(rotation)));
     else if (type == ValueType::Range)
-        return (util::enum_b(value->as<RangeValue*>()->rotation & rotation));
+        return (util::enum_b(util::toVHR(value->as<RangeValue*>()->rotation) & util::toVHR(rotation)));
     else if (type == ValueType::Coord)
-        return (util::enum_b(value->as<CoordValue*>()->rotation & rotation));
+        return (util::enum_b(util::toVHR(value->as<CoordValue*>()->rotation) & util::toVHR(rotation)));
     else
-        return (util::enum_b(value->as<ObjectValue*>()->rotation & rotation));
+        return (util::enum_b(util::toVHR(value->as<ObjectValue*>()->rotation) & util::toVHR(rotation)));
 }
 
-void ASTNodeEvaluator::rotate(Value* value, Rotation rotation)
+void ASTNodeEvaluator::rotate(Value* value, Rotation rotation) const
 {
     auto type = value->type();
 

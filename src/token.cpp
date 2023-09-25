@@ -358,17 +358,13 @@ bool Token::isVariadic(ValueType type, ValueType variadic) noexcept
 
 bool Token::isSingleRotation(std::string_view s) noexcept
 {
-    return s == "N" || s == "V" || s == "H" || s == "R";
-}
-
-bool Token::isSingleRotation(Rotation rotation) noexcept
-{
-    return rotation == Rotation::N || rotation == Rotation::V || rotation == Rotation::H || rotation == Rotation::R;
+    return s == "N" || s == "V" || s == "H" || s == "R" || s == "X" || s == "Y";
 }
 
 bool Token::isRotation(std::string_view s) noexcept
 {
-    return s == "N" || s == "V" || s == "H" || s == "R" || s == "VH" || s == "VR" || s == "HR" || s == "VHR";
+    return s == "N" || s == "V" || s == "H" || s == "R" || s == "VH" || s == "VR" || s == "HR" || s == "VHR"
+                    || s == "X" || s == "Y"             || s == "XY" || s == "XR" || s == "YR" || s == "XYR";
 }
 
 bool Token::isPos(std::string_view s) noexcept
@@ -430,6 +426,18 @@ Rotation Token::stringToRotation(std::string_view s) noexcept
         return Rotation::HR;
     else if (s == "VHR")
         return Rotation::VHR;
+    else if (s == "X")
+        return Rotation::X;
+    else if (s == "Y")
+        return Rotation::Y;
+    else if (s == "XY")
+        return Rotation::XY;
+    else if (s == "XR")
+        return Rotation::XR;
+    else if (s == "YR")
+        return Rotation::YR;
+    else if (s == "XYR")
+        return Rotation::XYR;
     else
         return Rotation::Default;
 }
@@ -453,6 +461,18 @@ std::string Token::rotationToString(Rotation rotation) noexcept
             return "HR";
         case Rotation::VHR:
             return "VHR";
+        case Rotation::X:
+            return "X";
+        case Rotation::Y:
+            return "Y";
+        case Rotation::XY:
+            return "XY";
+        case Rotation::XR:
+            return "XR";
+        case Rotation::YR:
+            return "YR";
+        case Rotation::XYR:
+            return "XYR";
         default:
             return "";
     }

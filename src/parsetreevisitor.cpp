@@ -1218,6 +1218,10 @@ std::unique_ptr<Error> PTExpressionVisitor::parse(PTMemberAccessExpression& node
             ))
         ) return std::make_unique<ErrInvalidExpression>(node.getTokens());
 
+    // rotate.?
+    if (leftLastToken->value == KW::Rotate && !Token::isSingleRotation(rightLastToken->value)) 
+        return std::make_unique<ErrInvalidExpression>(node.getTokens());
+
     return nullptr;
 }
 

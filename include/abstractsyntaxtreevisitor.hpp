@@ -3305,10 +3305,9 @@ public:
     ptr_value cast(Value* value, ValueType to);
     void evaluateArguments(const ptr_node_v& callArgs, ptr_node_v& defArgs);
     void evaluateArgumentsVariadic(const ptr_node_v& callArgs, ASTIdentifierNode* identifier);
-    void evaluatePush(const ptr_node_v& callArgs, ASTIdentifierNode* identifier);
 
-    bool hasRotation(Value* value, Rotation rotation);
-    void rotate(Value* value, Rotation rotation);
+    bool hasRotation(Value* value, Rotation rotation) const;
+    void rotate(Value* value, Rotation rotation) const;
 
     void insertPosType(uint32_t line, NodeID id);
     void insert(InsertC control, Value* value, uint32_t line);

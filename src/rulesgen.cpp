@@ -67,9 +67,9 @@ void RulesGen::exec(std::vector<AutoMapper>& automappers, const std::filesystem:
 
                         do {
                             rulesFile << "Index " << rule.indexInfo.tileID;
-                            if ((rule.indexInfo.rotation & Rotation::V) != Rotation::Default)
+                            if ((rule.indexInfo.rotation & Rotation::V) != Rotation::Default || (rule.indexInfo.rotation & Rotation::X) != Rotation::Default)
                                 rulesFile << " XFLIP";
-                            if ((rule.indexInfo.rotation & Rotation::H) != Rotation::Default)
+                            if ((rule.indexInfo.rotation & Rotation::H) != Rotation::Default || (rule.indexInfo.rotation & Rotation::Y) != Rotation::Default)
                                 rulesFile << " YFLIP";
                             if ((rule.indexInfo.rotation & Rotation::R) != Rotation::Default)
                                 rulesFile << " ROTATE";
@@ -121,9 +121,9 @@ void RulesGen::generatePosRule(PosRule& rule, bool runOptimize, std::ofstream& r
         if ((indexInfo.rotation & Rotation::N) != Rotation::Default)
             rulesFile << " NONE";
         else {
-            if ((indexInfo.rotation & Rotation::V) != Rotation::Default)
+            if ((indexInfo.rotation & Rotation::V) != Rotation::Default || (indexInfo.rotation & Rotation::X) != Rotation::Default)
                 rulesFile << " XFLIP";
-            if ((indexInfo.rotation & Rotation::H) != Rotation::Default)
+            if ((indexInfo.rotation & Rotation::H) != Rotation::Default || (indexInfo.rotation & Rotation::Y) != Rotation::Default)
                 rulesFile << " YFLIP";
             if ((indexInfo.rotation & Rotation::R) != Rotation::Default)
                 rulesFile << " ROTATE";
