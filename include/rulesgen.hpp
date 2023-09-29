@@ -22,6 +22,7 @@
 #ifndef RPP_RULESGEN_HPP
 #define RPP_RULESGEN_HPP
 
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <vector>
@@ -32,14 +33,26 @@ struct PosRule;
 
 class RulesGen final {
 public:
-    static void exec(std::vector<AutoMapper>& automappers, const std::filesystem::path& outputFile);
+    RulesGen() = default;
+
+    void run(std::vector<AutoMapper>& automappers, const std::filesystem::path& outputFile);
+
+    std::streamoff fileSize() const noexcept
+        { return m_fileSize; }
+    uint32_t lineCount() const noexcept
+        { return m_lineCount; }
 
 private:
-    static void generatePosRule(PosRule& rule, bool runOptimize, std::ofstream& rulesFile);
-    static void optimize(Rule& rule);
-    static void optimize(PosRule& rule);
-    static std::vector<std::vector<PosRule>> getOrPosRules(Rule& rule);
-    static void removeOrPosRules(Rule& rule);
+    void newLine(std::ofstream& rulesFile);
+    void generatePosRule(PosRule& rule, bool runOptimize, std::ofstream& rulesFile);
+    void optimize(Rule& rule) const;
+    void optimize(PosRule& rule) const;
+    std::vector<std::vector<PosRule>> getOrPosRules(Rule& rule) const;
+    void removeOrPosRules(Rule& rule) const;
+
+private:
+    std::streamoff m_fileSize = 0;
+    uint32_t m_lineCount = 1;
 };
 
 class Combinator final {

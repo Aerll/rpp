@@ -219,7 +219,12 @@ int App::exec(int argc, char** argv) {
             if (translator.failed())
                 continue;
 
-            RulesGen::exec(translator.automappers(), preprocessor.output());
+            RulesGen rulesGen;
+            rulesGen.run(translator.automappers(), preprocessor.output());
+
+            errorOutput::print::newLine();
+            std::cout << "File size (bytes): " << rulesGen.fileSize() << '\n';
+            std::cout << "Line count: " << rulesGen.lineCount() << '\n';
         }
 
         auto end = high_resolution_clock::now();
