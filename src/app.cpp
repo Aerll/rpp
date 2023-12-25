@@ -1,16 +1,16 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2022 Aerll - aerlldev@gmail.com
-// 
+// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and /or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright noticeand this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
@@ -19,42 +19,43 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 //
+#include <abstractsyntaxtree.hpp>
 #include <app.hpp>
+#include <automapper.hpp>
+#include <externalresource.hpp>
+#include <inputstream.hpp>
+#include <io.hpp>
+#include <parser.hpp>
+#include <parsetree.hpp>
+#include <preprocessor.hpp>
+#include <rulesgen.hpp>
+#include <tokenizer.hpp>
+#include <tokenstream.hpp>
+#include <translator.hpp>
 
 #include <algorithm>
+#include <chrono>
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
-#include <chrono>
 #include <iostream>
 #include <iterator>
 #include <utility>
 
-#include <io.hpp>
-#include <inputstream.hpp>
-#include <tokenizer.hpp>
-#include <tokenstream.hpp>
-#include <preprocessor.hpp>
-#include <parsetree.hpp>
-#include <abstractsyntaxtree.hpp>
-#include <parser.hpp>
-#include <translator.hpp>
-#include <automapper.hpp>
-#include <rulesgen.hpp>
-#include <externalresource.hpp>
-
 namespace {
-    int64_t memory = 0;
-    int64_t max_memory = 0; // in bytes
+
+int64_t memory     = 0;
+int64_t max_memory = 0; // in bytes
+
 }
 
 void* operator new(std::size_t size) {
     if (max_memory != 0 && memory + size > max_memory) {
         int64_t tmp_max_memory = max_memory;
-        max_memory = 0; // allow allocating beyond max_memory for the error
-        auto err = std::overflow_error("Memory overflow");
-        max_memory = tmp_max_memory;
+        max_memory             = 0; // allow allocating beyond max_memory for the error
+        auto err               = std::overflow_error("Memory overflow");
+        max_memory             = tmp_max_memory;
         throw err;
     }
     memory += size;
@@ -64,9 +65,9 @@ void* operator new(std::size_t size) {
 void* operator new[](std::size_t size) {
     if (max_memory != 0 && memory + size > max_memory) {
         int64_t tmp_max_memory = max_memory;
-        max_memory = 0; // allow allocating beyond max_memory for the error
-        auto err = std::overflow_error("Memory overflow");
-        max_memory = tmp_max_memory;
+        max_memory             = 0; // allow allocating beyond max_memory for the error
+        auto err               = std::overflow_error("Memory overflow");
+        max_memory             = tmp_max_memory;
         throw err;
     }
     memory += size;
@@ -91,23 +92,20 @@ void operator delete[](void* data) noexcept {
     std::free(data);
 }
 
-
-
 /*
     App
 */
-static void showHelp(char const* prog) {
-    std::cout
-        << "Usage: " << prog << "[options] file...\n"
-        << "      --help               Display the help.\n"
-        << "  -o, --output <file>      Write to <file> (same as #tileset).\n"
-        << "  -i, --include <file>     A file to include (same as #include).\n"
-        << "  -m, --memory <megabytes> Memory limit in <megabytes> (same as #memory).\n"
-        << "  -p, --no-pause           Do not pause after execution.\n"
-        << "Options -o, -i, -m disable preprocessor stage. All directives will be ignored.\n";
+static void showHelp(const char* prog) {
+    std::cout << "Usage: " << prog << "[options] file...\n"
+              << "      --help               Display the help.\n"
+              << "  -o, --output <file>      Write to <file> (same as #tileset).\n"
+              << "  -i, --include <file>     A file to include (same as #include).\n"
+              << "  -m, --memory <megabytes> Memory limit in <megabytes> (same as #memory).\n"
+              << "  -p, --no-pause           Do not pause after execution.\n"
+              << "Options -o, -i, -m disable preprocessor stage. All directives will be ignored.\n";
 }
 
-static void exitWithError(char const* prog, char const* err) {
+static void exitWithError(const char* prog, const char* err) {
     std::cerr << "Error: " << err << "\n\n";
     showHelp(prog);
     std::exit(1);
@@ -128,7 +126,7 @@ CLI App::parseCLI(int argc, char** argv) {
                 if (i + 1 >= argc)
                     exitWithError(argv[0], "missing filename after --output");
 
-                cli.output = argv[++i];
+                cli.output           = argv[++i];
                 cli.skipPreprocessor = true;
             }
             else if (arg == "--include" || arg == "-i") {
@@ -143,10 +141,9 @@ CLI App::parseCLI(int argc, char** argv) {
                     exitWithError(argv[0], "missing value after --memory");
 
                 try {
-                    cli.memory = std::stoll(argv[++i]) * 1024 * 1024;
+                    cli.memory           = std::stoll(argv[++i]) * 1024 * 1024;
                     cli.skipPreprocessor = true;
-                }
-                catch (...) {
+                } catch (...) {
                     exitWithError(argv[0], "--memory: value is not an integer");
                 }
             }
@@ -180,7 +177,7 @@ int App::exec(int argc, char** argv) {
         using namespace std::chrono;
         auto beg = high_resolution_clock::now();
 
-        for (auto const& input : cli.inputFiles) {
+        for (const auto& input : cli.inputFiles) {
             max_memory = 0;
             ExternalResource::get().clear();
 
@@ -227,7 +224,7 @@ int App::exec(int argc, char** argv) {
             std::cout << "Line count: " << rulesGen.lineCount() << '\n';
         }
 
-        auto end = high_resolution_clock::now();
+        auto end  = high_resolution_clock::now();
         auto time = duration_cast<duration<double>>(end - beg).count();
 
         std::cout << "\n\n";
@@ -236,16 +233,14 @@ int App::exec(int argc, char** argv) {
         if (cli.pause)
             pause();
         return 0;
-    }
-    catch (const std::overflow_error& error) {
+    } catch (const std::overflow_error& error) {
         std::cout << error.what() << '\n';
         pause();
         return 0;
     }
 }
 
-void App::pause()
-{
+void App::pause() {
     errorOutput::print::newLine(2);
     errorOutput::print::string("Press any key to continue...");
     std::cin.get();

@@ -1,16 +1,16 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2022 Aerll - aerlldev@gmail.com
-// 
+// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and /or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright noticeand this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
@@ -22,14 +22,14 @@
 #ifndef RPP_VALUETYPES_HPP
 #define RPP_VALUETYPES_HPP
 
-#include <string>
-#include <vector>
-#include <memory>
-#include <type_traits>
-#include <algorithm>
-
 #include <enums.hpp>
 #include <token.hpp>
+
+#include <algorithm>
+#include <memory>
+#include <string>
+#include <type_traits>
+#include <vector>
 
 class Value;
 
@@ -41,7 +41,7 @@ class FloatValue;
 class StringValue;
 class ObjectValue;
 template <typename T>
-    class ArrayValue;
+class ArrayValue;
 
 using ptr_value = std::unique_ptr<Value>;
 
@@ -50,16 +50,17 @@ public:
     virtual ~Value() = default;
 
     virtual ValueType type() const noexcept = 0;
-    virtual ptr_value clone() const = 0;
-    virtual ptr_value makeNew() const = 0;
-    virtual void reset() = 0;
+    virtual ptr_value clone() const         = 0;
+    virtual ptr_value makeNew() const       = 0;
+    virtual void reset()                    = 0;
 
     virtual std::string str() const = 0;
 
 public:
     template <typename T>
-    constexpr T as() noexcept
-        { return static_cast<T>(this); }
+    constexpr T as() noexcept {
+        return static_cast<T>(this);
+    }
 };
 
 class BoolValue final : public Value {
@@ -67,30 +68,38 @@ public:
     ~BoolValue() = default;
 
     BoolValue() noexcept
-        : value(false)
-    {
-    }
+        : value(false) {}
+
     BoolValue(bool value) noexcept
-        : value(value)
-    {
+        : value(value) {}
+
+    friend bool operator==(const BoolValue& lhs, const BoolValue& rhs) {
+        return lhs.value == rhs.value;
     }
 
-    friend bool operator==(const BoolValue& lhs, const BoolValue& rhs)
-        { return lhs.value == rhs.value; }
-    friend bool operator!=(const BoolValue& lhs, const BoolValue& rhs)
-        { return !(lhs == rhs); }
+    friend bool operator!=(const BoolValue& lhs, const BoolValue& rhs) {
+        return !(lhs == rhs);
+    }
 
-    ValueType type() const noexcept final
-        { return ValueType::Bool; }
-    ptr_value clone() const final
-        { return std::make_unique<BoolValue>(*this); }
-    ptr_value makeNew() const final
-        { return std::make_unique<BoolValue>(); }
-    void reset() final
-        { value = false; }
+    ValueType type() const noexcept final {
+        return ValueType::Bool;
+    }
 
-    std::string str() const final
-        { return value ? "true" : "false"; }
+    ptr_value clone() const final {
+        return std::make_unique<BoolValue>(*this);
+    }
+
+    ptr_value makeNew() const final {
+        return std::make_unique<BoolValue>();
+    }
+
+    void reset() final {
+        value = false;
+    }
+
+    std::string str() const final {
+        return value ? "true" : "false";
+    }
 
 public:
     bool value;
@@ -102,45 +111,68 @@ public:
 
     IntValue() noexcept
         : value(0)
-        , rotation(Rotation::Default)
-    {
-    }
+        , rotation(Rotation::Default) {}
+
     IntValue(int32_t value, Rotation rotation = Rotation::Default) noexcept
         : value(value)
-        , rotation(rotation)
-    {
+        , rotation(rotation) {}
+
+    friend IntValue operator+(const IntValue& lhs, const IntValue& rhs) {
+        return { lhs.value + rhs.value };
     }
 
-    friend IntValue operator+(const IntValue& lhs, const IntValue& rhs)
-        { return { lhs.value + rhs.value }; }
-    friend IntValue operator-(const IntValue& lhs, const IntValue& rhs)
-        { return { lhs.value - rhs.value }; }
-    friend IntValue operator*(const IntValue& lhs, const IntValue& rhs)
-        { return { lhs.value *rhs.value }; }
-    friend IntValue operator/(const IntValue& lhs, const IntValue& rhs)
-        { return { lhs.value / rhs.value }; }
+    friend IntValue operator-(const IntValue& lhs, const IntValue& rhs) {
+        return { lhs.value - rhs.value };
+    }
 
-    friend bool operator==(const IntValue& lhs, const IntValue& rhs)
-        { return lhs.value == rhs.value; }
-    friend bool operator!=(const IntValue& lhs, const IntValue& rhs)
-        { return !(lhs == rhs); }
-    friend bool operator<(const IntValue& lhs, const IntValue& rhs)
-        { return lhs.value < rhs.value; }
-    friend bool operator<=(const IntValue& lhs, const IntValue& rhs)
-        { return lhs.value <= rhs.value; }
-    friend bool operator>(const IntValue& lhs, const IntValue& rhs)
-        { return lhs.value > rhs.value; }
-    friend bool operator>=(const IntValue& lhs, const IntValue& rhs)
-        { return lhs.value >= rhs.value; }
+    friend IntValue operator*(const IntValue& lhs, const IntValue& rhs) {
+        return { lhs.value * rhs.value };
+    }
 
-    ValueType type() const noexcept final
-        { return ValueType::Int; }
-    ptr_value clone() const final
-        { return std::make_unique<IntValue>(*this); }
-    ptr_value makeNew() const final
-        { return std::make_unique<IntValue>(); }
-    void reset() final
-        { value = 0; rotation = Rotation::Default; }
+    friend IntValue operator/(const IntValue& lhs, const IntValue& rhs) {
+        return { lhs.value / rhs.value };
+    }
+
+    friend bool operator==(const IntValue& lhs, const IntValue& rhs) {
+        return lhs.value == rhs.value;
+    }
+
+    friend bool operator!=(const IntValue& lhs, const IntValue& rhs) {
+        return !(lhs == rhs);
+    }
+
+    friend bool operator<(const IntValue& lhs, const IntValue& rhs) {
+        return lhs.value < rhs.value;
+    }
+
+    friend bool operator<=(const IntValue& lhs, const IntValue& rhs) {
+        return lhs.value <= rhs.value;
+    }
+
+    friend bool operator>(const IntValue& lhs, const IntValue& rhs) {
+        return lhs.value > rhs.value;
+    }
+
+    friend bool operator>=(const IntValue& lhs, const IntValue& rhs) {
+        return lhs.value >= rhs.value;
+    }
+
+    ValueType type() const noexcept final {
+        return ValueType::Int;
+    }
+
+    ptr_value clone() const final {
+        return std::make_unique<IntValue>(*this);
+    }
+
+    ptr_value makeNew() const final {
+        return std::make_unique<IntValue>();
+    }
+
+    void reset() final {
+        value    = 0;
+        rotation = Rotation::Default;
+    }
 
     std::string str() const final {
         std::string result = std::to_string(value);
@@ -164,29 +196,38 @@ public:
     RangeValue() noexcept
         : from(0)
         , to(0)
-        , rotation(Rotation::Default)
-    {
-    }
+        , rotation(Rotation::Default) {}
+
     RangeValue(int32_t from, int32_t to, Rotation rotation = Rotation::Default) noexcept
         : from(from)
         , to(to)
-        , rotation(rotation)
-    {
+        , rotation(rotation) {}
+
+    friend bool operator==(const RangeValue& lhs, const RangeValue& rhs) {
+        return lhs.from == rhs.from && lhs.to == rhs.to;
     }
 
-    friend bool operator==(const RangeValue& lhs, const RangeValue& rhs)
-        { return lhs.from == rhs.from && lhs.to == rhs.to; }
-    friend bool operator!=(const RangeValue& lhs, const RangeValue& rhs)
-        { return !(lhs == rhs); }
+    friend bool operator!=(const RangeValue& lhs, const RangeValue& rhs) {
+        return !(lhs == rhs);
+    }
 
-    ValueType type() const noexcept final
-        { return ValueType::Range; }
-    ptr_value clone() const final
-        { return std::make_unique<RangeValue>(*this); }
-    ptr_value makeNew() const final
-        { return std::make_unique<RangeValue>(); }
-    void reset() final
-        { from = 0; to = 0; rotation = Rotation::Default; }
+    ValueType type() const noexcept final {
+        return ValueType::Range;
+    }
+
+    ptr_value clone() const final {
+        return std::make_unique<RangeValue>(*this);
+    }
+
+    ptr_value makeNew() const final {
+        return std::make_unique<RangeValue>();
+    }
+
+    void reset() final {
+        from     = 0;
+        to       = 0;
+        rotation = Rotation::Default;
+    }
 
     std::string str() const final {
         std::string result = std::to_string(from) + "_" + std::to_string(to);
@@ -210,29 +251,38 @@ public:
     CoordValue() noexcept
         : x(0)
         , y(0)
-        , rotation(Rotation::Default)
-    {
-    }
+        , rotation(Rotation::Default) {}
+
     CoordValue(int32_t x, int32_t y, Rotation rotation = Rotation::Default) noexcept
         : x(x)
         , y(y)
-        , rotation(rotation)
-    {
+        , rotation(rotation) {}
+
+    friend bool operator==(const CoordValue& lhs, const CoordValue& rhs) {
+        return lhs.x == rhs.x && lhs.y == rhs.y;
     }
 
-    friend bool operator==(const CoordValue& lhs, const CoordValue& rhs)
-        { return lhs.x == rhs.x && lhs.y == rhs.y; }
-    friend bool operator!=(const CoordValue& lhs, const CoordValue& rhs)
-        { return !(lhs == rhs); }
+    friend bool operator!=(const CoordValue& lhs, const CoordValue& rhs) {
+        return !(lhs == rhs);
+    }
 
-    ValueType type() const noexcept final
-        { return ValueType::Coord; }
-    ptr_value clone() const final
-        { return std::make_unique<CoordValue>(*this); }
-    ptr_value makeNew() const final
-        { return std::make_unique<CoordValue>(); }
-    void reset() final
-        { x = {}; y = {}; rotation = Rotation::Default; }
+    ValueType type() const noexcept final {
+        return ValueType::Coord;
+    }
+
+    ptr_value clone() const final {
+        return std::make_unique<CoordValue>(*this);
+    }
+
+    ptr_value makeNew() const final {
+        return std::make_unique<CoordValue>();
+    }
+
+    void reset() final {
+        x        = {};
+        y        = {};
+        rotation = Rotation::Default;
+    }
 
     std::string str() const final {
         std::string result = "[" + std::to_string(x.value) + ", " + std::to_string(y.value) + "]";
@@ -254,47 +304,70 @@ public:
     ~FloatValue() = default;
 
     FloatValue() noexcept
-        : value(0.0f)
-    {
-    }
+        : value(0.0f) {}
+
     FloatValue(float value) noexcept
-        : value(value)
-    {
+        : value(value) {}
+
+    friend FloatValue operator+(const FloatValue& lhs, const FloatValue& rhs) {
+        return { lhs.value + rhs.value };
     }
 
-    friend FloatValue operator+(const FloatValue& lhs, const FloatValue& rhs)
-        { return { lhs.value + rhs.value }; }
-    friend FloatValue operator-(const FloatValue& lhs, const FloatValue& rhs)
-        { return { lhs.value - rhs.value }; }
-    friend FloatValue operator*(const FloatValue& lhs, const FloatValue& rhs)
-        { return { lhs.value *rhs.value }; }
-    friend FloatValue operator/(const FloatValue& lhs, const FloatValue& rhs)
-        { return { lhs.value / rhs.value }; }
+    friend FloatValue operator-(const FloatValue& lhs, const FloatValue& rhs) {
+        return { lhs.value - rhs.value };
+    }
 
-    friend bool operator==(const FloatValue& lhs, const FloatValue& rhs)
-        { return lhs.value == rhs.value; }
-    friend bool operator!=(const FloatValue& lhs, const FloatValue& rhs)
-        { return !(lhs == rhs); }
-    friend bool operator<(const FloatValue& lhs, const FloatValue& rhs)
-        { return lhs.value < rhs.value; }
-    friend bool operator<=(const FloatValue& lhs, const FloatValue& rhs)
-        { return lhs.value <= rhs.value; }
-    friend bool operator>(const FloatValue& lhs, const FloatValue& rhs)
-        { return lhs.value > rhs.value; }
-    friend bool operator>=(const FloatValue& lhs, const FloatValue& rhs)
-        { return lhs.value >= rhs.value; }
+    friend FloatValue operator*(const FloatValue& lhs, const FloatValue& rhs) {
+        return { lhs.value * rhs.value };
+    }
 
-    ValueType type() const noexcept final
-        { return ValueType::Float; }
-    ptr_value clone() const final
-        { return std::make_unique<FloatValue>(*this); }
-    ptr_value makeNew() const final
-        { return std::make_unique<FloatValue>(); }
-    void reset() final
-        { value = 0.0f; }
+    friend FloatValue operator/(const FloatValue& lhs, const FloatValue& rhs) {
+        return { lhs.value / rhs.value };
+    }
 
-    std::string str() const final
-        { return std::to_string(value); }
+    friend bool operator==(const FloatValue& lhs, const FloatValue& rhs) {
+        return lhs.value == rhs.value;
+    }
+
+    friend bool operator!=(const FloatValue& lhs, const FloatValue& rhs) {
+        return !(lhs == rhs);
+    }
+
+    friend bool operator<(const FloatValue& lhs, const FloatValue& rhs) {
+        return lhs.value < rhs.value;
+    }
+
+    friend bool operator<=(const FloatValue& lhs, const FloatValue& rhs) {
+        return lhs.value <= rhs.value;
+    }
+
+    friend bool operator>(const FloatValue& lhs, const FloatValue& rhs) {
+        return lhs.value > rhs.value;
+    }
+
+    friend bool operator>=(const FloatValue& lhs, const FloatValue& rhs) {
+        return lhs.value >= rhs.value;
+    }
+
+    ValueType type() const noexcept final {
+        return ValueType::Float;
+    }
+
+    ptr_value clone() const final {
+        return std::make_unique<FloatValue>(*this);
+    }
+
+    ptr_value makeNew() const final {
+        return std::make_unique<FloatValue>();
+    }
+
+    void reset() final {
+        value = 0.0f;
+    }
+
+    std::string str() const final {
+        return std::to_string(value);
+    }
 
     IntValue toInt() const noexcept;
 
@@ -307,34 +380,44 @@ public:
     ~StringValue() = default;
 
     StringValue() = default;
+
     StringValue(const std::string& value)
-        : value(value)
-    {
-    }
+        : value(value) {}
+
     StringValue(std::string&& value)
-        : value(std::move(value))
-    {
+        : value(std::move(value)) {}
+
+    friend bool operator==(const StringValue& lhs, const StringValue& rhs) {
+        return lhs.value == rhs.value;
     }
 
-    friend bool operator==(const StringValue& lhs, const StringValue& rhs)
-        { return lhs.value == rhs.value; }
-    friend bool operator!=(const StringValue& lhs, const StringValue& rhs)
-        { return !(lhs == rhs); }
+    friend bool operator!=(const StringValue& lhs, const StringValue& rhs) {
+        return !(lhs == rhs);
+    }
 
-    friend StringValue operator+(const StringValue& lhs, const StringValue& rhs)
-        { return { lhs.value + rhs.value }; }
+    friend StringValue operator+(const StringValue& lhs, const StringValue& rhs) {
+        return { lhs.value + rhs.value };
+    }
 
-    ValueType type() const noexcept final
-        { return ValueType::String; }
-    ptr_value clone() const final
-        { return std::make_unique<StringValue>(*this); }
-    ptr_value makeNew() const final
-        { return std::make_unique<StringValue>(); }
-    void reset() final
-        { value = {}; }
+    ValueType type() const noexcept final {
+        return ValueType::String;
+    }
 
-    std::string str() const final
-        { return value; }
+    ptr_value clone() const final {
+        return std::make_unique<StringValue>(*this);
+    }
+
+    ptr_value makeNew() const final {
+        return std::make_unique<StringValue>();
+    }
+
+    void reset() final {
+        value = {};
+    }
+
+    std::string str() const final {
+        return value;
+    }
 
 public:
     std::string value;
@@ -346,9 +429,7 @@ public:
 
     Container() noexcept
         : last(-1)
-        , count(0)
-    {
-    }
+        , count(0) {}
 
     virtual Value* at(size_t index) = 0;
 
@@ -365,39 +446,53 @@ public:
         : Container()
         , value()
         , rotation(Rotation::N)
-        , anchor()
-    {
-    }
+        , anchor() {}
+
     ObjectValue(const std::vector<IntValue>& value, Rotation rotation = Rotation::N)
         : value(value)
         , rotation(rotation)
-        , anchor()
-    {
+        , anchor() {
         update();
     }
+
     ObjectValue(std::vector<IntValue>&& value, Rotation rotation = Rotation::N) noexcept
         : value(std::move(value))
         , rotation(rotation)
-        , anchor()
-    {
+        , anchor() {
         update();
     }
 
-    friend bool operator==(const ObjectValue& lhs, const ObjectValue& rhs)
-        { return lhs.value == rhs.value; }
-    friend bool operator!=(const ObjectValue& lhs, const ObjectValue& rhs)
-        { return !(lhs == rhs); }
+    friend bool operator==(const ObjectValue& lhs, const ObjectValue& rhs) {
+        return lhs.value == rhs.value && lhs.rotation == rhs.rotation;
+    }
 
-    ValueType type() const noexcept final
-        { return ValueType::Object; }
-    ptr_value clone() const final
-        { return std::make_unique<ObjectValue>(*this); }
-    ptr_value makeNew() const final
-        { return std::make_unique<ObjectValue>(); }
-    void reset() final
-        { value.clear(); rotation = Rotation::N; anchor = {}; last.value = -1; count.value = 0; }
-    Value* at(size_t index) final
-        { return &value[index]; }
+    friend bool operator!=(const ObjectValue& lhs, const ObjectValue& rhs) {
+        return !(lhs == rhs);
+    }
+
+    ValueType type() const noexcept final {
+        return ValueType::Object;
+    }
+
+    ptr_value clone() const final {
+        return std::make_unique<ObjectValue>(*this);
+    }
+
+    ptr_value makeNew() const final {
+        return std::make_unique<ObjectValue>();
+    }
+
+    void reset() final {
+        value.clear();
+        rotation    = Rotation::N;
+        anchor      = {};
+        last.value  = -1;
+        count.value = 0;
+    }
+
+    Value* at(size_t index) final {
+        return &value[index];
+    }
 
     std::string str() const final {
         std::string result = "{";
@@ -434,8 +529,7 @@ public:
 
 template <typename T>
 class ArrayValue final : public Array {
-    constexpr ValueType subtype() const noexcept
-    {
+    constexpr ValueType subtype() const noexcept {
         if constexpr (std::is_same_v<T, BoolValue>)
             return ValueType::Bool;
         else if constexpr (std::is_same_v<T, IntValue>)
@@ -457,38 +551,49 @@ public:
 
     ArrayValue()
         : Array()
-        , value()
-    {
-    }
+        , value() {}
+
     ArrayValue(const std::vector<T>& value)
-        : value(value)
-    {
+        : value(value) {
         update();
     }
+
     ArrayValue(std::vector<T>&& value)
-        : value(std::move(value))
-    {
+        : value(std::move(value)) {
         update();
     }
 
-    friend bool operator==(const ArrayValue& lhs, const ArrayValue& rhs)
-        { return lhs.value == rhs.value; }
-    friend bool operator!=(const ArrayValue& lhs, const ArrayValue& rhs)
-        { return !(lhs == rhs); }
+    friend bool operator==(const ArrayValue& lhs, const ArrayValue& rhs) {
+        return lhs.value == rhs.value;
+    }
 
-    ValueType type() const noexcept final
-        { return ValueType::Array | subtype(); }
-    ptr_value clone() const final
-        { return std::make_unique<ArrayValue<T>>(*this); }
-    ptr_value makeNew() const final
-        { return std::make_unique<ArrayValue<T>>(); }
-    void reset() final
-        { value.clear(); last.value = -1; count.value = 0; }
-    Value* at(size_t index) final
-        { return &value[index]; }
+    friend bool operator!=(const ArrayValue& lhs, const ArrayValue& rhs) {
+        return !(lhs == rhs);
+    }
 
-    ObjectValue toObject() const
-    {
+    ValueType type() const noexcept final {
+        return ValueType::Array | subtype();
+    }
+
+    ptr_value clone() const final {
+        return std::make_unique<ArrayValue<T>>(*this);
+    }
+
+    ptr_value makeNew() const final {
+        return std::make_unique<ArrayValue<T>>();
+    }
+
+    void reset() final {
+        value.clear();
+        last.value  = -1;
+        count.value = 0;
+    }
+
+    Value* at(size_t index) final {
+        return &value[index];
+    }
+
+    ObjectValue toObject() const {
         ObjectValue object;
         for (const auto& i : value)
             object.value.push_back(i);
@@ -496,12 +601,20 @@ public:
         return object;
     }
 
-    bool has(const T& val) const
-        { return std::find(value.rbegin(), value.rend(), val) != value.rend(); }
-    void push(ArrayValue<T>* values) 
-        { value.insert(value.end(), values->value.begin(), values->value.end()); update(); }
-    void unique() final
-        { value.erase(util::removeDuplicates(value.begin(), value.end()), value.end()); update(); }
+    bool has(const T& val) const {
+        return std::find(value.rbegin(), value.rend(), val) != value.rend();
+    }
+
+    void push(ArrayValue<T>* values) {
+        value.insert(value.end(), values->value.begin(), values->value.end());
+        update();
+    }
+
+    void unique() final {
+        value.erase(util::removeDuplicates(value.begin(), value.end()), value.end());
+        update();
+    }
+
     std::string str() const final {
         std::string result = "{";
         for (std::size_t i = 0; i < value.size(); ++i) {
@@ -512,13 +625,17 @@ public:
         result += "}";
         return result;
     }
-    int32_t find(ArrayValue<T>* values) const { 
-        int32_t index = static_cast<int32_t>(std::distance(value.begin(), std::search(value.begin(), value.end(), values->value.begin(), values->value.end()))); 
+
+    int32_t find(ArrayValue<T>* values) const {
+        int32_t index = static_cast<int32_t>(std::distance(
+            value.begin(),
+            std::search(value.begin(), value.end(), values->value.begin(), values->value.end())
+        ));
         return index != count.value ? index : -1;
     }
-    void update()
-    {
-        last.value = static_cast<int32_t>(value.size()) - 1;
+
+    void update() {
+        last.value  = static_cast<int32_t>(value.size()) - 1;
         count.value = static_cast<int32_t>(value.size());
     }
 

@@ -1,16 +1,16 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2022 Aerll - aerlldev@gmail.com
-// 
+// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and /or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright noticeand this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
@@ -19,25 +19,23 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 //
-#include <tokenizer.hpp>
-
-#include <tokenliterals.hpp>
 #include <inputstream.hpp>
+#include <tokenizer.hpp>
+#include <tokenliterals.hpp>
 
 /*
     Tokenizer
 */
-void Tokenizer::run(InputStream& inputStream, bool ignoreLine)
-{
+void Tokenizer::run(InputStream& inputStream, bool ignoreLine) {
     // numberOfPuncAndOp() returns number of all operators and punctuators in the input stream.
-    // In most cases punctuators and operators are followed by either identifier, keyword or literal,
-    // thus approximately vector needs around twice that number of capacity.
+    // In most cases punctuators and operators are followed by either identifier, keyword or
+    // literal, thus approximately vector needs around twice that number of capacity.
     m_data.reserve(numberOfPuncAndOp(inputStream) * 2); // set approximate capacity
 
-    m_line = ignoreLine ? 0 : 1;
-    m_enclosed = false;
+    m_line        = ignoreLine ? 0 : 1;
+    m_enclosed    = false;
     m_subtraction = false;
-    m_ignoreLine = ignoreLine;
+    m_ignoreLine  = ignoreLine;
 
     while (!inputStream.eof()) {
         if (isEnclosed() && m_data.back().value == PU::StringLiteral && inputStream.current() == PU::CharStringLiteral) {
@@ -55,11 +53,10 @@ void Tokenizer::run(InputStream& inputStream, bool ignoreLine)
     }
 }
 
-uint64_t Tokenizer::numberOfPuncAndOp(InputStream& inputStream) const noexcept
-{
+uint64_t Tokenizer::numberOfPuncAndOp(InputStream& inputStream) const noexcept {
     uint64_t count = 0;
 
-    bool oneLineComment = false;
+    bool oneLineComment   = false;
     bool multiLineComment = false;
     while (!inputStream.eof()) {
         char c1 = inputStream.next();
@@ -81,8 +78,7 @@ uint64_t Tokenizer::numberOfPuncAndOp(InputStream& inputStream) const noexcept
     return count;
 }
 
-Token Tokenizer::nextToken(InputStream& inputStream)
-{
+Token Tokenizer::nextToken(InputStream& inputStream) {
     Token token = getNewToken(inputStream);
     setValue(inputStream, token);
     token.line = line();
@@ -90,8 +86,7 @@ Token Tokenizer::nextToken(InputStream& inputStream)
     return token;
 }
 
-Token Tokenizer::getNewToken(InputStream& inputStream)
-{
+Token Tokenizer::getNewToken(InputStream& inputStream) {
     if (!m_enclosed)
         skipBlank(inputStream);
 
@@ -108,8 +103,7 @@ Token Tokenizer::getNewToken(InputStream& inputStream)
         return { TInvalid };
 }
 
-Token Tokenizer::getNewTokenFromLiteral(InputStream& inputStream, ValueType type)
-{
+Token Tokenizer::getNewTokenFromLiteral(InputStream& inputStream, ValueType type) {
     if (isEnclosed())
         return { TLiteral, getString(inputStream), 0, ValueType::String };
     else if (type == ValueType::String) {
@@ -124,16 +118,15 @@ Token Tokenizer::getNewTokenFromLiteral(InputStream& inputStream, ValueType type
         return { TLiteral, getInteger(inputStream), 0, ValueType::Int };
 }
 
-void Tokenizer::skipBlank(InputStream& inputStream)
-{
+void Tokenizer::skipBlank(InputStream& inputStream) {
     while (!inputStream.eof()) {
-        char c = inputStream.current();
+        char c  = inputStream.current();
         char c1 = inputStream.current(1);
 
         // skip blank
         if (Token::isBlank(c)) {
             if (Token::isNewLine(c)) {
-                m_enclosed = false;
+                m_enclosed    = false;
                 m_subtraction = false;
                 nextLine();
             }
@@ -168,17 +161,14 @@ void Tokenizer::skipBlank(InputStream& inputStream)
     }
 }
 
-void Tokenizer::setValue(InputStream& inputStream, Token& t)
-{
+void Tokenizer::setValue(InputStream& inputStream, Token& t) {
     switch (t.cat) {
         case TInvalid:
-            t.value = getString(inputStream);
+            t.value       = getString(inputStream);
             m_subtraction = false;
             break;
 
-        case TKeyword:
-            m_subtraction = false;
-            break;
+        case TKeyword: m_subtraction = false; break;
 
         case TIdentifier:
             ensureValid(t);
@@ -197,12 +187,12 @@ void Tokenizer::setValue(InputStream& inputStream, Token& t)
             break;
 
         case TPunctuator:
-        case TOperator: {
-            char c = inputStream.next();
+        case TOperator:   {
+            char c  = inputStream.next();
             t.value = c;
             if (isUnaryNegation(inputStream)) {
                 t.value += getInteger(inputStream);
-                t.cat = TLiteral;
+                t.cat  = TLiteral;
                 t.type = ValueType::Int;
 
                 if (isFloat(inputStream)) {
@@ -225,7 +215,7 @@ void Tokenizer::setValue(InputStream& inputStream, Token& t)
                 m_subtraction = false;
             }
             else if (c == PU::CharStringLiteral) {
-                m_enclosed = !m_enclosed;
+                m_enclosed    = !m_enclosed;
                 m_subtraction = false;
             }
             else
@@ -235,8 +225,7 @@ void Tokenizer::setValue(InputStream& inputStream, Token& t)
     }
 }
 
-void Tokenizer::ensureValid(Token& t)
-{
+void Tokenizer::ensureValid(Token& t) {
     if (t.type == ValueType::Int || t.type == ValueType::Float) {
         for (auto c : t.value)
             if (Token::isLetter(c)) {
@@ -256,8 +245,7 @@ void Tokenizer::ensureValid(Token& t)
     }
 }
 
-std::string Tokenizer::getInteger(InputStream& inputStream)
-{
+std::string Tokenizer::getInteger(InputStream& inputStream) {
     std::string s;
 
     while (!inputStream.eof()) {
@@ -270,10 +258,9 @@ std::string Tokenizer::getInteger(InputStream& inputStream)
     return s;
 }
 
-std::string Tokenizer::getString(InputStream& inputStream)
-{
+std::string Tokenizer::getString(InputStream& inputStream) {
     std::string s;
-    
+
     while (!inputStream.eof()) {
         s += inputStream.next();
         char c = inputStream.current();
@@ -290,8 +277,7 @@ std::string Tokenizer::getString(InputStream& inputStream)
     return s;
 }
 
-bool Tokenizer::isUnaryNegation(InputStream& inputStream) const noexcept
-{
+bool Tokenizer::isUnaryNegation(InputStream& inputStream) const noexcept {
     if (inputStream.current(-1) == OP::CharUnaryNegation) {
         if (!isSubtraction() && Token::isDigit(inputStream.current())) {
             return true;
@@ -301,8 +287,7 @@ bool Tokenizer::isUnaryNegation(InputStream& inputStream) const noexcept
     return false;
 }
 
-bool Tokenizer::isFloat(InputStream& inputStream) const noexcept
-{
+bool Tokenizer::isFloat(InputStream& inputStream) const noexcept {
     if (inputStream.current() == PU::CharDecimalPoint && Token::isDigit(inputStream.current(1)))
         return true;
 

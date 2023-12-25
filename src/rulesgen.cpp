@@ -1,16 +1,16 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2022 Aerll - aerlldev@gmail.com
-// 
+// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and /or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright noticeand this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
@@ -19,16 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 //
-#include <rulesgen.hpp>
-
 #include <automapper.hpp>
 #include <erroroutput.hpp>
+#include <rulesgen.hpp>
 
 /*
     RulesGen
 */
-void RulesGen::run(std::vector<AutoMapper>& automappers, const std::filesystem::path& outputFile)
-{
+void RulesGen::run(std::vector<AutoMapper>& automappers, const std::filesystem::path& outputFile) {
     if (automappers.empty()) {
         errorOutput::print::stage("No rules to generate");
         return;
@@ -47,7 +45,9 @@ void RulesGen::run(std::vector<AutoMapper>& automappers, const std::filesystem::
                 if (run.rules.empty())
                     continue;
 
-                run.rules.erase(util::removeDuplicates(run.rules.begin(), run.rules.end()), run.rules.end());
+                run.rules.erase(
+                    util::removeDuplicates(run.rules.begin(), run.rules.end()), run.rules.end()
+                );
 
                 for (uint32_t i = 0; i < run.copies; ++i) {
                     rulesFile << "NewRun";
@@ -69,9 +69,11 @@ void RulesGen::run(std::vector<AutoMapper>& automappers, const std::filesystem::
 
                         do {
                             rulesFile << "Index " << rule.indexInfo.tileID;
-                            if ((rule.indexInfo.rotation & Rotation::V) != Rotation::Default || (rule.indexInfo.rotation & Rotation::X) != Rotation::Default)
+                            if ((rule.indexInfo.rotation & Rotation::V) != Rotation::Default
+                                || (rule.indexInfo.rotation & Rotation::X) != Rotation::Default)
                                 rulesFile << " XFLIP";
-                            if ((rule.indexInfo.rotation & Rotation::H) != Rotation::Default || (rule.indexInfo.rotation & Rotation::Y) != Rotation::Default)
+                            if ((rule.indexInfo.rotation & Rotation::H) != Rotation::Default
+                                || (rule.indexInfo.rotation & Rotation::Y) != Rotation::Default)
                                 rulesFile << " YFLIP";
                             if ((rule.indexInfo.rotation & Rotation::R) != Rotation::Default)
                                 rulesFile << " ROTATE";
@@ -105,8 +107,7 @@ void RulesGen::run(std::vector<AutoMapper>& automappers, const std::filesystem::
     }
 }
 
-void RulesGen::generatePosRule(PosRule& rule, bool runOptimize, std::ofstream& rulesFile)
-{
+void RulesGen::generatePosRule(PosRule& rule, bool runOptimize, std::ofstream& rulesFile) {
     if (rule.indexInfos.empty() && rule.ruleType != PosRuleType::FULL && rule.ruleType != PosRuleType::EMPTY)
         return;
 
@@ -115,10 +116,16 @@ void RulesGen::generatePosRule(PosRule& rule, bool runOptimize, std::ofstream& r
 
     rulesFile << "Pos " << rule.x << " " << rule.y;
     switch (rule.ruleType) {
-        case PosRuleType::INDEX: rulesFile << " INDEX"; break;
+        case PosRuleType::INDEX:    rulesFile << " INDEX"; break;
         case PosRuleType::NOTINDEX: rulesFile << " NOTINDEX"; break;
-        case PosRuleType::FULL: rulesFile << " FULL"; newLine(rulesFile); return;
-        case PosRuleType::EMPTY: rulesFile << " EMPTY"; newLine(rulesFile); return;
+        case PosRuleType::FULL:
+            rulesFile << " FULL";
+            newLine(rulesFile);
+            return;
+        case PosRuleType::EMPTY:
+            rulesFile << " EMPTY";
+            newLine(rulesFile);
+            return;
     }
 
     bool insertOr = false;
@@ -141,22 +148,19 @@ void RulesGen::generatePosRule(PosRule& rule, bool runOptimize, std::ofstream& r
     newLine(rulesFile);
 }
 
-void RulesGen::newLine(std::ofstream& rulesFile)
-{
+void RulesGen::newLine(std::ofstream& rulesFile) {
     rulesFile << '\n';
     ++m_lineCount;
 }
 
-void RulesGen::optimize(Rule& rule) const
-{
+void RulesGen::optimize(Rule& rule) const {
     for (size_t i = 1; i < rule.posRules.size(); ++i) {
         for (int64_t j = i - 1; j >= 0; --j) {
-            if (rule.posRules[i].ruleType == rule.posRules[j].ruleType &&
-                rule.posRules[i].x == rule.posRules[j].x &&
-                rule.posRules[i].y == rule.posRules[j].y &&
-                rule.posRules[i].op == rule.posRules[j].op &&
-                rule.posRules[i].group == rule.posRules[j].group
-                ) {
+            if (rule.posRules[i].ruleType == rule.posRules[j].ruleType
+                && rule.posRules[i].x == rule.posRules[j].x
+                && rule.posRules[i].y == rule.posRules[j].y
+                && rule.posRules[i].op == rule.posRules[j].op
+                && rule.posRules[i].group == rule.posRules[j].group) {
                 rule.posRules[i].ruleType = PosRuleType::NORULE;
                 if (rule.posRules[j].ruleType == PosRuleType::EMPTY || rule.posRules[j].ruleType == PosRuleType::FULL)
                     continue;
@@ -167,19 +171,25 @@ void RulesGen::optimize(Rule& rule) const
         }
     }
 
-    rule.posRules.erase(std::remove_if(rule.posRules.begin(), rule.posRules.end(), [](const PosRule& posRule) {
-        return posRule.ruleType == PosRuleType::NORULE;
-    }), rule.posRules.end());
+    rule.posRules.erase(
+        std::remove_if(
+            rule.posRules.begin(), rule.posRules.end(),
+            [](const PosRule& posRule) {
+                return posRule.ruleType == PosRuleType::NORULE;
+            }
+        ),
+        rule.posRules.end()
+    );
 }
 
-void RulesGen::optimize(PosRule& rule) const
-{
+void RulesGen::optimize(PosRule& rule) const {
     std::sort(rule.indexInfos.begin(), rule.indexInfos.end());
-    rule.indexInfos.erase(std::unique(rule.indexInfos.begin(), rule.indexInfos.end()), rule.indexInfos.end());
+    rule.indexInfos.erase(
+        std::unique(rule.indexInfos.begin(), rule.indexInfos.end()), rule.indexInfos.end()
+    );
 }
 
-std::vector<std::vector<PosRule>> RulesGen::getOrPosRules(Rule& rule) const
-{
+std::vector<std::vector<PosRule>> RulesGen::getOrPosRules(Rule& rule) const {
     std::vector<PosRule> orPosRules;
     std::copy_if(rule.posRules.begin(), rule.posRules.end(), std::back_inserter(orPosRules), [](const PosRule& posRule) {
         return posRule.op == Op::Or;
@@ -202,28 +212,31 @@ std::vector<std::vector<PosRule>> RulesGen::getOrPosRules(Rule& rule) const
     return result;
 }
 
-void RulesGen::removeOrPosRules(Rule& rule) const
-{
-    rule.posRules.erase(std::remove_if(rule.posRules.begin(), rule.posRules.end(), [](const PosRule& posRule) {
-        return posRule.op == Op::Or;
-    }), rule.posRules.end());
+void RulesGen::removeOrPosRules(Rule& rule) const {
+    rule.posRules.erase(
+        std::remove_if(
+            rule.posRules.begin(), rule.posRules.end(),
+            [](const PosRule& posRule) {
+                return posRule.op == Op::Or;
+            }
+        ),
+        rule.posRules.end()
+    );
 }
 
 /*
     Combinator
 */
 Combinator::Combinator(std::vector<std::vector<PosRule>>& vectors)
-    : m_vectors(vectors)
-{
+    : m_vectors(vectors) {
     m_combination.reserve(m_vectors.size());
     for (auto& v : m_vectors)
         m_combination.push_back(v.begin());
 }
 
-bool Combinator::next()
-{
+bool Combinator::next() {
     for (int64_t i = m_vectors.size() - 1; i >= 0; --i) {
-        auto& v = m_vectors[i];
+        auto& v  = m_vectors[i];
         auto& it = m_combination[i];
 
         if (++it != v.end())

@@ -70,6 +70,18 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC") # visual studio
         FILES ${RPP_SOURCE_FILES} ${RPP_HEADER_FILES}
         )
     target_link_options(rpp PRIVATE /INCREMENTAL:NO /NODEFAULTLIB:MSVCRT)
+    
+    if(MSVC_VERSION GREATER_EQUAL 1936) # 17.6+
+        file(CONFIGURE OUTPUT "${CMAKE_BINARY_DIR}/Directory.Build.props" CONTENT [==[
+            <Project>
+                <ItemDefinitionGroup>
+                    <ClCompile>
+                        <BuildStlModules>false</BuildStlModules>
+                    </ClCompile>
+                </ItemDefinitionGroup>
+            </Project>
+        ]==] @ONLY)
+    endif()
 endif()
 
 set_property(TARGET rpp PROPERTY CXX_STANDARD 23)

@@ -1,16 +1,16 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2022 Aerll - aerlldev@gmail.com
-// 
+// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and /or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright noticeand this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
@@ -19,28 +19,25 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 //
-#include <limits>
-
 #include <valuetypes.hpp>
+
+#include <limits>
 
 /*
     IntValue
 */
-FloatValue IntValue::toFloat() const noexcept
-{
+FloatValue IntValue::toFloat() const noexcept {
     return { static_cast<float>(value) };
 }
 
-CoordValue IntValue::toCoord() const noexcept
-{
+CoordValue IntValue::toCoord() const noexcept {
     return { value % 16, value / 16, rotation };
 }
 
 /*
     RangeValue
 */
-ObjectValue RangeValue::toObject() const
-{
+ObjectValue RangeValue::toObject() const {
     ObjectValue object;
     bool increment = from <= to;
     for (int32_t i = from; increment ? i <= to : i >= to; increment ? ++i : --i)
@@ -53,24 +50,21 @@ ObjectValue RangeValue::toObject() const
 /*
     CoordValue
 */
-IntValue CoordValue::toInt() const noexcept
-{
+IntValue CoordValue::toInt() const noexcept {
     return { y.value * 16 + x.value, rotation };
 }
 
 /*
     FloatValue
 */
-IntValue FloatValue::toInt() const noexcept
-{
+IntValue FloatValue::toInt() const noexcept {
     return { static_cast<int32_t>(value) };
 }
 
 /*
     ObjectValue
 */
-ArrayValue<IntValue> ObjectValue::toArray() const
-{
+ArrayValue<IntValue> ObjectValue::toArray() const {
     ArrayValue<IntValue> array;
     for (auto i : value)
         array.value.push_back(i);
@@ -78,14 +72,13 @@ ArrayValue<IntValue> ObjectValue::toArray() const
     return array;
 }
 
-void ObjectValue::update(bool sort)
-{
+void ObjectValue::update(bool sort) {
     if (sort) {
         std::sort(value.begin(), value.end());
         value.erase(std::unique(value.begin(), value.end()), value.end());
     }
 
-    last.value = static_cast<int32_t>(value.size()) - 1;
+    last.value  = static_cast<int32_t>(value.size()) - 1;
     count.value = static_cast<int32_t>(value.size());
 
     for (auto& val : value)

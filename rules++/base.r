@@ -98,6 +98,15 @@ end
 
 
 
+function->bool util:SameRotation(int iIndex1, int iIndex2)
+
+    return iIndex1.rotate.V == iIndex2.rotate.V
+       and iIndex1.rotate.H == iIndex2.rotate.H
+       and iIndex1.rotate.R == iIndex2.rotate.R;
+end
+
+
+
 function->int util:RemoveRotation(int iIndex)
 
     float fIndex = iIndex;
@@ -2718,6 +2727,7 @@ end
 
 ///////////////////////////////////////
 //
+array object g:insertedObjects;
 /******************************************************************************
 
 */
@@ -2747,6 +2757,10 @@ function->null InsertObject(array object aObjects)
     for (i = 0 to aObjects.last)
         g:vInsertObject = aObjects[i];
         g:vInsertIndex = aObjects[i].anchor;
+
+        if (not g:insertedObjects.has(g:vInsertObject))
+            g:insertedObjects.push(g:vInsertObject);
+        end
 
         insert.newrule;
         util:InsertIndex(g:vInsertIndex);
@@ -3512,4 +3526,218 @@ nested function->bool Object.IsNotOverlapping(array object aObjects)
         end
     end
     return true;
+end
+
+
+
+
+
+///////////////////////////////////////
+//
+coord g:argCheckerboardSize = [1, 1];
+int g:argCheckerboardIndex1 = g:mask.N;
+int g:argCheckerboardIndex2 = g:mask.V;
+/******************************************************************************
+
+*/
+function->null internal:ResetCheckerboardArgs()
+
+    g:argCheckerboardSize = [1, 1];
+    g:argCheckerboardIndex1 = g:mask.N;
+    g:argCheckerboardIndex2 = g:mask.V;
+end
+
+
+
+function->null Checkerboard()
+    nested(
+        SetSize, SetIndices
+    )
+
+    invoke(nested);
+end
+
+
+
+nested function->null Checkerboard.SetSize(int iWidth, int iHeight)
+
+//
+    if (s:debug)
+        if (iWidth < 1)
+            error("Checkerboard.SetSize(int " + iWidth.name() + ", int " + iHeight.name() + ") -> " + iWidth.name() + " needs to be greater than 0.");
+        end
+        if (iHeight < 1)
+            error("Checkerboard.SetSize(int " + iWidth.name() + ", int " + iHeight.name() + ") -> " + iHeight.name() + " needs to be greater than 0.");
+        end
+    end
+//
+
+    g:argCheckerboardSize = [iWidth, iHeight];
+end
+
+
+
+nested function->null Checkerboard.SetIndices(int iIndex1, int iIndex2)
+
+//
+    if (s:debug)
+        if (iIndex1 < 0 or iIndex1 > 255)
+            error("Checkerboard.SetIndices(int " + iIndex1.name() + ", " + iIndex2.name() + ") -> " + iIndex1.name() + " needs to be in range [0-255].");
+        end
+        if (iIndex2 < 0 or iIndex2 > 255)
+            error("Checkerboard.SetIndices(int " + iIndex1.name() + ", " + iIndex2.name() + ") -> " + iIndex2.name() + " needs to be in range [0-255].");
+        end
+    end
+//
+
+    g:argCheckerboardIndex1 = iIndex1;
+    g:argCheckerboardIndex2 = iIndex2;
+end
+
+
+
+
+
+///////////////////////////////////////
+//
+array int g:argFilterIndices;
+/******************************************************************************
+
+*/
+function->null internal:ResetFilterArgs()
+
+    array int aEmpty;
+    g:argFilterIndices = aEmpty;
+end
+
+
+
+function->null Filter()
+    nested(
+        SetIndices
+    )
+
+    invoke(nested);
+end
+
+
+
+nested function->null Filter.SetIndices(array int aIndices)
+
+    g:argFilterIndices = aIndices;
+end
+
+
+
+
+
+///////////////////////////////////////
+//
+/******************************************************************************
+
+*/
+function->null internal:ResetFillObjectsArgs()
+
+    array object aEmpty;
+    g:insertedObjects = aEmpty;
+end
+
+
+
+
+
+///////////////////////////////////////
+//
+/******************************************************************************
+
+*/
+function->null Run()
+    nested(
+        Filter, Checkerboard, FillObjects
+    )
+
+    invoke(nested);
+end
+
+
+
+nested function->null Run.Filter()
+
+    NewRun();
+    OverrideLayer();
+
+    Insert(0).If(
+        IndexAt(0).IsNot(g:argFilterIndices)
+    );
+
+    NewRun();
+    internal:ResetFilterArgs();
+end
+
+
+
+nested function->null Run.Checkerboard()
+
+    NewRun();
+    OverrideLayer();
+
+    int iIndex1 = g:argCheckerboardIndex1;
+    int iIndex2 = g:argCheckerboardIndex2;
+    int iMask = g:mask.N;
+
+    if (util:SameRotation(iMask, iIndex1))
+        iMask = iMask.V;
+    end
+    if (util:SameRotation(iMask, iIndex2))
+        iMask = iMask.VH;
+    end
+
+    coord cSize = g:argCheckerboardSize;
+
+    Insert(iIndex2);
+    Insert(iMask).If(
+        IndexAt(0).IsEmpty(), IndexAt([util:Negate(cSize.x), 0], [0, util:Negate(cSize.y)]).IsNot(iMask, iIndex1)
+    );
+    Insert(iIndex1).If(
+        IndexAt(0).Is(iIndex2), IndexAt([util:Negate(cSize.x), 0], [0, util:Negate(cSize.y)]).IsNot(iMask, iIndex1)
+    );
+
+    NewRun();
+    OverrideLayer();
+
+    Replace(iMask, 0);
+
+    NewRun();
+    internal:ResetCheckerboardArgs();
+end
+
+
+
+nested function->null Run.FillObjects()
+
+//
+    if (s:debug)
+        if (g:insertedObjects.count == 0)
+            warning("Run.FillObjects() -> No objects were inserted, function had no effect.");
+            return;
+        end
+    end
+//
+
+    NewRun();
+
+    for (i = 0 to g:insertedObjects.last)
+        coord cAnchor = g:insertedObjects[i].anchor;
+
+        for (j = 0 to g:insertedObjects[i].last)
+            coord cRelativePos = util:RelativePos(cAnchor, g:insertedObjects[i][j]);
+
+            Insert(g:insertedObjects[i][j]).If(
+                IndexAt([cRelativePos.x * -1, cRelativePos.y * -1]).Is(cAnchor)
+            ).NoDefaultPosRule();
+        end
+    end
+
+    NewRun();
+    internal:ResetFillObjectsArgs();
 end

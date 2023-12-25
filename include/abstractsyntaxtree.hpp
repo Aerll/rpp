@@ -1,16 +1,16 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2022 Aerll - aerlldev@gmail.com
-// 
+// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and /or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright noticeand this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
@@ -26,7 +26,7 @@
 #include <parsetree.hpp>
 
 class AbstractSyntaxTree final {
-    using ptr_node = std::unique_ptr<IASTNode>;
+    using ptr_node   = std::unique_ptr<IASTNode>;
     using ptr_node_v = std::vector<ptr_node>;
 
 public:
@@ -34,22 +34,33 @@ public:
 
     void create(ParseTree& parseTree);
 
-    IASTNode* getMainNode() const noexcept
-        { return m_tree.get(); }
-    IASTNode* getCurrentNode() const
-        { return m_currentNode[getScope()]; }
+    IASTNode* getMainNode() const noexcept {
+        return m_tree.get();
+    }
+
+    IASTNode* getCurrentNode() const {
+        return m_currentNode[getScope()];
+    }
 
 private:
-    void enterScope()
-        { m_currentNode.push_back(nullptr); ++m_scope; }
-    void leaveScope()
-        { m_currentNode.pop_back(); --m_scope; }
-    int32_t getScope() const noexcept
-        { return m_scope; }
+    void enterScope() {
+        m_currentNode.push_back(nullptr);
+        ++m_scope;
+    }
 
-    void setCurrentNode(IASTNode* node)
-        { m_currentNode[getScope()] = node; }
-        
+    void leaveScope() {
+        m_currentNode.pop_back();
+        --m_scope;
+    }
+
+    int32_t getScope() const noexcept {
+        return m_scope;
+    }
+
+    void setCurrentNode(IASTNode* node) {
+        m_currentNode[getScope()] = node;
+    }
+
     void addNextNode(ptr_node&& node);
 
     void convertStatements(std::vector<std::unique_ptr<IPTStatementNode>>&& statements);
@@ -63,7 +74,6 @@ private:
     ptr_node convertStatement(PTFunctionDeclStatement& statement, NodeID id = NodeID::Null);
     ptr_node convertStatement(PTNestedFunctionDefStatement& statement);
     ptr_node convertStatement(PTNestedFunctionDeclStatement& statement, NodeID id = NodeID::Null);
-    ptr_node convertStatement(PTPresetDefStatement& statement);
     ptr_node convertStatement(PTReturnStatement& statement);
     ptr_node convertStatement(PTBreakStatement& statement);
     ptr_node convertStatement(PTContinueStatement& statement);
@@ -124,33 +134,25 @@ private:
 };
 
 template <typename T>
-inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convert(uint32_t line)
-{
+inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convert(uint32_t line) {
     auto node = std::make_unique<T>();
     node->setLine(line);
     return node;
 }
 
 template <typename T>
-inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertName(std::string_view name, uint32_t line)
-{
+inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertName(std::string_view name, uint32_t line) {
     auto node = std::make_unique<T>();
-    if constexpr (
-        std::is_same_v<T, ASTFunctionIdentifierNode> ||
-        std::is_same_v<T, ASTNestedIdentifierNode> ||
-        std::is_same_v<T, ASTPresetIdentifierNode> ||
-        std::is_same_v<T, ASTVariableNode>
-        ) node->setName(name);
-    else if constexpr (
-        std::is_same_v<T, ASTRotationNode>
-        ) node->setRotation(Token::stringToRotation(name));
+    if constexpr (std::is_same_v<T, ASTFunctionIdentifierNode> || std::is_same_v<T, ASTNestedIdentifierNode> || std::is_same_v<T, ASTVariableNode>)
+        node->setName(name);
+    else if constexpr (std::is_same_v<T, ASTRotationNode>)
+        node->setRotation(Token::stringToRotation(name));
     node->setLine(line);
     return node;
 }
 
 template <typename T, typename ValT>
-inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertValue(ValT value, uint32_t line)
-{
+inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertValue(ValT value, uint32_t line) {
     auto node = std::make_unique<T>();
     node->setValue(value);
     node->setLine(line);
@@ -158,8 +160,7 @@ inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertValue(ValT value,
 }
 
 template <typename T>
-inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertUnaryExpression(ptr_node&& expr, uint32_t line)
-{
+inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertUnaryExpression(ptr_node&& expr, uint32_t line) {
     auto node = std::make_unique<T>();
     node->setExpr(std::move(expr));
     node->setLine(line);
@@ -167,8 +168,7 @@ inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertUnaryExpression(p
 }
 
 template <typename T>
-inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertBinaryExpression(ptr_node&& left, ptr_node&& right, uint32_t line)
-{
+inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertBinaryExpression(ptr_node&& left, ptr_node&& right, uint32_t line) {
     auto node = std::make_unique<T>();
     node->setLeft(std::move(left));
     node->setRight(std::move(right));

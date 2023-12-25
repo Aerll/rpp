@@ -1,16 +1,16 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2022 Aerll - aerlldev@gmail.com
-// 
+// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and /or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright noticeand this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
@@ -22,10 +22,10 @@
 #ifndef RPP_ERROR_HPP
 #define RPP_ERROR_HPP
 
-#include <vector>
-
 #include <enums.hpp>
 #include <erroroutput.hpp>
+
+#include <vector>
 
 class Token;
 
@@ -57,7 +57,6 @@ protected:
     static std::string strMissingValue(const std::string& s);
     static std::string strFunctionSignatureNotFound(const std::string& s);
     static std::string strNestedSignatureNotFound(const std::string& s);
-    static std::string strPresetSignatureNotFound(const std::string& s);
     static std::string strNestedDifferentReturnType(const std::string& s, ValueType expected);
     static std::string strReturnInvalidContext();
     static std::string strBreakInvalidContext();
@@ -76,15 +75,19 @@ protected:
     Error() = default;
 
 public:
-    Error(const Error&) = delete;
+    Error(const Error&)            = delete;
     Error& operator=(const Error&) = delete;
 
     virtual ~Error() = default;
 
-    uint32_t line() const noexcept
-        { return m_line; }
-    void print() const
-        { errorOutput::print::string(m_err); errorOutput::print::newLine(); }
+    uint32_t line() const noexcept {
+        return m_line;
+    }
+
+    void print() const {
+        errorOutput::print::string(m_err);
+        errorOutput::print::newLine();
+    }
 
 protected:
     std::string m_err;
@@ -185,11 +188,6 @@ public:
 class ErrNestedSignatureNotFound final : public Error {
 public:
     ErrNestedSignatureNotFound(const std::string& name, uint32_t line);
-};
-
-class ErrPresetSignatureNotFound final : public Error {
-public:
-    ErrPresetSignatureNotFound(const std::string& name, uint32_t line);
 };
 
 class ErrNestedDifferentReturnType final : public Error {

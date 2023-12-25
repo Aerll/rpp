@@ -1,16 +1,16 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2022 Aerll - aerlldev@gmail.com
-// 
+// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and /or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright noticeand this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
@@ -40,19 +40,19 @@ enum class Order {
 
 enum class Op {
     And = 0,
-    Or = 1,
+    Or  = 1,
 };
 
 enum class ValueType {
-    Null    = 0,
-    Bool    = 1 << 0,
-    Int     = 1 << 1,
-    Range   = 1 << 2,
-    Coord   = 1 << 3,
-    Float   = 1 << 4,
-    String  = 1 << 5,
-    Object  = 1 << 6,
-    Array   = 1 << 7, // array needs to have subtype
+    Null   = 0,
+    Bool   = 1 << 0,
+    Int    = 1 << 1,
+    Range  = 1 << 2,
+    Coord  = 1 << 3,
+    Float  = 1 << 4,
+    String = 1 << 5,
+    Object = 1 << 6,
+    Array  = 1 << 7, // array needs to have subtype
 
     ArrayBool   = Array | Bool,
     ArrayInt    = Array | Int,
@@ -63,17 +63,21 @@ enum class ValueType {
     ArrayObject = Array | Object,
 };
 
-inline ValueType operator|(ValueType lhs, ValueType rhs) noexcept
-    { return util::i32_enum<ValueType>(util::enum_i32(lhs) | util::enum_i32(rhs)); }
+inline ValueType operator|(ValueType lhs, ValueType rhs) noexcept {
+    return util::i32_enum<ValueType>(util::enum_i32(lhs) | util::enum_i32(rhs));
+}
 
-inline ValueType& operator|=(ValueType& lhs, ValueType rhs) noexcept
-    { return lhs = lhs | rhs; }
+inline ValueType& operator|=(ValueType& lhs, ValueType rhs) noexcept {
+    return lhs = lhs | rhs;
+}
 
-inline ValueType operator&(ValueType lhs, ValueType rhs) noexcept
-    { return util::i32_enum<ValueType>(util::enum_i32(lhs) & util::enum_i32(rhs)); }
+inline ValueType operator&(ValueType lhs, ValueType rhs) noexcept {
+    return util::i32_enum<ValueType>(util::enum_i32(lhs) & util::enum_i32(rhs));
+}
 
-inline ValueType operator^(ValueType lhs, ValueType rhs) noexcept
-    { return util::i32_enum<ValueType>(util::enum_i32(lhs) ^ util::enum_i32(rhs)); }
+inline ValueType operator^(ValueType lhs, ValueType rhs) noexcept {
+    return util::i32_enum<ValueType>(util::enum_i32(lhs) ^ util::enum_i32(rhs));
+}
 
 enum class StatementID {
     Empty,
@@ -86,7 +90,6 @@ enum class StatementID {
     NestedFunctionDef,
     NestedFunctionDecl,
     NestedDecl,
-    PresetDef,
     Return,
     Break,
     Continue,
@@ -176,15 +179,12 @@ enum class NodeID {
     FindCall,
     FunctionCall,
     NestedCall,
-    PresetCall,
     For,
     If,
     FunctionIdentifier,
     Function,
     NestedIdentifier,
     NestedFunction,
-    PresetIdentifier,
-    Preset,
     InvokeNested,
 };
 
@@ -195,78 +195,88 @@ enum class Rotation {
     R       = 1 << 2, // ROTATE
     N       = 1 << 3, // NONE
 
-    VH      = V | H,
-    VR      = V | R,
-    HR      = H | R,
-    VHR     = V | H | R,
+    VH  = V | H,
+    VR  = V | R,
+    HR  = H | R,
+    VHR = V | H | R,
 
-    X       = 1 << 4, // XFLIP
-    Y       = 1 << 5, // YFLIP
+    X = 1 << 4, // XFLIP
+    Y = 1 << 5, // YFLIP
 
-    XY      = X | Y,
-    XR      = X | R,
-    YR      = Y | R,
-    XYR     = X | Y | R,
+    XY  = X | Y,
+    XR  = X | R,
+    YR  = Y | R,
+    XYR = X | Y | R,
 };
 
-inline Rotation operator|(Rotation lhs, Rotation rhs) noexcept
-    { return util::i32_enum<Rotation>(util::enum_i32(lhs) | util::enum_i32(rhs)); }
+inline Rotation operator|(Rotation lhs, Rotation rhs) noexcept {
+    return util::i32_enum<Rotation>(util::enum_i32(lhs) | util::enum_i32(rhs));
+}
 
-inline Rotation& operator|=(Rotation& lhs, Rotation rhs) noexcept
-    { return lhs = lhs | rhs; }
+inline Rotation& operator|=(Rotation& lhs, Rotation rhs) noexcept {
+    return lhs = lhs | rhs;
+}
 
-inline Rotation operator&(Rotation lhs, Rotation rhs) noexcept
-    { return util::i32_enum<Rotation>(util::enum_i32(lhs) & util::enum_i32(rhs)); }
+inline Rotation operator&(Rotation lhs, Rotation rhs) noexcept {
+    return util::i32_enum<Rotation>(util::enum_i32(lhs) & util::enum_i32(rhs));
+}
 
-inline Rotation operator^(Rotation lhs, Rotation rhs) noexcept
-    { return util::i32_enum<Rotation>(util::enum_i32(lhs) ^ util::enum_i32(rhs)); }
+inline Rotation operator^(Rotation lhs, Rotation rhs) noexcept {
+    return util::i32_enum<Rotation>(util::enum_i32(lhs) ^ util::enum_i32(rhs));
+}
 
-inline Rotation& operator^=(Rotation& lhs, Rotation rhs) noexcept
-    { return lhs = lhs ^ rhs; }
+inline Rotation& operator^=(Rotation& lhs, Rotation rhs) noexcept {
+    return lhs = lhs ^ rhs;
+}
 
 enum class InsertC {
-    Default     = 0,
-    Insert      = 1 << 0,
-    Automapper  = 1 << 1,
-    Newrun      = 1 << 2,
-    Newrule     = 1 << 3,
-    Nocopy      = 1 << 4,
-    Rule        = 1 << 5,
-    Nodefault   = 1 << 6,
-    Random      = 1 << 7,
-    Pos         = 1 << 8,
-    Index       = 1 << 9,
-    Type        = 1 << 10,
-    Operator    = 1 << 11,
-    Group       = 1 << 12,
+    Default    = 0,
+    Insert     = 1 << 0,
+    Automapper = 1 << 1,
+    Newrun     = 1 << 2,
+    Newrule    = 1 << 3,
+    Nocopy     = 1 << 4,
+    Rule       = 1 << 5,
+    Nodefault  = 1 << 6,
+    Random     = 1 << 7,
+    Pos        = 1 << 8,
+    Index      = 1 << 9,
+    Type       = 1 << 10,
+    Operator   = 1 << 11,
+    Group      = 1 << 12,
 
-    InsertAutomapper            = Insert | Automapper,
-    InsertNewrun                = Insert | Newrun,
-    InsertNewrule               = Insert | Newrule,
-    InsertNocopy                = Insert | Nocopy,
-    InsertRuleNodefault         = Insert | Rule | Nodefault,
-    InsertRuleRandom            = Insert | Rule | Random,
-    InsertRulePos               = Insert | Rule | Pos,
-    InsertRulePosType           = Insert | Rule | Pos | Type,
-    InsertRulePosIndex          = Insert | Rule | Pos | Index,
-    InsertRulePosOperator       = Insert | Rule | Pos | Operator,
-    InsertRulePosGroup          = Insert | Rule | Pos | Group,
-    InsertRuleIndex             = Insert | Rule | Index,
+    InsertAutomapper      = Insert | Automapper,
+    InsertNewrun          = Insert | Newrun,
+    InsertNewrule         = Insert | Newrule,
+    InsertNocopy          = Insert | Nocopy,
+    InsertRuleNodefault   = Insert | Rule | Nodefault,
+    InsertRuleRandom      = Insert | Rule | Random,
+    InsertRulePos         = Insert | Rule | Pos,
+    InsertRulePosType     = Insert | Rule | Pos | Type,
+    InsertRulePosIndex    = Insert | Rule | Pos | Index,
+    InsertRulePosOperator = Insert | Rule | Pos | Operator,
+    InsertRulePosGroup    = Insert | Rule | Pos | Group,
+    InsertRuleIndex       = Insert | Rule | Index,
 };
 
-inline InsertC operator|(InsertC lhs, InsertC rhs) noexcept
-    { return util::i32_enum<InsertC>(util::enum_i32(lhs) | util::enum_i32(rhs)); }
+inline InsertC operator|(InsertC lhs, InsertC rhs) noexcept {
+    return util::i32_enum<InsertC>(util::enum_i32(lhs) | util::enum_i32(rhs));
+}
 
-inline InsertC& operator|=(InsertC& lhs, InsertC rhs) noexcept
-    { return lhs = lhs | rhs; }
+inline InsertC& operator|=(InsertC& lhs, InsertC rhs) noexcept {
+    return lhs = lhs | rhs;
+}
 
-inline InsertC operator&(InsertC lhs, InsertC rhs) noexcept
-    { return util::i32_enum<InsertC>(util::enum_i32(lhs) & util::enum_i32(rhs)); }
+inline InsertC operator&(InsertC lhs, InsertC rhs) noexcept {
+    return util::i32_enum<InsertC>(util::enum_i32(lhs) & util::enum_i32(rhs));
+}
 
-inline InsertC operator^(InsertC lhs, InsertC rhs) noexcept
-    { return util::i32_enum<InsertC>(util::enum_i32(lhs) ^ util::enum_i32(rhs)); }
+inline InsertC operator^(InsertC lhs, InsertC rhs) noexcept {
+    return util::i32_enum<InsertC>(util::enum_i32(lhs) ^ util::enum_i32(rhs));
+}
 
-inline InsertC& operator^=(InsertC& lhs, InsertC rhs) noexcept
-    { return lhs = lhs ^ rhs; }
+inline InsertC& operator^=(InsertC& lhs, InsertC rhs) noexcept {
+    return lhs = lhs ^ rhs;
+}
 
 #endif // RPP_ENUMS_HPP
