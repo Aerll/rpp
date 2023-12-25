@@ -1,16 +1,16 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2022 Aerll - aerlldev@gmail.com
-// 
+// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and /or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright noticeand this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
@@ -19,40 +19,36 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 //
+#include <cli.hpp>
+#include <enums.hpp>
+#include <error.hpp>
+#include <expect.hpp>
+#include <externalresource.hpp>
+#include <inputstream.hpp>
+#include <io.hpp>
 #include <preprocessor.hpp>
+#include <token.hpp>
+#include <tokenizer.hpp>
+#include <tokenliterals.hpp>
 
 #include <algorithm>
 #include <iterator>
 
-#include <cli.hpp>
-#include <enums.hpp>
-#include <error.hpp>
-#include <tokenliterals.hpp>
-#include <token.hpp>
-#include <expect.hpp>
-#include <externalresource.hpp>
-#include <io.hpp>
-#include <inputstream.hpp>
-#include <tokenizer.hpp>
-
 /*
     Preprocessor
 */
-void Preprocessor::run(const std::filesystem::path& path, const CLI& cli)
-{
+void Preprocessor::run(const std::filesystem::path& path, const CLI& cli) {
     errorOutput::print::stage("Preprocessing file", path.filename().string());
-    
+
     ExternalResource::Info info;
-    info.fileName = std::filesystem::canonical(path.filename()).string();
+    info.fileName  = std::filesystem::canonical(path.filename()).string();
     info.lineCount = m_data.back().line;
     ExternalResource::get().addInfo(std::move(info));
 
     if (!cli.skipPreprocessor) {
-        auto lastPreproc = std::find_if(m_data.rbegin(), m_data.rend(), 
-            [](const Token& token) {
-                return token.cat == TPunctuator && token.value == PU::Preproc;
-            }
-        );
+        auto lastPreproc = std::find_if(m_data.rbegin(), m_data.rend(), [](const Token& token) {
+            return token.cat == TPunctuator && token.value == PU::Preproc;
+        });
         if (lastPreproc == m_data.rend())
             return;
 
@@ -65,26 +61,30 @@ void Preprocessor::run(const std::filesystem::path& path, const CLI& cli)
                 if (line.at(1).value == ID::Output) {
                     m_output = getPath(line.at(3).value);
                     if (!std::filesystem::exists(m_output.parent_path()))
-                        pushError(std::make_unique<ErrInvalidOutPath>(m_output.parent_path().string(), line.at(3).line));
+                        pushError(std::make_unique<ErrInvalidOutPath>(
+                            m_output.parent_path().string(), line.at(3).line
+                        ));
                 }
                 else if (line.at(1).value == ID::Memory) {
                     try {
                         m_memory = std::stoll(line.at(3).value) * 1024 * 1024;
-                    }
-                    catch (...) {
-                        pushError(std::make_unique<ErrIncorrectValueType>(ValueType::String, ValueType::Int, line.at(3).line));
+                    } catch (...) {
+                        pushError(std::make_unique<ErrIncorrectValueType>(
+                            ValueType::String, ValueType::Int, line.at(3).line
+                        ));
                     }
                 }
                 else if (line.at(1).value == ID::Include) {
                     auto currentLine = line.back().line - 1;
-                    auto filePath = getPath(line.at(3).value);
+                    auto filePath    = getPath(line.at(3).value);
 
-                    if (std::filesystem::is_regular_file(filePath) &&
-                        !ExternalResource::get().isLoaded(filePath)
-                        ) {
+                    if (std::filesystem::is_regular_file(filePath) && !ExternalResource::get().isLoaded(filePath)) {
                         auto tokens = ExternalResource::get().load(filePath, cli);
 
-                        m_curr = m_data.insert(m_curr, std::make_move_iterator(tokens.begin()), std::make_move_iterator(tokens.end()));
+                        m_curr = m_data.insert(
+                            m_curr, std::make_move_iterator(tokens.begin()),
+                            std::make_move_iterator(tokens.end())
+                        );
                         for (auto it = m_curr; it != m_data.end(); ++it) {
                             if (it < m_curr + tokens.size())
                                 it->line += currentLine;
@@ -121,12 +121,13 @@ void Preprocessor::run(const std::filesystem::path& path, const CLI& cli)
             m_memory = cli.memory.value();
 
         for (const auto& include : cli.includes) {
-            if (std::filesystem::is_regular_file(include) &&
-                !ExternalResource::get().isLoaded(include)
-                ) {
+            if (std::filesystem::is_regular_file(include) && !ExternalResource::get().isLoaded(include)) {
                 auto tokens = ExternalResource::get().load(include, cli);
-                
-                m_curr = m_data.insert(m_data.begin(), std::make_move_iterator(tokens.begin()), std::make_move_iterator(tokens.end()));
+
+                m_curr = m_data.insert(
+                    m_data.begin(), std::make_move_iterator(tokens.begin()),
+                    std::make_move_iterator(tokens.end())
+                );
                 for (auto it = m_curr; it != m_data.end(); ++it)
                     it->line += ExternalResource::get().info().back().lineCount - 1;
             }
@@ -136,8 +137,7 @@ void Preprocessor::run(const std::filesystem::path& path, const CLI& cli)
     }
 }
 
-std::filesystem::path Preprocessor::getPath(const std::string& value) const
-{
+std::filesystem::path Preprocessor::getPath(const std::string& value) const {
     std::filesystem::path path = value;
     if (path.is_absolute()) {}
     else if (path.empty())
@@ -148,13 +148,10 @@ std::filesystem::path Preprocessor::getPath(const std::string& value) const
     return path;
 }
 
-std::vector<Token> Preprocessor::getLine()
-{
-    m_curr = std::find_if(m_curr, m_data.end(), 
-        [](const Token& token) {
-            return token.cat == TPunctuator && token.value == PU::Preproc;
-        }
-    );
+std::vector<Token> Preprocessor::getLine() {
+    m_curr = std::find_if(m_curr, m_data.end(), [](const Token& token) {
+        return token.cat == TPunctuator && token.value == PU::Preproc;
+    });
     if (m_curr == m_data.end())
         return {};
 
@@ -185,6 +182,6 @@ std::vector<Token> Preprocessor::getLine()
         std::advance(m_curr, 1);
         return {};
     }
-    
+
     return { *m_curr, t1, t2, t3, t4 };
 }

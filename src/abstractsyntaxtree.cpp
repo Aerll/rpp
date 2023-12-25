@@ -1,16 +1,16 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2022 Aerll - aerlldev@gmail.com
-// 
+// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and /or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright noticeand this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
@@ -20,14 +20,12 @@
 // IN THE SOFTWARE.
 //
 #include <abstractsyntaxtree.hpp>
-
 #include <tokenliterals.hpp>
 
 /*
     AbstractSyntaxTree
 */
-void AbstractSyntaxTree::create(ParseTree& parseTree)
-{
+void AbstractSyntaxTree::create(ParseTree& parseTree) {
     m_scope = -1;
     enterScope();
 
@@ -40,16 +38,14 @@ void AbstractSyntaxTree::create(ParseTree& parseTree)
     parseTree.destroy();
 }
 
-void AbstractSyntaxTree::addNextNode(ptr_node&& node)
-{
+void AbstractSyntaxTree::addNextNode(ptr_node&& node) {
     IASTNode* previous = getCurrentNode();
     getCurrentNode()->setNextNode(std::move(node));
     setCurrentNode(getCurrentNode()->getNextNode());
     getCurrentNode()->setPreviousNode(previous);
 }
 
-void AbstractSyntaxTree::convertStatements(std::vector<std::unique_ptr<IPTStatementNode>>&& statements)
-{
+void AbstractSyntaxTree::convertStatements(std::vector<std::unique_ptr<IPTStatementNode>>&& statements) {
     for (auto&& stat : statements) {
         auto node = convertStatement(*stat.get());
         if (node == nullptr)
@@ -58,17 +54,12 @@ void AbstractSyntaxTree::convertStatements(std::vector<std::unique_ptr<IPTStatem
     }
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(IPTStatementNode& statement, NodeID id)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(IPTStatementNode& statement, NodeID id) {
     switch (statement.id()) {
-        case StatementID::Expr:
-            return convertStatement(static_cast<PTExprStatement&>(statement));
-        case StatementID::For:
-            return convertStatement(static_cast<PTForStatement&>(statement));
-        case StatementID::If:
-            return convertStatement(static_cast<PTIfStatement&>(statement));
-        case StatementID::Decl:
-            return convertStatement(static_cast<PTDeclStatement&>(statement));
+        case StatementID::Expr: return convertStatement(static_cast<PTExprStatement&>(statement));
+        case StatementID::For:  return convertStatement(static_cast<PTForStatement&>(statement));
+        case StatementID::If:   return convertStatement(static_cast<PTIfStatement&>(statement));
+        case StatementID::Decl: return convertStatement(static_cast<PTDeclStatement&>(statement));
         case StatementID::FunctionDef:
             return convertStatement(static_cast<PTFunctionDefStatement&>(statement));
         case StatementID::FunctionDecl:
@@ -77,27 +68,20 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(IPTStatementNo
             return convertStatement(static_cast<PTNestedFunctionDefStatement&>(statement));
         case StatementID::NestedFunctionDecl:
             return convertStatement(static_cast<PTNestedFunctionDeclStatement&>(statement), id);
-        case StatementID::PresetDef:
-            return convertStatement(static_cast<PTPresetDefStatement&>(statement));
         case StatementID::Return:
             return convertStatement(static_cast<PTReturnStatement&>(statement));
-        case StatementID::Break:
-            return convertStatement(static_cast<PTBreakStatement&>(statement));
+        case StatementID::Break: return convertStatement(static_cast<PTBreakStatement&>(statement));
         case StatementID::Continue:
             return convertStatement(static_cast<PTContinueStatement&>(statement));
-        default:
-            return nullptr;
+        default: return nullptr;
     }
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTExprStatement& statement)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTExprStatement& statement) {
     return convertExpression(*statement.get<1>().get());
 }
 
-
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTForStatement& statement)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTForStatement& statement) {
     enterScope();
 
     auto node = std::make_unique<ASTForNode>();
@@ -115,8 +99,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTForStatement
     return node;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTIfStatement& statement)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTIfStatement& statement) {
     enterScope();
 
     auto node = std::make_unique<ASTIfNode>();
@@ -134,13 +117,11 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTIfStatement&
     return node;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTDeclStatement& statement)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTDeclStatement& statement) {
     return convertExpression(*statement.get<1>().get());
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTFunctionDefStatement& statement)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTFunctionDefStatement& statement) {
     enterScope();
 
     auto node = std::make_unique<ASTFunctionNode>();
@@ -167,16 +148,9 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTFunctionDefS
     return node;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTFunctionDeclStatement& statement, NodeID id)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTFunctionDeclStatement& statement, NodeID id) {
     if (id == NodeID::FunctionIdentifier) {
         auto node = std::make_unique<ASTFunctionIdentifierNode>();
-        node->setName(statement.get<1>()->value);
-        node->setLine(statement.get<1>()->line);
-        return node;
-    }
-    else if (id == NodeID::PresetIdentifier) {
-        auto node = std::make_unique<ASTPresetIdentifierNode>();
         node->setName(statement.get<1>()->value);
         node->setLine(statement.get<1>()->line);
         return node;
@@ -185,8 +159,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTFunctionDecl
         return nullptr;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTNestedFunctionDefStatement& statement)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTNestedFunctionDefStatement& statement) {
     enterScope();
 
     auto node = std::make_unique<ASTNestedFunctionNode>();
@@ -212,35 +185,11 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTNestedFuncti
     return node;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTNestedFunctionDeclStatement& statement, NodeID id)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTNestedFunctionDeclStatement& statement, NodeID id) {
     return convertExpression(*statement.get<1>(), id);
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTPresetDefStatement& statement)
-{
-    enterScope();
-
-    auto node = std::make_unique<ASTPresetNode>();
-    node->setLine(statement.get<1>()->line);
-    node->setIdentifier(convertStatement(*statement.get<2>(), NodeID::PresetIdentifier));
-    node->setArguments(convertArguments(*statement.get<2>()));
-
-    auto branch = std::make_unique<ASTNullNode>();
-    branch->setPreviousNode(node.get());
-    node->setBranch(std::move(branch));
-
-    static_cast<ASTPresetIdentifierNode*>(node->getIdentifier())->setPreset(node.get());
-
-    setCurrentNode(node->getBranch());
-    convertStatements(statement.get<3>());
-
-    leaveScope();
-    return node;
-}
-
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTReturnStatement& statement)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTReturnStatement& statement) {
     auto node = std::make_unique<ASTReturnNode>();
     node->setNode(convertExpression(*statement.get<2>()));
     node->setLine(statement.get<1>()->line);
@@ -248,24 +197,21 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTReturnStatem
     return node;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTBreakStatement& statement)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTBreakStatement& statement) {
     auto node = std::make_unique<ASTBreakNode>();
     node->setLine(statement.get<1>()->line);
 
     return node;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTContinueStatement& statement)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertStatement(PTContinueStatement& statement) {
     auto node = std::make_unique<ASTContinueNode>();
     node->setLine(statement.get<1>()->line);
 
     return node;
 }
 
-AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertArguments(IPTStatementNode& statement)
-{
+AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertArguments(IPTStatementNode& statement) {
     switch (statement.id()) {
         case StatementID::FunctionDecl:
             return convertArguments(static_cast<PTFunctionDeclStatement&>(statement));
@@ -273,13 +219,11 @@ AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertArguments(IPTStatement
             return convertArguments(static_cast<PTNestedFunctionDeclStatement&>(statement));
         case StatementID::NestedDecl:
             return convertArguments(static_cast<PTNestedDeclStatement&>(statement));
-        default:
-            return {};
+        default: return {};
     }
 }
 
-AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertArguments(PTFunctionDeclStatement& statement)
-{
+AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertArguments(PTFunctionDeclStatement& statement) {
     if (statement.get<3>()->id() == ExpressionID::Empty)
         return {};
 
@@ -302,8 +246,7 @@ AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertArguments(PTFunctionDe
     return args;
 }
 
-AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertArguments(PTNestedFunctionDeclStatement& statement)
-{
+AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertArguments(PTNestedFunctionDeclStatement& statement) {
     if (statement.get<3>()->id() == ExpressionID::Empty)
         return {};
 
@@ -326,8 +269,7 @@ AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertArguments(PTNestedFunc
     return args;
 }
 
-AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertArguments(PTNestedDeclStatement& statement)
-{
+AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertArguments(PTNestedDeclStatement& statement) {
     if (statement.get<3>()->id() == ExpressionID::Empty)
         return {};
 
@@ -336,7 +278,7 @@ AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertArguments(PTNestedDecl
         args.push_back(convertExpression(*statement.get<3>(), NodeID::NestedIdentifier));
         return args;
     }
-    
+
     PTSeparatorExpression* current = static_cast<PTSeparatorExpression*>(statement.get<3>().get());
     while (true) {
         args.push_back(convertExpression(*current->get<1>(), NodeID::NestedIdentifier));
@@ -350,8 +292,7 @@ AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertArguments(PTNestedDecl
     return args;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(IPTExpressionNode& expression, NodeID id)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(IPTExpressionNode& expression, NodeID id) {
     switch (expression.id()) {
         case ExpressionID::Literal:
             return convertExpression(static_cast<PTLiteralExpression&>(expression));
@@ -393,29 +334,30 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(IPTExpression
             return convertExpression(static_cast<PTCoordLiteralExpression&>(expression));
         case ExpressionID::DeclType:
             return convertExpression(static_cast<PTDeclTypeExpression&>(expression), id);
-        default:
-            return nullptr;
+        default: return nullptr;
     }
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTLiteralExpression& expression)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTLiteralExpression& expression) {
     if (expression.get<1>()->type == ValueType::Int)
-        return convertValue<ASTIntNode>(std::strtol(expression.get<1>()->value.data(), nullptr, 10), expression.get<1>()->line);
+        return convertValue<ASTIntNode>(
+            std::strtol(expression.get<1>()->value.data(), nullptr, 10), expression.get<1>()->line
+        );
     else if (expression.get<1>()->type == ValueType::Float)
-        return convertValue<ASTFloatNode>(std::strtof(expression.get<1>()->value.data(), nullptr), expression.get<1>()->line);
+        return convertValue<ASTFloatNode>(
+            std::strtof(expression.get<1>()->value.data(), nullptr), expression.get<1>()->line
+        );
     else
         return nullptr;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTIdentifierExpression& expression, NodeID id)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTIdentifierExpression& expression, NodeID id) {
     if (id == NodeID::FunctionIdentifier)
-        return convertName<ASTFunctionIdentifierNode>(expression.get<1>()->value, expression.get<1>()->line);
+        return convertName<ASTFunctionIdentifierNode>(
+            expression.get<1>()->value, expression.get<1>()->line
+        );
     else if (id == NodeID::NestedIdentifier)
         return convertName<ASTNestedIdentifierNode>(expression.get<1>()->value, expression.get<1>()->line);
-    else if (id == NodeID::PresetIdentifier)
-        return convertName<ASTPresetIdentifierNode>(expression.get<1>()->value, expression.get<1>()->line);
     else if (id == NodeID::X)
         return convertName<ASTXNode>(expression.get<1>()->value, expression.get<1>()->line);
     else if (id == NodeID::Y)
@@ -426,8 +368,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTIdentifierE
         return convertName<ASTVariableNode>(expression.get<1>()->value, expression.get<1>()->line);
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTKeywordExpression& expression)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTKeywordExpression& expression) {
     if (expression.get<1>()->value == KW::Anchor)
         return convert<ASTAnchorNode>(expression.get<1>()->line);
     else if (expression.get<1>()->value == KW::Count)
@@ -452,15 +393,14 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTKeywordExpr
         return nullptr;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTAssignmentExpression& expression, NodeID id)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTAssignmentExpression& expression, NodeID id) {
     if (id == NodeID::ForRange) {
         PTDeclTypeExpression decl;
         Token intType = { TKeyword, KW::Int, expression.get<1>()->getLastToken()->line };
         decl.set<1>(&intType);
         decl.set<3>(expression.get<1>()->getLastToken());
 
-        auto left = convertExpression(decl, NodeID::OpAssign);
+        auto left  = convertExpression(decl, NodeID::OpAssign);
         auto right = convertExpression(*expression.get<3>());
 
         left->as<ASTDeclarationNode*>()->setNode(std::move(right));
@@ -468,7 +408,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTAssignmentE
         return left;
     }
     else {
-        auto left = convertExpression(*expression.get<1>(), NodeID::OpAssign);
+        auto left  = convertExpression(*expression.get<1>(), NodeID::OpAssign);
         auto right = convertExpression(*expression.get<3>());
 
         if (left->id() == NodeID::Declaration) {
@@ -480,82 +420,96 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTAssignmentE
             left->as<ASTInsertNode*>()->setNode(std::move(right));
             return left;
         }
-        return convertBinaryExpression<ASTOpAssignNode>(std::move(left), std::move(right), expression.get<2>()->line);
+        return convertBinaryExpression<ASTOpAssignNode>(
+            std::move(left), std::move(right), expression.get<2>()->line
+        );
     }
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTArithmeticExpression& expression)
-{
-    auto left = convertExpression(*expression.get<1>());
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTArithmeticExpression& expression) {
+    auto left  = convertExpression(*expression.get<1>());
     auto right = convertExpression(*expression.get<3>());
 
     ptr_node node;
     if (expression.get<2>()->value == OP::Addition)
-        node = convertBinaryExpression<ASTOpAddNode>(std::move(left), std::move(right), expression.get<2>()->line);
+        node = convertBinaryExpression<ASTOpAddNode>(
+            std::move(left), std::move(right), expression.get<2>()->line
+        );
     else if (expression.get<2>()->value == OP::Subtraction)
-        node = convertBinaryExpression<ASTOpSubtractNode>(std::move(left), std::move(right), expression.get<2>()->line);
+        node = convertBinaryExpression<ASTOpSubtractNode>(
+            std::move(left), std::move(right), expression.get<2>()->line
+        );
     else if (expression.get<2>()->value == OP::Multiplication)
-        node = convertBinaryExpression<ASTOpMultiplyNode>(std::move(left), std::move(right), expression.get<2>()->line);
+        node = convertBinaryExpression<ASTOpMultiplyNode>(
+            std::move(left), std::move(right), expression.get<2>()->line
+        );
     else if (expression.get<2>()->value == OP::Division)
-        node = convertBinaryExpression<ASTOpDivideNode>(std::move(left), std::move(right), expression.get<2>()->line);
+        node = convertBinaryExpression<ASTOpDivideNode>(
+            std::move(left), std::move(right), expression.get<2>()->line
+        );
     return node;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTComparisonExpression& expression)
-{
-    auto left = convertExpression(*expression.get<1>());
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTComparisonExpression& expression) {
+    auto left  = convertExpression(*expression.get<1>());
     auto right = convertExpression(*expression.get<3>());
 
     ptr_node node;
     if (expression.get<2>()->value == OP::Equal)
-        node = convertBinaryExpression<ASTOpEqualNode>(std::move(left), std::move(right), expression.get<2>()->line);
+        node = convertBinaryExpression<ASTOpEqualNode>(
+            std::move(left), std::move(right), expression.get<2>()->line
+        );
     else if (expression.get<2>()->value == OP::NotEqual)
-        node = convertBinaryExpression<ASTOpNotEqualNode>(std::move(left), std::move(right), expression.get<2>()->line);
+        node = convertBinaryExpression<ASTOpNotEqualNode>(
+            std::move(left), std::move(right), expression.get<2>()->line
+        );
     else if (expression.get<2>()->value == OP::GreaterThan)
-        node = convertBinaryExpression<ASTOpGreaterThanNode>(std::move(left), std::move(right), expression.get<2>()->line);
+        node = convertBinaryExpression<ASTOpGreaterThanNode>(
+            std::move(left), std::move(right), expression.get<2>()->line
+        );
     else if (expression.get<2>()->value == OP::GreaterThanOrEqual)
-        node = convertBinaryExpression<ASTOpGreaterThanOrEqualNode>(std::move(left), std::move(right), expression.get<2>()->line);
+        node = convertBinaryExpression<ASTOpGreaterThanOrEqualNode>(
+            std::move(left), std::move(right), expression.get<2>()->line
+        );
     else if (expression.get<2>()->value == OP::LessThan)
-        node = convertBinaryExpression<ASTOpLessThanNode>(std::move(left), std::move(right), expression.get<2>()->line);
+        node = convertBinaryExpression<ASTOpLessThanNode>(
+            std::move(left), std::move(right), expression.get<2>()->line
+        );
     else if (expression.get<2>()->value == OP::LessThanOrEqual)
-        node = convertBinaryExpression<ASTOpLessThanOrEqualNode>(std::move(left), std::move(right), expression.get<2>()->line);
+        node = convertBinaryExpression<ASTOpLessThanOrEqualNode>(
+            std::move(left), std::move(right), expression.get<2>()->line
+        );
     return node;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTLogicalExpression& expression)
-{
-    auto left = convertExpression(*expression.get<1>());
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTLogicalExpression& expression) {
+    auto left  = convertExpression(*expression.get<1>());
     auto right = convertExpression(*expression.get<3>());
-    
+
     ptr_node node;
     if (expression.get<2>()->value == KW::And)
-        node = convertBinaryExpression<ASTOpAndNode>(std::move(left), std::move(right), expression.get<2>()->line);
+        node = convertBinaryExpression<ASTOpAndNode>(
+            std::move(left), std::move(right), expression.get<2>()->line
+        );
     else if (expression.get<2>()->value == KW::Or)
-        node = convertBinaryExpression<ASTOpOrNode>(std::move(left), std::move(right), expression.get<2>()->line);
+        node = convertBinaryExpression<ASTOpOrNode>(
+            std::move(left), std::move(right), expression.get<2>()->line
+        );
     return node;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTUnaryLogicalExpression& expression)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTUnaryLogicalExpression& expression) {
     auto expr = convertExpression(*expression.get<2>());
-    
+
     ptr_node node;
     if (expression.get<1>()->value == KW::Not)
         node = convertUnaryExpression<ASTOpNotNode>(std::move(expr), expression.get<1>()->line);
     return node;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTFunctionCallExpression& expression, NodeID id)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTFunctionCallExpression& expression, NodeID id) {
     if (id == NodeID::NestedCall) {
         auto node = std::make_unique<ASTNestedCallNode>();
-        node->setName(expression.get<1>()->value);
-        node->setArguments(convertArguments(expression));
-        node->setLine(expression.get<1>()->line);
-        return node;
-    }
-    else if (id == NodeID::PresetCall) {
-        auto node = std::make_unique<ASTPresetCallNode>();
         node->setName(expression.get<1>()->value);
         node->setArguments(convertArguments(expression));
         node->setLine(expression.get<1>()->line);
@@ -612,8 +566,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTFunctionCal
     }
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTForRangeExpression& expression)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTForRangeExpression& expression) {
     auto node = std::make_unique<ASTForRangeNode>();
     node->setDeclaration(convertExpression(*expression.get<1>(), NodeID::ForRange));
     node->setTo(convertExpression(*expression.get<3>()));
@@ -621,13 +574,12 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTForRangeExp
     return node;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAccessExpression& expression, NodeID id)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAccessExpression& expression, NodeID id) {
     if (id == NodeID::FunctionIdentifier)
         return convertExpression(*expression.get<1>(), id);
     else if (id == NodeID::NestedIdentifier)
         return convertExpression(*expression.get<3>(), id);
-        
+
     auto nodes = convertExpressions(expression, id);
 
     // handle nested calls
@@ -636,7 +588,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAcces
     size_t nestedEnd = 0;
     if (nodes.front()->id() == NodeID::FunctionCall) {
         functionCall = std::move(nodes.front());
-        nestedEnd = 1;
+        nestedEnd    = 1;
 
         ptr_node_v nestedCalls;
         for (size_t i = 1; i < nodes.size(); ++i, ++nestedEnd) {
@@ -657,23 +609,23 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAcces
         auto& current = nodes[i];
 
         switch (result->id()) {
-            case NodeID::Bool :
-            case NodeID::HasCall :
-            case NodeID::Float :
-            case NodeID::String :
-            case NodeID::NameCall :
+            case NodeID::Bool:
+            case NodeID::HasCall:
+            case NodeID::Float:
+            case NodeID::String:
+            case NodeID::NameCall:
                 if (current->id() == NodeID::StrCall)
                     current->as<ASTStrCallNode*>()->setVariable(std::move(result));
                 result = std::move(current);
                 break;
 
-            case NodeID::Int :
-            case NodeID::OpRange :
-            case NodeID::Count :
-            case NodeID::Last :
-            case NodeID::X :
-            case NodeID::Y :
-            case NodeID::FindCall :
+            case NodeID::Int:
+            case NodeID::OpRange:
+            case NodeID::Count:
+            case NodeID::Last:
+            case NodeID::X:
+            case NodeID::Y:
+            case NodeID::FindCall:
                 if (current->id() == NodeID::Rotation)
                     current->as<ASTRotationNode*>()->setNode(std::move(result));
                 else if (current->id() == NodeID::Rotate)
@@ -682,9 +634,9 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAcces
                     current->as<ASTStrCallNode*>()->setVariable(std::move(result));
                 result = std::move(current);
                 break;
-                
-            case NodeID::OpCoord :
-            case NodeID::Anchor :
+
+            case NodeID::OpCoord:
+            case NodeID::Anchor:
                 if (current->id() == NodeID::X)
                     current->as<ASTXNode*>()->setNode(std::move(result));
                 else if (current->id() == NodeID::Y)
@@ -698,7 +650,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAcces
                 result = std::move(current);
                 break;
 
-            case NodeID::Object :
+            case NodeID::Object:
                 if (current->id() == NodeID::Anchor)
                     current->as<ASTAnchorNode*>()->setNode(std::move(result));
                 else if (current->id() == NodeID::Count)
@@ -714,8 +666,8 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAcces
                 result = std::move(current);
                 break;
 
-            case NodeID::Array :
-            case NodeID::UniqueCall :
+            case NodeID::Array:
+            case NodeID::UniqueCall:
                 if (current->id() == NodeID::Count)
                     current->as<ASTCountNode*>()->setNode(std::move(result));
                 else if (current->id() == NodeID::Last)
@@ -733,7 +685,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAcces
                 result = std::move(current);
                 break;
 
-            case NodeID::Variable :
+            case NodeID::Variable:
                 if (current->id() == NodeID::Anchor)
                     current->as<ASTAnchorNode*>()->setNode(std::move(result));
                 else if (current->id() == NodeID::Count)
@@ -763,7 +715,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAcces
                 result = std::move(current);
                 break;
 
-            case NodeID::Rotation :
+            case NodeID::Rotation:
                 if (current->id() == NodeID::Anchor)
                     current->as<ASTAnchorNode*>()->setNode(std::move(result));
                 else if (current->id() == NodeID::Count)
@@ -781,7 +733,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAcces
                 result = std::move(current);
                 break;
 
-            case NodeID::Rotate :
+            case NodeID::Rotate:
                 if (current->id() == NodeID::Rotation) {
                     result->as<ASTRotateNode*>()->setRotation(current->as<ASTRotationNode*>()->getRotation());
                     break;
@@ -789,9 +741,9 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAcces
                 if (current->id() == NodeID::StrCall)
                     current->as<ASTStrCallNode*>()->setVariable(std::move(result));
                 result = std::move(current);
-                break;        
-                
-            case NodeID::ArraySubscript :
+                break;
+
+            case NodeID::ArraySubscript:
                 if (current->id() == NodeID::Anchor)
                     current->as<ASTAnchorNode*>()->setNode(std::move(result));
                 else if (current->id() == NodeID::Count)
@@ -811,7 +763,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAcces
                 result = std::move(current);
                 break;
 
-            case NodeID::FunctionCall :
+            case NodeID::FunctionCall:
                 if (current->id() == NodeID::Anchor)
                     current->as<ASTAnchorNode*>()->setNode(std::move(result));
                 else if (current->id() == NodeID::Count)
@@ -841,8 +793,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTMemberAcces
     return result;
 }
 
-AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertExpressions(PTMemberAccessExpression& expression, NodeID id)
-{
+AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertExpressions(PTMemberAccessExpression& expression, NodeID id) {
     ptr_node_v result;
     result.push_back(convertLeft(expression, id));
 
@@ -852,20 +803,19 @@ AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertExpressions(PTMemberAc
     ptr_node_v nodes;
     if (expression.get<3>()->id() == ExpressionID::MemberAccess) {
         nodes = convertExpressions(static_cast<PTMemberAccessExpression&>(*expression.get<3>()), NodeID::NestedCall);
-        result.insert(result.end(), std::make_move_iterator(nodes.begin()), std::make_move_iterator(nodes.end()));
+        result.insert(
+            result.end(), std::make_move_iterator(nodes.begin()), std::make_move_iterator(nodes.end())
+        );
     }
     else if (expression.get<1>()->id() == ExpressionID::FunctionCall && expression.get<3>()->id() == ExpressionID::FunctionCall)
         result.push_back(convertRight(expression, NodeID::NestedCall));
-    else {
-        if (result.back()->id() != NodeID::PresetCall)
-            result.push_back(convertRight(expression, result.back()->id()));
-    }
-    
+    else
+        result.push_back(convertRight(expression, result.back()->id()));
+
     return result;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTErrorExpression& expression)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTErrorExpression& expression) {
     auto node = std::make_unique<ASTErrorNode>();
     node->setString(convertExpression(*expression.get<3>()));
     node->setLine(expression.get<1>()->line);
@@ -873,8 +823,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTErrorExpres
     return node;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTWarningExpression& expression)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTWarningExpression& expression) {
     auto node = std::make_unique<ASTWarningNode>();
     node->setString(convertExpression(*expression.get<3>()));
     node->setLine(expression.get<1>()->line);
@@ -882,8 +831,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTWarningExpr
     return node;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTAssertExpression& expression)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTAssertExpression& expression) {
     auto node = std::make_unique<ASTAssertNode>();
     node->setExpr(convertExpression(*expression.get<3>()));
     node->setLine(expression.get<1>()->line);
@@ -891,9 +839,8 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTAssertExpre
     return node;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTArraySubscriptExpression& expression)
-{
-    auto node = std::make_unique<ASTArraySubscriptNode>();
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTArraySubscriptExpression& expression) {
+    auto node                  = std::make_unique<ASTArraySubscriptNode>();
     std::vector<Token*> tokens = expression.get<1>()->getTokens();
     std::string name;
     for (auto&& token : tokens)
@@ -905,20 +852,19 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTArraySubscr
     return node;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTPercentLiteralExpression& expression)
-{
-    return convertValue<ASTFloatNode>(100.0f / std::stof(expression.get<1>()->value), expression.get<1>()->line);
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTPercentLiteralExpression& expression) {
+    return convertValue<ASTFloatNode>(
+        100.0f / std::stof(expression.get<1>()->value), expression.get<1>()->line
+    );
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTStringLiteralExpression& expression)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTStringLiteralExpression& expression) {
     return convertValue<ASTStringNode>(expression.get<2>()->value, expression.get<2>()->line);
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTRangeLiteralExpression& expression)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTRangeLiteralExpression& expression) {
     auto from = convertExpression(*expression.get<1>());
-    auto to = convertExpression(*expression.get<3>());
+    auto to   = convertExpression(*expression.get<3>());
 
     auto node = std::make_unique<ASTOpRangeNode>();
     node->setLeft(std::move(from));
@@ -928,8 +874,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTRangeLitera
     return node;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTCoordLiteralExpression& expression)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTCoordLiteralExpression& expression) {
     auto x = convertExpression(*static_cast<PTSeparatorExpression&>(*expression.get<2>()).get<1>());
     auto y = convertExpression(*static_cast<PTSeparatorExpression&>(*expression.get<2>()).get<3>());
 
@@ -941,8 +886,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTCoordLitera
     return node;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTDeclTypeExpression& expression, NodeID id)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTDeclTypeExpression& expression, NodeID id) {
     auto identifier = std::make_unique<ASTIdentifierNode>();
     identifier->setName(expression.get<3>()->value);
     identifier->setLine(expression.get<3>()->line);
@@ -953,24 +897,12 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTDeclTypeExp
 
     if (id == NodeID::Function || id == NodeID::NestedFunction || id == NodeID::OpAssign) {
         switch (identifier->getType()) {
-            case ValueType::Bool:
-                identifier->setValue(std::make_unique<BoolValue>());
-                break;
-            case ValueType::Int:
-                identifier->setValue(std::make_unique<IntValue>());
-                break;
-            case ValueType::Range:
-                identifier->setValue(std::make_unique<RangeValue>());
-                break;
-            case ValueType::Coord:
-                identifier->setValue(std::make_unique<CoordValue>());
-                break;
-            case ValueType::Float:
-                identifier->setValue(std::make_unique<FloatValue>());
-                break;
-            case ValueType::String:
-                identifier->setValue(std::make_unique<StringValue>());
-                break;
+            case ValueType::Bool:   identifier->setValue(std::make_unique<BoolValue>()); break;
+            case ValueType::Int:    identifier->setValue(std::make_unique<IntValue>()); break;
+            case ValueType::Range:  identifier->setValue(std::make_unique<RangeValue>()); break;
+            case ValueType::Coord:  identifier->setValue(std::make_unique<CoordValue>()); break;
+            case ValueType::Float:  identifier->setValue(std::make_unique<FloatValue>()); break;
+            case ValueType::String: identifier->setValue(std::make_unique<StringValue>()); break;
         }
     }
 
@@ -1000,18 +932,14 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertExpression(PTDeclTypeExp
     return node;
 }
 
-AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertArguments(IPTExpressionNode& expression)
-{
+AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertArguments(IPTExpressionNode& expression) {
     switch (expression.id()) {
-        case ExpressionID::FunctionCall:
-            return convertArguments(expression);
-        default:
-            return {};
+        case ExpressionID::FunctionCall: return convertArguments(expression);
+        default:                         return {};
     }
 }
 
-AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertArguments(PTFunctionCallExpression& expression)
-{
+AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertArguments(PTFunctionCallExpression& expression) {
     if (expression.get<3>()->id() == ExpressionID::Empty)
         return {};
 
@@ -1034,8 +962,7 @@ AbstractSyntaxTree::ptr_node_v AbstractSyntaxTree::convertArguments(PTFunctionCa
     return args;
 }
 
-InsertC AbstractSyntaxTree::convertInsertControl(PTMemberAccessExpression& expression)
-{
+InsertC AbstractSyntaxTree::convertInsertControl(PTMemberAccessExpression& expression) {
     InsertC control = InsertC::Default;
 
     Token* left = expression.get<1>()->getLastToken();
@@ -1080,15 +1007,14 @@ InsertC AbstractSyntaxTree::convertInsertControl(PTMemberAccessExpression& expre
     return control;
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertLeft(PTMemberAccessExpression& expression, NodeID id)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertLeft(PTMemberAccessExpression& expression, NodeID id) {
     if (expression.get<1>()->getLastToken()->value == KW::Insert) {
         auto insert = std::make_unique<ASTInsertNode>();
         insert->setControl(convertInsertControl(expression));
         insert->setLine(expression.get<1>()->getLastToken()->line);
         return insert;
     }
-    
+
     if (expression.get<1>()->getLastToken()->value == KW::Anchor)
         return convertExpression(*expression.get<1>(), NodeID::Anchor);
     else if (expression.get<1>()->getLastToken()->value == KW::Count)
@@ -1111,10 +1037,9 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertLeft(PTMemberAccessExpre
         return convertExpression(*expression.get<1>(), NodeID::Rotation);
     else if (expression.get<1>()->getTokens().front()->value == KW::Rotate)
         return convertExpression(*expression.get<1>(), NodeID::Rotate);
-    else if (expression.get<1>()->getLastToken()->value == KW::Preset)
-        return convertExpression(*expression.get<3>(), NodeID::PresetCall);
     else if (expression.get<1>()->id() == ExpressionID::FunctionCall) {
-        std::string_view functionName = static_cast<PTFunctionCallExpression&>(*expression.get<1>()).get<1>()->value;
+        std::string_view functionName =
+            static_cast<PTFunctionCallExpression&>(*expression.get<1>()).get<1>()->value;
         if (Token::isBuiltin(functionName)) {
             if (functionName == "push")
                 return convertExpression(*expression.get<1>(), NodeID::PushCall);
@@ -1140,8 +1065,7 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertLeft(PTMemberAccessExpre
         return convertExpression(*expression.get<1>());
 }
 
-AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertRight(PTMemberAccessExpression& expression, NodeID left_id)
-{
+AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertRight(PTMemberAccessExpression& expression, NodeID left_id) {
     if (expression.get<3>()->id() == ExpressionID::MemberAccess)
         return convertExpression(*expression.get<3>());
 
@@ -1159,10 +1083,9 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertRight(PTMemberAccessExpr
         return convertExpression(*expression.get<3>(), NodeID::Rotation);
     else if (expression.get<3>()->getTokens().front()->value == KW::Rotate)
         return convertExpression(*expression.get<3>(), NodeID::Rotate);
-    else if (expression.get<3>()->getLastToken()->value == KW::Preset)
-        return convertExpression(*expression.get<3>(), NodeID::PresetCall);
     else if (expression.get<3>()->id() == ExpressionID::FunctionCall) {
-        std::string_view functionName = static_cast<PTFunctionCallExpression&>(*expression.get<3>()).get<1>()->value;
+        std::string_view functionName =
+            static_cast<PTFunctionCallExpression&>(*expression.get<3>()).get<1>()->value;
         if (Token::isBuiltin(functionName)) {
             if (functionName == "push")
                 return convertExpression(*expression.get<3>(), NodeID::PushCall);
@@ -1179,8 +1102,6 @@ AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertRight(PTMemberAccessExpr
             else
                 return nullptr;
         }
-        else if (left_id == NodeID::PresetCall)
-            return convertExpression(*expression.get<3>(), NodeID::PresetCall);
         else if (left_id == NodeID::NestedCall)
             return convertExpression(*expression.get<3>(), NodeID::NestedCall);
         else

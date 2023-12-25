@@ -1,16 +1,16 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2022 Aerll - aerlldev@gmail.com
-// 
+// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and /or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright noticeand this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
@@ -21,36 +21,31 @@
 //
 #include <erroroutput.hpp>
 
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
 namespace errorOutput::print {
 
-void string(std::string_view str, uint32_t width)
-{
+void string(std::string_view str, uint32_t width) {
     std::cout << std::setw(width) << str << std::setw(0);
 }
 
-void stage(std::string_view stageName)
-{
+void stage(std::string_view stageName) {
     std::cout << ">>> " << stageName << '\n';
 }
 
-void stage(std::string_view stageName, const std::string& fileName)
-{
+void stage(std::string_view stageName, const std::string& fileName) {
     std::cout << ">>> " << stageName << ": '" << fileName << "'\n";
 }
 
-void summary(uint32_t errorsCount, bool failed)
-{
+void summary(uint32_t errorsCount, bool failed) {
     if (failed)
         std::cout << ">>> failed - errors: " << errorsCount << '\n';
     else
         std::cout << "> \n";
 }
 
-void newLine(uint32_t count)
-{
+void newLine(uint32_t count) {
     for (uint32_t i = 0; i < count; ++i)
         std::cout << '\n';
 }

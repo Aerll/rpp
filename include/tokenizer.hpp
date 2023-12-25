@@ -1,16 +1,16 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2022 Aerll - aerlldev@gmail.com
-// 
+// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and /or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright noticeand this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
@@ -22,22 +22,23 @@
 #ifndef RPP_TOKENIZER_HPP
 #define RPP_TOKENIZER_HPP
 
-#include <vector>
-
 #include <token.hpp>
+
+#include <vector>
 
 class InputStream;
 
 class Tokenizer final {
 public:
-    Tokenizer() = default;
-    Tokenizer(const Tokenizer&) = delete;
+    Tokenizer()                            = default;
+    Tokenizer(const Tokenizer&)            = delete;
     Tokenizer& operator=(const Tokenizer&) = delete;
 
     void run(InputStream& inputStream, bool ignoreLine = false);
 
-    std::vector<Token>&& data() noexcept
-        { return std::move(m_data); }
+    std::vector<Token>&& data() noexcept {
+        return std::move(m_data);
+    }
 
 private:
     uint64_t numberOfPuncAndOp(InputStream& inputStream) const noexcept;
@@ -55,35 +56,55 @@ private:
     bool isUnaryNegation(InputStream& inputStream) const noexcept;
     bool isFloat(InputStream& inputStream) const noexcept;
 
-    bool isEnclosed() const noexcept
-        { return m_enclosed; }
-    bool isSubtraction() const noexcept
-        { return m_subtraction; }
+    bool isEnclosed() const noexcept {
+        return m_enclosed;
+    }
 
-    auto line() const noexcept
-        { return m_line; }
-    void nextLine() noexcept
-        { if (!m_ignoreLine) ++m_line; }
+    bool isSubtraction() const noexcept {
+        return m_subtraction;
+    }
 
-    bool isOneLineComment(char c1, char c2) const noexcept
-        { return c1 == '/' && c2 == '/'; }
-    bool isMultiLineComment(char c1, char c2) const noexcept
-        { return c1 == '/' && c2 == '*'; }
-    bool isOpReturnType(char c1, char c2) const noexcept
-        { return c1 == '-' && c2 == '>'; }
-    bool isOpEqual(char c1, char c2) const noexcept
-        { return c1 == '=' && c2 == '='; }
-    bool isOpNotEqual(char c1, char c2) const noexcept
-        { return c1 == '!' && c2 == '='; }
-    bool isOpGreaterOrEqual(char c1, char c2) const noexcept
-        { return c1 == '>' && c2 == '='; }
-    bool isOpLessOrEqual(char c1, char c2) const noexcept
-        { return c1 == '<' && c2 == '='; }
+    auto line() const noexcept {
+        return m_line;
+    }
+
+    void nextLine() noexcept {
+        if (!m_ignoreLine)
+            ++m_line;
+    }
+
+    bool isOneLineComment(char c1, char c2) const noexcept {
+        return c1 == '/' && c2 == '/';
+    }
+
+    bool isMultiLineComment(char c1, char c2) const noexcept {
+        return c1 == '/' && c2 == '*';
+    }
+
+    bool isOpReturnType(char c1, char c2) const noexcept {
+        return c1 == '-' && c2 == '>';
+    }
+
+    bool isOpEqual(char c1, char c2) const noexcept {
+        return c1 == '=' && c2 == '=';
+    }
+
+    bool isOpNotEqual(char c1, char c2) const noexcept {
+        return c1 == '!' && c2 == '=';
+    }
+
+    bool isOpGreaterOrEqual(char c1, char c2) const noexcept {
+        return c1 == '>' && c2 == '=';
+    }
+
+    bool isOpLessOrEqual(char c1, char c2) const noexcept {
+        return c1 == '<' && c2 == '=';
+    }
 
 private:
     std::vector<Token> m_data;
     uint32_t m_line;
-    bool m_enclosed; // if literal is enclosed
+    bool m_enclosed;    // if literal is enclosed
     bool m_subtraction; // if '-' should be treated as subtraction
     bool m_ignoreLine;
 };

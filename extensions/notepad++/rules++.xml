@@ -228,6 +228,16 @@
         
         
         
+        <!-- util:SameRotation -->
+        <KeyWord name="util:SameRotation" func="yes">
+            <Overload retVal="bool">
+                <Param name="int iIndex1" />
+                <Param name="int iIndex2" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
         <!-- util:RemoveRotation -->
         <KeyWord name="util:RemoveRotation" func="yes">
             <Overload retVal="int">
@@ -1043,6 +1053,63 @@
         
         
         <!-- ******************************************************************
+            function Run
+        -->
+        
+        <!-- Run -->
+        <KeyWord name="Run" func="yes">
+            <Overload retVal="null" />
+        </KeyWord>
+        
+        
+        
+        <!-- Filter -->
+        <KeyWord name="Filter" func="yes">
+            <Overload retVal="null" />
+        </KeyWord>
+        
+        
+        
+        <!-- Checkerboard -->
+        <KeyWord name="Checkerboard" func="yes">
+            <Overload retVal="null" />
+        </KeyWord>
+        
+        
+        
+        <!-- SetSize -->
+        <KeyWord name="SetSize" func="yes">
+            <Overload retVal="null">
+                <Param name="int iWidth" />
+                <Param name="int iHeight" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetIndices -->
+        <KeyWord name="SetIndices" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex1" />
+                <Param name="int iIndex2" />
+            </Overload>
+            <Overload retVal="null">
+                <Param name="array int aIndices" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- FillObjects -->
+        <KeyWord name="FillObjects" func="yes">
+            <Overload retVal="null" />
+        </KeyWord>
+        
+        
+        
+        
+        
+        <!-- ******************************************************************
             shared
         -->
         
@@ -1161,39 +1228,6 @@
             </Overload>
             <Overload retVal="null">
                 <Param name="array float aProbabilities" />
-            </Overload>
-        </KeyWord>
-        
-        
-        
-        
-        
-        <!-- ******************************************************************
-            presets
-        -->
-        
-        <!-- Clear -->
-        <KeyWord name="Clear" func="yes">
-            <Overload retVal="preset">
-            </Overload>
-        </KeyWord>
-        
-        
-        
-        <!-- FillObjects -->
-        <KeyWord name="FillObjects" func="yes">
-            <Overload retVal="preset">
-                <Param name="array object aObjects" />
-            </Overload>
-        </KeyWord>
-        
-        
-        
-        <!-- Checkerboard -->
-        <KeyWord name="Checkerboard" func="yes">
-            <Overload retVal="preset">
-                <Param name="int iIndex1" />
-                <Param name="int iIndex2" />
             </Overload>
         </KeyWord>
     </AutoComplete>

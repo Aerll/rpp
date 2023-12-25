@@ -1,16 +1,16 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2022 Aerll - aerlldev@gmail.com
-// 
+// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and /or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright noticeand this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
@@ -29,25 +29,29 @@ class TokenH;
 
 class ParseTree final {
     using ptr_stat_v = std::vector<std::unique_ptr<IPTStatementNode>>;
-    using ptr_stat = std::unique_ptr<IPTStatementNode>;
+    using ptr_stat   = std::unique_ptr<IPTStatementNode>;
     using ptr_expr_v = std::vector<std::unique_ptr<IPTExpressionNode>>;
-    using ptr_expr = std::unique_ptr<IPTExpressionNode>;
+    using ptr_expr   = std::unique_ptr<IPTExpressionNode>;
 
 public:
     ParseTree() = default;
 
     void create(TokenStream& tokenStream);
 
-    ptr_stat_v& getStatements()
-        { return m_statements; }
-    void destroy()
-        { ptr_stat_v{}.swap(getStatements()); }
+    ptr_stat_v& getStatements() {
+        return m_statements;
+    }
+
+    void destroy() {
+        ptr_stat_v{}.swap(getStatements());
+    }
 
 private:
     StatementID getNodeID(const TokenStream& tokenStream) const noexcept;
 
-    void add(ptr_stat&& statement)
-        { m_statements.push_back(std::move(statement)); }
+    void add(ptr_stat&& statement) {
+        m_statements.push_back(std::move(statement));
+    }
 
     ptr_stat getStatementNode(TokenStream& tokenStream, StatementID nodeID) const;
     ptr_stat getExprStatementNode(TokenStream& tokenStream) const;
@@ -59,7 +63,6 @@ private:
     ptr_stat getNestedFunctionDefStatementNode(TokenStream& tokenStream) const;
     ptr_stat getNestedFunctionDeclStatementNode(TokenStream& tokenStream) const;
     ptr_stat getNestedDeclStatementNode(TokenStream& tokenStream) const;
-    ptr_stat getPresetDefStatementNode(TokenStream& tokenStream) const;
     ptr_stat getReturnStatementNode(TokenStream& tokenStream) const;
     ptr_stat getBreakStatementNode(TokenStream& tokenStream) const;
     ptr_stat getContinueStatementNode(TokenStream& tokenStream) const;
@@ -75,10 +78,10 @@ private:
     ptr_expr getWarningExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const;
     ptr_expr getAssertExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const;
     ptr_expr getDeclTypeExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const;
-    
+
     template <typename NodeType>
     ptr_expr getUnaryExpressionNode(TokenStream& tokenStream, Order order, uint32_t beg, uint32_t end, const std::vector<TokenH>& tokens) const;
-    template <typename NodeType> 
+    template <typename NodeType>
     ptr_expr getBinaryExpressionNode(TokenStream& tokenStream, Order order, uint32_t beg, uint32_t end, const std::vector<TokenH>& tokens) const;
 
     uint32_t findEnd(const TokenStream& tokenStream, uint32_t beg, const TokenH& t) const;
@@ -90,11 +93,8 @@ private:
     ptr_stat_v m_statements;
 };
 
-
-
 template <typename NodeType>
-ParseTree::ptr_expr ParseTree::getUnaryExpressionNode(TokenStream& tokenStream, Order order, uint32_t beg, uint32_t end, const std::vector<TokenH>& tokens) const
-{
+ParseTree::ptr_expr ParseTree::getUnaryExpressionNode(TokenStream& tokenStream, Order order, uint32_t beg, uint32_t end, const std::vector<TokenH>& tokens) const {
     uint32_t found;
     if (order == Order::RightToLeft)
         found = findRange(tokenStream, beg, end, tokens);
@@ -111,8 +111,7 @@ ParseTree::ptr_expr ParseTree::getUnaryExpressionNode(TokenStream& tokenStream, 
 }
 
 template <typename NodeType>
-ParseTree::ptr_expr ParseTree::getBinaryExpressionNode(TokenStream& tokenStream, Order order, uint32_t beg, uint32_t end, const std::vector<TokenH>& tokens) const
-{
+ParseTree::ptr_expr ParseTree::getBinaryExpressionNode(TokenStream& tokenStream, Order order, uint32_t beg, uint32_t end, const std::vector<TokenH>& tokens) const {
     uint32_t found;
     if (order == Order::RightToLeft)
         found = findRange(tokenStream, beg, end, tokens);
