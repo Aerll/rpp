@@ -250,6 +250,18 @@
         
         
         
+        <!-- util:EnsureRotation -->
+        <KeyWord name="util:EnsureRotation" func="yes">
+            <Overload retVal="int">
+                <Param name="int iIndex" />
+            </Overload>
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
         <!-- util:N -->
         <KeyWord name="util:N" func="yes">
             <Overload retVal="int">
@@ -439,6 +451,60 @@
                 <Param name="array int aIndices" />
             </Overload>
             <Overload retVal="array object">
+                <Param name="object oObject" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:Rotate -->
+        <KeyWord name="util:Rotate" func="yes">
+            <Overload retVal="int">
+                <Param name="int iIndex" />
+            </Overload>
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="object">
+                <Param name="object oObject" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:MirrorV -->
+        <KeyWord name="util:MirrorV" func="yes">
+            <Overload retVal="int">
+                <Param name="int iIndex" />
+            </Overload>
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="object">
+                <Param name="object oObject" />
+            </Overload>
+            <Overload retVal="array object">
+                <Param name="array object aObjects" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- util:MirrorH -->
+        <KeyWord name="util:MirrorH" func="yes">
+            <Overload retVal="int">
+                <Param name="int iIndex" />
+            </Overload>
+            <Overload retVal="array int">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="object">
                 <Param name="object oObject" />
             </Overload>
             <Overload retVal="array object">
@@ -959,30 +1025,6 @@
         
         
         <!-- ******************************************************************
-            function Shift
-        -->
-        
-        <!-- Shift -->
-        <KeyWord name="Shift" func="yes">
-            <Overload retVal="null">
-                <Param name="array int aIndices" />
-            </Overload>
-        </KeyWord>
-        
-        
-        
-        <!-- By -->
-        <KeyWord name="By" func="yes">
-            <Overload retVal="null">
-                <Param name="coord cPos" />
-            </Overload>
-        </KeyWord>
-        
-        
-        
-        
-        
-        <!-- ******************************************************************
             function InsertObject
         -->
         
@@ -1070,6 +1112,20 @@
         
         
         
+        <!-- Randomize -->
+        <KeyWord name="Randomize" func="yes">
+            <Overload retVal="null" />
+        </KeyWord>
+        
+        
+        
+        <!-- Shift -->
+        <KeyWord name="Shift" func="yes">
+            <Overload retVal="null" />
+        </KeyWord>
+        
+        
+        
         <!-- Checkerboard -->
         <KeyWord name="Checkerboard" func="yes">
             <Overload retVal="null" />
@@ -1077,25 +1133,9 @@
         
         
         
-        <!-- SetSize -->
-        <KeyWord name="SetSize" func="yes">
-            <Overload retVal="null">
-                <Param name="int iWidth" />
-                <Param name="int iHeight" />
-            </Overload>
-        </KeyWord>
-        
-        
-        
-        <!-- SetIndices -->
-        <KeyWord name="SetIndices" func="yes">
-            <Overload retVal="null">
-                <Param name="int iIndex1" />
-                <Param name="int iIndex2" />
-            </Overload>
-            <Overload retVal="null">
-                <Param name="array int aIndices" />
-            </Overload>
+        <!-- Border -->
+        <KeyWord name="Border" func="yes">
+            <Overload retVal="null" />
         </KeyWord>
         
         
@@ -1228,6 +1268,304 @@
             </Overload>
             <Overload retVal="null">
                 <Param name="array float aProbabilities" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetIndices -->
+        <KeyWord name="SetIndices" func="yes">
+            <Overload retVal="null">
+                <Param name="array int aIndices" />
+            </Overload>
+            <Overload retVal="null">
+                <Param name="int iIndex1" />
+                <Param name="int iIndex2" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetFill -->
+        <KeyWord name="SetFill" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetTestIndices -->
+        <KeyWord name="SetTestIndices" func="yes">
+            <Overload retVal="null">
+                <Param name="array int aIndices" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetChance -->
+        <KeyWord name="SetChance" func="yes">
+            <Overload retVal="null">
+                <Param name="array float aProbabilities" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetOffset -->
+        <KeyWord name="SetOffset" func="yes">
+            <Overload retVal="null">
+                <Param name="coord cOffset" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetSize -->
+        <KeyWord name="SetSize" func="yes">
+            <Overload retVal="null">
+                <Param name="coord cSize" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetWall -->
+        <KeyWord name="SetWall" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetWallFrom -->
+        <KeyWord name="SetWallFrom" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetOuter -->
+        <KeyWord name="SetOuter" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetOuterFrom -->
+        <KeyWord name="SetOuterFrom" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetInner -->
+        <KeyWord name="SetInner" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetInnerFrom -->
+        <KeyWord name="SetInnerFrom" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetDiagonal -->
+        <KeyWord name="SetDiagonal" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetDiagonalFrom -->
+        <KeyWord name="SetDiagonalFrom" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetIShape -->
+        <KeyWord name="SetIShape" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetIShapeFrom -->
+        <KeyWord name="SetIShapeFrom" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetUShape -->
+        <KeyWord name="SetUShape" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetUShapeFrom -->
+        <KeyWord name="SetUShapeFrom" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetLShape -->
+        <KeyWord name="SetLShape" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetLShapeFrom -->
+        <KeyWord name="SetLShapeFrom" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetTShape -->
+        <KeyWord name="SetTShape" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetTShapeFrom -->
+        <KeyWord name="SetTShapeFrom" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetWallToIShape -->
+        <KeyWord name="SetWallToIShape" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetWallToIShapeFrom -->
+        <KeyWord name="SetWallToIShapeFrom" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetOuterToIShape -->
+        <KeyWord name="SetOuterToIShape" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+                <Param name="int iIShapeOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetOuterToIShapeFrom -->
+        <KeyWord name="SetOuterToIShapeFrom" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+                <Param name="int iIShapeOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetOuterToDoubleIShape -->
+        <KeyWord name="SetOuterToDoubleIShape" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetOuterToDoubleIShapeFrom -->
+        <KeyWord name="SetOuterToDoubleIShapeFrom" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+                <Param name="int iOrientation" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetCross -->
+        <KeyWord name="SetCross" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetDot -->
+        <KeyWord name="SetDot" func="yes">
+            <Overload retVal="null">
+                <Param name="int iIndex" />
             </Overload>
         </KeyWord>
     </AutoComplete>

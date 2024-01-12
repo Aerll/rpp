@@ -26,12 +26,12 @@
             <Keywords name="Folders in comment, close"></Keywords>
             <Keywords name="Keywords1">#include #output #memory</Keywords>
             <Keywords name="Keywords2">and or not null to last count object automapper newrun array coord bool int float range string error warning assert insert newrule true false rule pos nocopy nodefault random rotate invoke type index notindex full empty anchor operator group nested</Keywords>
-            <Keywords name="Keywords3">AutoMapper NewRun OverrideLayer Indices Rect Insert NoDefaultPosRule Chance Roll If IndexAt Is IsNot IsEmpty IsEmptyAt IsFull IsFullAt IsOut IsNotOut IsEdge IsNotEdge IsWall IsOuterCorner IsInnerCorner HasSpaceFor IsNotOverlapping IsOverlapping Replace ReplaceNot InsertObject HasSpace Fits IsOver Object IsNextTo IsNotNextTo Shift By At TestIndices IsWithinRadius IsNotWithinRadius Area Radius Footprint IsWithinArea IsNotWithinArea IsTouchingObjectAt IsTouchingWallAt Checkerboard SetSize SetIndices Run FillObjects Filter</Keywords>
+            <Keywords name="Keywords3">AutoMapper NewRun OverrideLayer Indices Rect Insert NoDefaultPosRule Chance Roll If IndexAt Is IsNot IsEmpty IsEmptyAt IsFull IsFullAt IsOut IsNotOut IsEdge IsNotEdge IsWall IsOuterCorner IsInnerCorner HasSpaceFor IsNotOverlapping IsOverlapping Replace ReplaceNot InsertObject HasSpace Fits IsOver Object IsNextTo IsNotNextTo At TestIndices IsWithinRadius IsNotWithinRadius Area Radius Footprint IsWithinArea IsNotWithinArea IsTouchingObjectAt IsTouchingWallAt Run Filter Randomize Shift Checkerboard Border FillObjects SetIndices SetTestIndices SetChance SetOffset SetSize SetWall SetWallFrom SetOuter SetOuterFrom SetInner SetInnerFrom SetDiagonal SetDiagonalFrom SetIShape SetIShapeFrom SetUShape SetUShapeFrom SetLShape SetLShapeFrom SetTShape SetTShapeFrom SetWallToIShape SetWallToIShapeFrom SetOuterToIShape SetOuterToIShapeFrom SetOuterToDoubleIShape SetOuterToDoubleIShapeFrom SetCross SetDot SetFill </Keywords>
             <Keywords name="Keywords4">push has unique str name find x y N V H R VR VH HR VHR X Y XY XR YR XYR</Keywords>
             <Keywords name="Keywords5">util: internal:</Keywords>
             <Keywords name="Keywords6">g: s:</Keywords>
             <Keywords name="Keywords7">if end return for break continue function</Keywords>
-            <Keywords name="Keywords8">top right bottom left topLeft topRight bottomLeft bottomRight this all</Keywords>
+            <Keywords name="Keywords8">top right bottom left topLeft topRight bottomLeft bottomRight all vertical horizontal this</Keywords>
             <Keywords name="Delimiters">00[ 01 02((] EOL)) 03&quot; 04 05((&quot; EOL)) 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23</Keywords>
         </KeywordLists>
         <Styles>

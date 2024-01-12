@@ -40,9 +40,11 @@ int bottom      = 1002;
 int left        = 1003;
 int topLeft     = 1004;
 int topRight    = 1005;
-int bottomLeft  = 1006;
-int bottomRight = 1007;
+int bottomRight = 1006;
+int bottomLeft  = 1007;
 int all         = 1008;
+int vertical    = 1009;
+int horizontal  = 1010;
 ///////////////////////////////////////
 // utility functions
 ///////////////////////////////////////
@@ -121,6 +123,33 @@ function->array int util:RemoveRotation(array int aIndices)
     if (aIndices.count != 0)
         for (i = 0 to aIndices.last)
             aResult.push(util:RemoveRotation(aIndices[i]));
+        end
+    end
+    return aResult;
+end
+
+
+
+function->int util:EnsureRotation(int iIndex)
+
+    bool hasV = iIndex.rotate.V;
+    bool hasH = iIndex.rotate.H;
+    bool hasR = iIndex.rotate.R;
+
+    if (hasV or hasH or hasR)
+        return iIndex;
+    end
+    return iIndex.N;
+end
+
+
+
+function->array int util:EnsureRotation(array int aIndices)
+
+    array int aResult;
+    if (aIndices.count != 0)
+        for (i = 0 to aIndices.last)
+            aResult.push(util:EnsureRotation(aIndices[i]));
         end
     end
     return aResult;
@@ -698,6 +727,276 @@ function->array object util:All(array object aObjects)
             aResult.push(oObject.HR);
             aResult.push(oObject.VHR);
         end
+    end
+    return aResult;
+end
+
+
+
+function->int util:Rotate(int iIndex)
+
+    bool hasV = iIndex.rotate.V;
+    bool hasH = iIndex.rotate.H;
+    bool hasR = iIndex.rotate.R;
+
+    if (hasV and hasH and hasR)
+        return iIndex.N;
+    end
+    if (hasV and hasH)
+        return iIndex.VHR;
+    end
+    if (hasV and hasR)
+        return iIndex.H;
+    end
+    if (hasH and hasR)
+        return iIndex.V;
+    end
+    if (hasV)
+        return iIndex.VR;
+    end
+    if (hasH)
+        return iIndex.HR;
+    end
+    if (hasR)
+        return iIndex.VH;
+    end
+
+    return iIndex.R;
+end
+
+
+
+function->array int util:Rotate(array int aIndices)
+
+    array int aResult;
+
+    for (i = 0 to aIndices.last)
+        aResult.push(util:Rotate(aIndices[i]));
+    end
+    return aResult;
+end
+
+
+
+function->object util:Rotate(object oObject)
+
+    bool hasV = oObject.rotate.V;
+    bool hasH = oObject.rotate.H;
+    bool hasR = oObject.rotate.R;
+
+    if (hasV and hasH and hasR)
+        return oObject.N;
+    end
+    if (hasV and hasH)
+        return oObject.VHR;
+    end
+    if (hasV and hasR)
+        return oObject.H;
+    end
+    if (hasH and hasR)
+        return oObject.V;
+    end
+    if (hasV)
+        return oObject.VR;
+    end
+    if (hasH)
+        return oObject.HR;
+    end
+    if (hasR)
+        return oObject.VH;
+    end
+
+    return oObject.R;
+end
+
+
+
+function->array object util:Rotate(array object aObjects)
+
+    array object aResult;
+
+    for (i = 0 to aObjects.last)
+        aResult.push(util:Rotate(aObjects[i]));
+    end
+    return aResult;
+end
+
+
+
+function->int util:MirrorV(int iIndex)
+
+    bool hasV = iIndex.rotate.V;
+    bool hasH = iIndex.rotate.H;
+    bool hasR = iIndex.rotate.R;
+
+    if (hasV and hasH and hasR)
+        return iIndex.VR;
+    end
+    if (hasV and hasH)
+        return iIndex.H;
+    end
+    if (hasV and hasR)
+        return iIndex.VHR;
+    end
+    if (hasH and hasR)
+        return iIndex.R;
+    end
+    if (hasV)
+        return iIndex.N;
+    end
+    if (hasH)
+        return iIndex.VH;
+    end
+    if (hasR)
+        return iIndex.HR;
+    end
+
+    return iIndex.V;
+end
+
+
+
+function->array int util:MirrorV(array int aIndices)
+
+    array int aResult;
+
+    for (i = 0 to aIndices.last)
+        aResult.push(util:MirrorV(aIndices[i]));
+    end
+    return aResult;
+end
+
+
+
+function->object util:MirrorV(object oObject)
+
+    bool hasV = oObject.rotate.V;
+    bool hasH = oObject.rotate.H;
+    bool hasR = oObject.rotate.R;
+
+    if (hasV and hasH and hasR)
+        return oObject.VR;
+    end
+    if (hasV and hasH)
+        return oObject.H;
+    end
+    if (hasV and hasR)
+        return oObject.VHR;
+    end
+    if (hasH and hasR)
+        return oObject.R;
+    end
+    if (hasV)
+        return oObject.N;
+    end
+    if (hasH)
+        return oObject.VH;
+    end
+    if (hasR)
+        return oObject.HR;
+    end
+
+    return oObject.V;
+end
+
+
+
+function->array object util:MirrorV(array object aObjects)
+
+    array object aResult;
+
+    for (i = 0 to aObjects.last)
+        aResult.push(util:MirrorV(aObjects[i]));
+    end
+    return aResult;
+end
+
+
+
+function->int util:MirrorH(int iIndex)
+
+    bool hasV = iIndex.rotate.V;
+    bool hasH = iIndex.rotate.H;
+    bool hasR = iIndex.rotate.R;
+
+    if (hasV and hasH and hasR)
+        return iIndex.HR;
+    end
+    if (hasV and hasH)
+        return iIndex.V;
+    end
+    if (hasV and hasR)
+        return iIndex.R;
+    end
+    if (hasH and hasR)
+        return iIndex.VHR;
+    end
+    if (hasV)
+        return iIndex.VH;
+    end
+    if (hasH)
+        return iIndex.N;
+    end
+    if (hasR)
+        return iIndex.VR;
+    end
+
+    return iIndex.H;
+end
+
+
+
+function->array int util:MirrorH(array int aIndices)
+
+    array int aResult;
+
+    for (i = 0 to aIndices.last)
+        aResult.push(util:MirrorH(aIndices[i]));
+    end
+    return aResult;
+end
+
+
+
+function->object util:MirrorH(object oObject)
+
+    bool hasV = oObject.rotate.V;
+    bool hasH = oObject.rotate.H;
+    bool hasR = oObject.rotate.R;
+
+    if (hasV and hasH and hasR)
+        return oObject.HR;
+    end
+    if (hasV and hasH)
+        return oObject.V;
+    end
+    if (hasV and hasR)
+        return oObject.R;
+    end
+    if (hasH and hasR)
+        return oObject.VHR;
+    end
+    if (hasV)
+        return oObject.VH;
+    end
+    if (hasH)
+        return oObject.N;
+    end
+    if (hasR)
+        return oObject.VR;
+    end
+
+    return oObject.H;
+end
+
+
+
+function->array object util:MirrorH(array object aObjects)
+
+    array object aResult;
+
+    for (i = 0 to aObjects.last)
+        aResult.push(util:MirrorH(aObjects[i]));
     end
     return aResult;
 end
@@ -1809,8 +2108,8 @@ nested function->bool IndexAt.IsEmptyAt(array int aOrientations)
         end
 
         for (i = 0 to aOrientations.last)
-            if (aOrientations[i] < top or aOrientations[i] > bottomRight)
-                error("IndexAt.IsEmptyAt(array int " + aOrientations.name() + ") -> values need to be top, right, bottom, left, topLeft, topRight, bottomLeft or bottomRight.");
+            if (aOrientations[i] < top or aOrientations[i] > bottomLeft)
+                error("IndexAt.IsEmptyAt(array int " + aOrientations.name() + ") -> values need to be top, right, bottom, left, topLeft, topRight, bottomRight or bottomLeft.");
             end
         end
     end
@@ -1846,12 +2145,12 @@ nested function->bool IndexAt.IsEmptyAt(array int aOrientations)
             insert.rule.pos = [iX + 1, iY - 1];
             insert.rule.pos.type = empty;
         end
-        if (iOrientation == bottomLeft)
-            insert.rule.pos = [iX - 1, iY + 1];
-            insert.rule.pos.type = empty;
-        end
         if (iOrientation == bottomRight)
             insert.rule.pos = [iX + 1, iY + 1];
+            insert.rule.pos.type = empty;
+        end
+        if (iOrientation == bottomLeft)
+            insert.rule.pos = [iX - 1, iY + 1];
             insert.rule.pos.type = empty;
         end
     end
@@ -1887,8 +2186,8 @@ nested function->bool IndexAt.IsFullAt(array int aOrientations)
         end
 
         for (i = 0 to aOrientations.last)
-            if (aOrientations[i] < top or aOrientations[i] > bottomRight)
-                error("IndexAt.IsFullAt(array int " + aOrientations.name() + ") -> values need to be top, right, bottom, left, topLeft, topRight, bottomLeft or bottomRight.");
+            if (aOrientations[i] < top or aOrientations[i] > bottomLeft)
+                error("IndexAt.IsFullAt(array int " + aOrientations.name() + ") -> values need to be top, right, bottom, left, topLeft, topRight, bottomRight or bottomLeft.");
             end
         end
     end
@@ -1924,12 +2223,12 @@ nested function->bool IndexAt.IsFullAt(array int aOrientations)
             insert.rule.pos = [iX + 1, iY - 1];
             insert.rule.pos.type = full;
         end
-        if (iOrientation == bottomLeft)
-            insert.rule.pos = [iX - 1, iY + 1];
-            insert.rule.pos.type = full;
-        end
         if (iOrientation == bottomRight)
             insert.rule.pos = [iX + 1, iY + 1];
+            insert.rule.pos.type = full;
+        end
+        if (iOrientation == bottomLeft)
+            insert.rule.pos = [iX - 1, iY + 1];
             insert.rule.pos.type = full;
         end
     end
@@ -2110,8 +2409,8 @@ nested function->bool IndexAt.IsEdge(int iOrientation)
     
 //
     if (s:debug)
-        if (iOrientation < top or iOrientation > bottomRight)
-            error("IndexAt.IsEdge(int " + iOrientation.name() + ") -> value needs to be top, right, bottom, left, topLeft, topRight, bottomLeft or bottomRight.");
+        if (iOrientation < top or iOrientation > bottomLeft)
+            error("IndexAt.IsEdge(int " + iOrientation.name() + ") -> value needs to be top, right, bottom, left, topLeft, topRight, bottomRight or bottomLeft.");
         end
     end
 //
@@ -2157,21 +2456,21 @@ nested function->bool IndexAt.IsEdge(int iOrientation)
         insert.rule.pos.type = index;
         insert.rule.pos.index = -1;
     end
-    if (iOrientation == bottomLeft)
-        insert.rule.pos = [iX, iY + 1];
-        insert.rule.pos.type = index;
-        insert.rule.pos.index = -1;
-
-        insert.rule.pos = [iX - 1, iY];
-        insert.rule.pos.type = index;
-        insert.rule.pos.index = -1;
-    end
     if (iOrientation == bottomRight)
         insert.rule.pos = [iX, iY + 1];
         insert.rule.pos.type = index;
         insert.rule.pos.index = -1;
 
         insert.rule.pos = [iX + 1, iY];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = -1;
+    end
+    if (iOrientation == bottomLeft)
+        insert.rule.pos = [iX, iY + 1];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = -1;
+
+        insert.rule.pos = [iX - 1, iY];
         insert.rule.pos.type = index;
         insert.rule.pos.index = -1;
     end
@@ -2410,8 +2709,8 @@ nested function->bool IndexAt.IsOuterCorner(array int aOrientations)
         end
 
         for (i = 0 to aOrientations.last)
-            if (aOrientations[i] < topLeft or aOrientations[i] > bottomRight)
-                error("IndexAt.IsOuterCorner(array int " + aOrientations.name() + ") -> values need to be topLeft, topRight, bottomLeft or bottomRight.");
+            if (aOrientations[i] < topLeft or aOrientations[i] > bottomLeft)
+                error("IndexAt.IsOuterCorner(array int " + aOrientations.name() + ") -> values need to be topLeft, topRight, bottomRight or bottomLeft.");
             end
         end
     end
@@ -2436,17 +2735,17 @@ nested function->bool IndexAt.IsOuterCorner(array int aOrientations)
         g:borderTopRight = -1;
         g:borderBottomRight = -1;
     end
-    if (aOrientations.has(bottomLeft))
-        g:borderBottom = 0;
-        g:borderLeft = 0;
-        g:borderTopLeft = -1;
-        g:borderBottomLeft = -1;
-        g:borderBottomRight = -1;
-    end
     if (aOrientations.has(bottomRight))
         g:borderBottom = 0;
         g:borderRight = 0;
         g:borderTopRight = -1;
+        g:borderBottomLeft = -1;
+        g:borderBottomRight = -1;
+    end
+    if (aOrientations.has(bottomLeft))
+        g:borderBottom = 0;
+        g:borderLeft = 0;
+        g:borderTopLeft = -1;
         g:borderBottomLeft = -1;
         g:borderBottomRight = -1;
     end
@@ -2469,8 +2768,8 @@ nested function->bool IndexAt.IsInnerCorner(array int aOrientations)
         end
 
         for (i = 0 to aOrientations.last)
-            if (aOrientations[i] < topLeft or aOrientations[i] > bottomRight)
-                error("IndexAt.IsInnerCorner(array int " + aOrientations.name() + ") -> values need to be topLeft, topRight, bottomLeft or bottomRight.");
+            if (aOrientations[i] < topLeft or aOrientations[i] > bottomLeft)
+                error("IndexAt.IsInnerCorner(array int " + aOrientations.name() + ") -> values need to be topLeft, topRight, bottomRight or bottomLeft.");
             end
         end
     end
@@ -2487,11 +2786,11 @@ nested function->bool IndexAt.IsInnerCorner(array int aOrientations)
     if (aOrientations.has(topRight))
         g:borderTopRight = 0;
     end
-    if (aOrientations.has(bottomLeft))
-        g:borderBottomLeft = 0;
-    end
     if (aOrientations.has(bottomRight))
         g:borderBottomRight = 0;
+    end
+    if (aOrientations.has(bottomLeft))
+        g:borderBottomLeft = 0;
     end
     return true;
 end
@@ -2619,7 +2918,9 @@ function->null Replace(int iFrom, int iTo)
     end
 //
 
-    Insert(iTo).If(IndexAt([0, 0]).Is(iFrom));
+    Insert(iTo).If(
+        IndexAt(0).Is(iFrom)
+    );
     invoke(nested);
 end
 
@@ -2660,7 +2961,9 @@ function->null ReplaceNot(int iNot, int iTo)
     end
 //
 
-    Insert(iTo).If(IndexAt([0, 0]).IsNot(iNot));
+    Insert(iTo).If(
+        IndexAt(0).IsNot(iNot)
+    );
     invoke(nested);
 end
 
@@ -2680,48 +2983,6 @@ nested function->null ReplaceNot.Chance(float fProbability)
 end
 
 
-
-///////////////////////////////////////
-//
-array int g:argShift;
-/******************************************************************************
-
-*/
-function->null Shift(array int aIndices)
-    nested(
-        By
-    )
-
-//
-    if (s:debug)
-        if (aIndices.count == 0)
-            warning("Shift(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
-            return;
-        end
-
-        for (i = 0 to aIndices.last)
-            if (aIndices[i] < 0 or aIndices[i] > 255)
-                error("Shift(array int " + aIndices.name() + ") -> values need to be in range [0-255].");
-            end
-        end
-    end
-//
-
-    g:argShift = aIndices;
-    invoke(nested);
-end
-
-
-
-nested function->null Shift.By(coord cPos)
-
-    for (i = 0 to g:argShift.last)
-        Insert(0).If(IndexAt([0, 0]).Is(g:argShift[i]));
-    end
-    for (i = 0 to g:argShift.last)
-        Insert(g:argShift[i]).If(IndexAt(cPos).Is(g:argShift[i])).NoDefaultPosRule();
-    end
-end
 
 
 
@@ -3165,8 +3426,8 @@ nested function->bool Object.IsEdge(int iOrientation)
     
 //
     if (s:debug)
-        if (iOrientation < top or iOrientation > bottomRight)
-            error("Object.IsEdge(int " + iOrientation.name() + ") -> value needs to be top, right, bottom, left, topLeft, topRight, bottomLeft or bottomRight.");
+        if (iOrientation < top or iOrientation > bottomLeft)
+            error("Object.IsEdge(int " + iOrientation.name() + ") -> value needs to be top, right, bottom, left, topLeft, topRight, bottomRight or bottomLeft.");
         end
     end
 //
@@ -3221,23 +3482,23 @@ nested function->bool Object.IsEdge(int iOrientation)
 
         return true;
     end
-    if (iOrientation == bottomLeft)
-        insert.rule.pos = [0, g:vObjectBottom + 1];
-        insert.rule.pos.type = index;
-        insert.rule.pos.index = -1;
-
-        insert.rule.pos = [g:vObjectLeft - 1, 0];
-        insert.rule.pos.type = index;
-        insert.rule.pos.index = -1;
-
-        return true;
-    end
     if (iOrientation == bottomRight)
         insert.rule.pos = [0, g:vObjectBottom + 1];
         insert.rule.pos.type = index;
         insert.rule.pos.index = -1;
 
         insert.rule.pos = [g:vObjectRight + 1, 0];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = -1;
+
+        return true;
+    end
+    if (iOrientation == bottomLeft)
+        insert.rule.pos = [0, g:vObjectBottom + 1];
+        insert.rule.pos.type = index;
+        insert.rule.pos.index = -1;
+
+        insert.rule.pos = [g:vObjectLeft - 1, 0];
         insert.rule.pos.type = index;
         insert.rule.pos.index = -1;
 
@@ -3534,72 +3795,6 @@ end
 
 ///////////////////////////////////////
 //
-coord g:argCheckerboardSize = [1, 1];
-int g:argCheckerboardIndex1 = g:mask.N;
-int g:argCheckerboardIndex2 = g:mask.V;
-/******************************************************************************
-
-*/
-function->null internal:ResetCheckerboardArgs()
-
-    g:argCheckerboardSize = [1, 1];
-    g:argCheckerboardIndex1 = g:mask.N;
-    g:argCheckerboardIndex2 = g:mask.V;
-end
-
-
-
-function->null Checkerboard()
-    nested(
-        SetSize, SetIndices
-    )
-
-    invoke(nested);
-end
-
-
-
-nested function->null Checkerboard.SetSize(int iWidth, int iHeight)
-
-//
-    if (s:debug)
-        if (iWidth < 1)
-            error("Checkerboard.SetSize(int " + iWidth.name() + ", int " + iHeight.name() + ") -> " + iWidth.name() + " needs to be greater than 0.");
-        end
-        if (iHeight < 1)
-            error("Checkerboard.SetSize(int " + iWidth.name() + ", int " + iHeight.name() + ") -> " + iHeight.name() + " needs to be greater than 0.");
-        end
-    end
-//
-
-    g:argCheckerboardSize = [iWidth, iHeight];
-end
-
-
-
-nested function->null Checkerboard.SetIndices(int iIndex1, int iIndex2)
-
-//
-    if (s:debug)
-        if (iIndex1 < 0 or iIndex1 > 255)
-            error("Checkerboard.SetIndices(int " + iIndex1.name() + ", " + iIndex2.name() + ") -> " + iIndex1.name() + " needs to be in range [0-255].");
-        end
-        if (iIndex2 < 0 or iIndex2 > 255)
-            error("Checkerboard.SetIndices(int " + iIndex1.name() + ", " + iIndex2.name() + ") -> " + iIndex2.name() + " needs to be in range [0-255].");
-        end
-    end
-//
-
-    g:argCheckerboardIndex1 = iIndex1;
-    g:argCheckerboardIndex2 = iIndex2;
-end
-
-
-
-
-
-///////////////////////////////////////
-//
 array int g:argFilterIndices;
 /******************************************************************************
 
@@ -3633,6 +3828,1101 @@ end
 
 ///////////////////////////////////////
 //
+array int g:argShiftIndices;
+coord g:argShiftOffset = [0, 0];
+/******************************************************************************
+
+*/
+function->null internal:ResetShiftArgs()
+
+    array int aEmpty;
+    g:argShiftIndices = aEmpty;
+end
+
+
+
+function->null Shift()
+    nested(
+        SetIndices, SetOffset
+    )
+
+    invoke(nested);
+end
+
+
+
+nested function->null Shift.SetIndices(array int aIndices)
+
+    g:argShiftIndices = aIndices;
+end
+
+
+
+nested function->null Shift.SetOffset(coord cOffset)
+
+    g:argShiftOffset = cOffset;
+end
+
+
+
+
+
+///////////////////////////////////////
+//
+coord g:argCheckerboardSize = [1, 1];
+int g:argCheckerboardIndex1 = g:mask.N;
+int g:argCheckerboardIndex2 = g:mask.V;
+/******************************************************************************
+
+*/
+function->null internal:ResetCheckerboardArgs()
+
+    g:argCheckerboardSize = [1, 1];
+    g:argCheckerboardIndex1 = g:mask.N;
+    g:argCheckerboardIndex2 = g:mask.V;
+end
+
+
+
+function->null Checkerboard()
+    nested(
+        SetSize, SetIndices
+    )
+
+    invoke(nested);
+end
+
+
+
+nested function->null Checkerboard.SetSize(coord cSize)
+
+//
+    if (s:debug)
+        if (cSize.x < 1 or cSize.y < 1)
+            error("Checkerboard.SetSize(coord " + cSize.name() + ") -> " + cSize.name() + " needs to be greater than 0.");
+        end
+    end
+//
+
+    g:argCheckerboardSize = cSize;
+end
+
+
+
+nested function->null Checkerboard.SetIndices(int iIndex1, int iIndex2)
+
+//
+    if (s:debug)
+        if (iIndex1 < 0 or iIndex1 > 255)
+            error("Checkerboard.SetIndices(int " + iIndex1.name() + ", " + iIndex2.name() + ") -> " + iIndex1.name() + " needs to be in range [0-255].");
+        end
+        if (iIndex2 < 0 or iIndex2 > 255)
+            error("Checkerboard.SetIndices(int " + iIndex1.name() + ", " + iIndex2.name() + ") -> " + iIndex2.name() + " needs to be in range [0-255].");
+        end
+    end
+//
+
+    g:argCheckerboardIndex1 = iIndex1;
+    g:argCheckerboardIndex2 = iIndex2;
+end
+
+
+
+
+
+///////////////////////////////////////
+//
+int g:argBorderWall:t = -1;
+int g:argBorderWall:r = -1;
+int g:argBorderWall:b = -1;
+int g:argBorderWall:l = -1;
+int g:argBorderOuter:tl = -1;
+int g:argBorderOuter:tr = -1;
+int g:argBorderOuter:br = -1;
+int g:argBorderOuter:bl = -1;
+int g:argBorderInner:tl = -1;
+int g:argBorderInner:tr = -1;
+int g:argBorderInner:br = -1;
+int g:argBorderInner:bl = -1;
+int g:argBorderDiagonal:tl = -1;
+int g:argBorderDiagonal:tr = -1;
+int g:argBorderIShape:v = -1;
+int g:argBorderIShape:h = -1;
+int g:argBorderUShape:t = -1;
+int g:argBorderUShape:r = -1;
+int g:argBorderUShape:b = -1;
+int g:argBorderUShape:l = -1;
+int g:argBorderLShape:tl = -1;
+int g:argBorderLShape:tr = -1;
+int g:argBorderLShape:br = -1;
+int g:argBorderLShape:bl = -1;
+int g:argBorderTShape:t = -1;
+int g:argBorderTShape:r = -1;
+int g:argBorderTShape:b = -1;
+int g:argBorderTShape:l = -1;
+int g:argBorderWallToIShape:t = -1;
+int g:argBorderWallToIShape:r = -1;
+int g:argBorderWallToIShape:b = -1;
+int g:argBorderWallToIShape:l = -1;
+int g:argBorderOuterToIShape:tl:v = -1;
+int g:argBorderOuterToIShape:tr:v = -1;
+int g:argBorderOuterToIShape:br:v = -1;
+int g:argBorderOuterToIShape:bl:v = -1;
+int g:argBorderOuterToIShape:tl:h = -1;
+int g:argBorderOuterToIShape:tr:h = -1;
+int g:argBorderOuterToIShape:br:h = -1;
+int g:argBorderOuterToIShape:bl:h = -1;
+int g:argBorderOuterToDoubleIShape:tl = -1;
+int g:argBorderOuterToDoubleIShape:tr = -1;
+int g:argBorderOuterToDoubleIShape:br = -1;
+int g:argBorderOuterToDoubleIShape:bl = -1;
+int g:argBorderCross = -1;
+int g:argBorderDot = -1;
+int g:argBorderFill = -1;
+array int g:argBorderTestIndices;
+/******************************************************************************
+
+*/
+function->null internal:ResetBorderArgs()
+
+    g:argBorderWall:t = -1;
+    g:argBorderWall:r = -1;
+    g:argBorderWall:b = -1;
+    g:argBorderWall:l = -1;
+    g:argBorderOuter:tl = -1;
+    g:argBorderOuter:tr = -1;
+    g:argBorderOuter:br = -1;
+    g:argBorderOuter:bl = -1;
+    g:argBorderInner:tl = -1;
+    g:argBorderInner:tr = -1;
+    g:argBorderInner:br = -1;
+    g:argBorderInner:bl = -1;
+    g:argBorderDiagonal:tl = -1;
+    g:argBorderDiagonal:tr = -1;
+    g:argBorderIShape:v = -1;
+    g:argBorderIShape:h = -1;
+    g:argBorderUShape:t = -1;
+    g:argBorderUShape:r = -1;
+    g:argBorderUShape:b = -1;
+    g:argBorderUShape:l = -1;
+    g:argBorderLShape:tl = -1;
+    g:argBorderLShape:tr = -1;
+    g:argBorderLShape:br = -1;
+    g:argBorderLShape:bl = -1;
+    g:argBorderTShape:t = -1;
+    g:argBorderTShape:r = -1;
+    g:argBorderTShape:b = -1;
+    g:argBorderTShape:l = -1;
+    g:argBorderWallToIShape:t = -1;
+    g:argBorderWallToIShape:r = -1;
+    g:argBorderWallToIShape:b = -1;
+    g:argBorderWallToIShape:l = -1;
+    g:argBorderOuterToIShape:tl:v = -1;
+    g:argBorderOuterToIShape:tr:v = -1;
+    g:argBorderOuterToIShape:br:v = -1;
+    g:argBorderOuterToIShape:bl:v = -1;
+    g:argBorderOuterToIShape:tl:h = -1;
+    g:argBorderOuterToIShape:tr:h = -1;
+    g:argBorderOuterToIShape:br:h = -1;
+    g:argBorderOuterToIShape:bl:h = -1;
+    g:argBorderOuterToDoubleIShape:tl = -1;
+    g:argBorderOuterToDoubleIShape:tr = -1;
+    g:argBorderOuterToDoubleIShape:br = -1;
+    g:argBorderOuterToDoubleIShape:bl = -1;
+    g:argBorderCross = -1;
+    g:argBorderDot = -1;
+    g:argBorderFill = -1;
+
+    array int aEmpty;
+    g:argBorderTestIndices = aEmpty;
+end
+
+
+
+function->null Border()
+    nested(
+        SetWall, SetWallFrom,
+        SetOuter, SetOuterFrom,
+        SetInner, SetInnerFrom,
+        SetDiagonal, SetDiagonalFrom,
+        SetIShape, SetIShapeFrom,
+        SetUShape, SetUShapeFrom,
+        SetLShape, SetLShapeFrom,
+        SetTShape, SetTShapeFrom,
+        SetWallToIShape, SetWallToIShapeFrom,
+        SetOuterToIShape, SetOuterToIShapeFrom,
+        SetOuterToDoubleIShape, SetOuterToDoubleIShapeFrom,
+        SetCross, SetDot, SetFill, 
+        SetTestIndices
+    )
+
+    invoke(nested);
+end
+
+
+
+nested function->null Border.SetWall(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < top or iOrientation > left)
+            error("Border.SetWall(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be top, right, bottom or left.");
+        end
+    end
+//
+
+    if (iOrientation == top)
+        g:argBorderWall:t = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == right)
+        g:argBorderWall:r = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == bottom)
+        g:argBorderWall:b = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == left)
+        g:argBorderWall:l = util:EnsureRotation(iIndex);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetWallFrom(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < top or iOrientation > left)
+            error("Border.SetWallFrom(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be top, right, bottom or left.");
+        end
+    end
+//
+
+    if (iOrientation == top)
+        g:argBorderWall:t = util:EnsureRotation(iIndex);
+        g:argBorderWall:r = util:Rotate(g:argBorderWall:t);
+        g:argBorderWall:b = util:Rotate(g:argBorderWall:r);
+        g:argBorderWall:l = util:Rotate(g:argBorderWall:b);
+        return;
+    end
+    if (iOrientation == right)
+        g:argBorderWall:r = util:EnsureRotation(iIndex);
+        g:argBorderWall:b = util:Rotate(g:argBorderWall:r);
+        g:argBorderWall:l = util:Rotate(g:argBorderWall:b);
+        g:argBorderWall:t = util:Rotate(g:argBorderWall:l);
+        return;
+    end
+    if (iOrientation == bottom)
+        g:argBorderWall:b = util:EnsureRotation(iIndex);
+        g:argBorderWall:l = util:Rotate(g:argBorderWall:b);
+        g:argBorderWall:t = util:Rotate(g:argBorderWall:l);
+        g:argBorderWall:r = util:Rotate(g:argBorderWall:t);
+        return;
+    end
+    if (iOrientation == left)
+        g:argBorderWall:l = util:EnsureRotation(iIndex);
+        g:argBorderWall:t = util:Rotate(g:argBorderWall:l);
+        g:argBorderWall:r = util:Rotate(g:argBorderWall:t);
+        g:argBorderWall:b = util:Rotate(g:argBorderWall:r);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetOuter(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < topLeft or iOrientation > bottomLeft)
+            error("Border.SetOuter(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be topLeft, topRight, bottomRight or bottomLeft.");
+        end
+    end
+//
+
+    if (iOrientation == topLeft)
+        g:argBorderOuter:tl = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == topRight)
+        g:argBorderOuter:tr = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == bottomRight)
+        g:argBorderOuter:br = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == bottomLeft)
+        g:argBorderOuter:bl = util:EnsureRotation(iIndex);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetOuterFrom(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < topLeft or iOrientation > bottomLeft)
+            error("Border.SetOuterFrom(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be topLeft, topRight, bottomRight or bottomLeft.");
+        end
+    end
+//
+
+    if (iOrientation == topLeft)
+        g:argBorderOuter:tl = util:EnsureRotation(iIndex);
+        g:argBorderOuter:tr = util:Rotate(g:argBorderOuter:tl);
+        g:argBorderOuter:br = util:Rotate(g:argBorderOuter:tr);
+        g:argBorderOuter:bl = util:Rotate(g:argBorderOuter:br);
+        return;
+    end
+    if (iOrientation == topRight)
+        g:argBorderOuter:tr = util:EnsureRotation(iIndex);
+        g:argBorderOuter:br = util:Rotate(g:argBorderOuter:tr);
+        g:argBorderOuter:bl = util:Rotate(g:argBorderOuter:br);
+        g:argBorderOuter:tl = util:Rotate(g:argBorderOuter:bl);
+        return;
+    end
+    if (iOrientation == bottomRight)
+        g:argBorderOuter:br = util:EnsureRotation(iIndex);
+        g:argBorderOuter:bl = util:Rotate(g:argBorderOuter:br);
+        g:argBorderOuter:tl = util:Rotate(g:argBorderOuter:bl);
+        g:argBorderOuter:tr = util:Rotate(g:argBorderOuter:tl);
+        return;
+    end
+    if (iOrientation == bottomLeft)
+        g:argBorderOuter:bl = util:EnsureRotation(iIndex);
+        g:argBorderOuter:tl = util:Rotate(g:argBorderOuter:bl);
+        g:argBorderOuter:tr = util:Rotate(g:argBorderOuter:tl);
+        g:argBorderOuter:br = util:Rotate(g:argBorderOuter:tr);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetInner(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < topLeft or iOrientation > bottomLeft)
+            error("Border.SetInner(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be topLeft, topRight, bottomRight or bottomLeft.");
+        end
+    end
+//
+
+    if (iOrientation == topLeft)
+        g:argBorderInner:tl = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == topRight)
+        g:argBorderInner:tr = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == bottomRight)
+        g:argBorderInner:br = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == bottomLeft)
+        g:argBorderInner:bl = util:EnsureRotation(iIndex);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetInnerFrom(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < topLeft or iOrientation > bottomLeft)
+            error("Border.SetInnerFrom(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be topLeft, topRight, bottomRight or bottomLeft.");
+        end
+    end
+//
+
+    if (iOrientation == topLeft)
+        g:argBorderInner:tl = util:EnsureRotation(iIndex);
+        g:argBorderInner:tr = util:Rotate(g:argBorderInner:tl);
+        g:argBorderInner:br = util:Rotate(g:argBorderInner:tr);
+        g:argBorderInner:bl = util:Rotate(g:argBorderInner:br);
+        return;
+    end
+    if (iOrientation == topRight)
+        g:argBorderInner:tr = util:EnsureRotation(iIndex);
+        g:argBorderInner:br = util:Rotate(g:argBorderInner:tr);
+        g:argBorderInner:bl = util:Rotate(g:argBorderInner:br);
+        g:argBorderInner:tl = util:Rotate(g:argBorderInner:bl);
+        return;
+    end
+    if (iOrientation == bottomRight)
+        g:argBorderInner:br = util:EnsureRotation(iIndex);
+        g:argBorderInner:bl = util:Rotate(g:argBorderInner:br);
+        g:argBorderInner:tl = util:Rotate(g:argBorderInner:bl);
+        g:argBorderInner:tr = util:Rotate(g:argBorderInner:tl);
+        return;
+    end
+    if (iOrientation == bottomLeft)
+        g:argBorderInner:bl = util:EnsureRotation(iIndex);
+        g:argBorderInner:tl = util:Rotate(g:argBorderInner:bl);
+        g:argBorderInner:tr = util:Rotate(g:argBorderInner:tl);
+        g:argBorderInner:br = util:Rotate(g:argBorderInner:tr);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetDiagonal(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < topLeft or iOrientation > bottomLeft)
+            error("Border.SetDiagonal(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be topLeft, topRight, bottomRight or bottomLeft.");
+        end
+    end
+//
+
+    if (iOrientation == topLeft or iOrientation == bottomRight)
+        g:argBorderDiagonal:tl = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == topRight or iOrientation == bottomLeft)
+        g:argBorderDiagonal:tr = util:EnsureRotation(iIndex);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetDiagonalFrom(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < topLeft or iOrientation > bottomLeft)
+            error("Border.SetDiagonalFrom(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be topLeft, topRight, bottomRight or bottomLeft.");
+        end
+    end
+//
+
+    if (iOrientation == topLeft or iOrientation == bottomRight)
+        g:argBorderDiagonal:tl = util:EnsureRotation(iIndex);
+        g:argBorderDiagonal:tr = util:Rotate(g:argBorderDiagonal:tl);
+        return;
+    end
+    if (iOrientation == topRight or iOrientation == bottomLeft)
+        g:argBorderDiagonal:tr = util:EnsureRotation(iIndex);
+        g:argBorderDiagonal:tl = util:Rotate(g:argBorderDiagonal:tr);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetIShape(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation != vertical and iOrientation != horizontal)
+            error("Border.SetIShape(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be vertical or horizontal.");
+        end
+    end
+//
+
+    if (iOrientation == vertical)
+        g:argBorderIShape:v = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == horizontal)
+        g:argBorderIShape:h = util:EnsureRotation(iIndex);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetIShapeFrom(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation != vertical and iOrientation != horizontal)
+            error("Border.SetIShapeFrom(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be vertical or horizontal.");
+        end
+    end
+//
+
+    if (iOrientation == vertical)
+        g:argBorderIShape:v = util:EnsureRotation(iIndex);
+        g:argBorderIShape:h = util:Rotate(g:argBorderIShape:v);
+        return;
+    end
+    if (iOrientation == horizontal)
+        g:argBorderIShape:h = util:EnsureRotation(iIndex);
+        g:argBorderIShape:v = util:Rotate(g:argBorderIShape:h);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetUShape(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < top or iOrientation > left)
+            error("Border.SetUShape(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be top, right, bottom or left.");
+        end
+    end
+//
+
+    if (iOrientation == top)
+        g:argBorderUShape:t = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == right)
+        g:argBorderUShape:r = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == bottom)
+        g:argBorderUShape:b = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == left)
+        g:argBorderUShape:l = util:EnsureRotation(iIndex);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetUShapeFrom(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < top or iOrientation > left)
+            error("Border.SetUShapeFrom(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be top, right, bottom or left.");
+        end
+    end
+//
+
+    if (iOrientation == top)
+        g:argBorderUShape:t = util:EnsureRotation(iIndex);
+        g:argBorderUShape:r = util:Rotate(g:argBorderUShape:t);
+        g:argBorderUShape:b = util:Rotate(g:argBorderUShape:r);
+        g:argBorderUShape:l = util:Rotate(g:argBorderUShape:b);
+        return;
+    end
+    if (iOrientation == right)
+        g:argBorderUShape:r = util:EnsureRotation(iIndex);
+        g:argBorderUShape:b = util:Rotate(g:argBorderUShape:r);
+        g:argBorderUShape:l = util:Rotate(g:argBorderUShape:b);
+        g:argBorderUShape:t = util:Rotate(g:argBorderUShape:l);
+        return;
+    end
+    if (iOrientation == bottom)
+        g:argBorderUShape:b = util:EnsureRotation(iIndex);
+        g:argBorderUShape:l = util:Rotate(g:argBorderUShape:b);
+        g:argBorderUShape:t = util:Rotate(g:argBorderUShape:l);
+        g:argBorderUShape:r = util:Rotate(g:argBorderUShape:t);
+        return;
+    end
+    if (iOrientation == left)
+        g:argBorderUShape:l = util:EnsureRotation(iIndex);
+        g:argBorderUShape:t = util:Rotate(g:argBorderUShape:l);
+        g:argBorderUShape:r = util:Rotate(g:argBorderUShape:t);
+        g:argBorderUShape:b = util:Rotate(g:argBorderUShape:r);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetLShape(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < topLeft or iOrientation > bottomLeft)
+            error("Border.SetLShape(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be topLeft, topRight, bottomRight or bottomLeft.");
+        end
+    end
+//
+
+    if (iOrientation == topLeft)
+        g:argBorderLShape:tl = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == topRight)
+        g:argBorderLShape:tr = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == bottomRight)
+        g:argBorderLShape:br = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == bottomLeft)
+        g:argBorderLShape:bl = util:EnsureRotation(iIndex);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetLShapeFrom(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < topLeft or iOrientation > bottomLeft)
+            error("Border.SetLShapeFrom(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be topLeft, topRight, bottomRight or bottomLeft.");
+        end
+    end
+//
+
+    if (iOrientation == topLeft)
+        g:argBorderLShape:tl = util:EnsureRotation(iIndex);
+        g:argBorderLShape:tr = util:Rotate(g:argBorderLShape:tl);
+        g:argBorderLShape:br = util:Rotate(g:argBorderLShape:tr);
+        g:argBorderLShape:bl = util:Rotate(g:argBorderLShape:br);
+        return;
+    end
+    if (iOrientation == topRight)
+        g:argBorderLShape:tr = util:EnsureRotation(iIndex);
+        g:argBorderLShape:br = util:Rotate(g:argBorderLShape:tr);
+        g:argBorderLShape:bl = util:Rotate(g:argBorderLShape:br);
+        g:argBorderLShape:tl = util:Rotate(g:argBorderLShape:bl);
+        return;
+    end
+    if (iOrientation == bottomRight)
+        g:argBorderLShape:br = util:EnsureRotation(iIndex);
+        g:argBorderLShape:bl = util:Rotate(g:argBorderLShape:br);
+        g:argBorderLShape:tl = util:Rotate(g:argBorderLShape:bl);
+        g:argBorderLShape:tr = util:Rotate(g:argBorderLShape:tl);
+        return;
+    end
+    if (iOrientation == bottomLeft)
+        g:argBorderLShape:bl = util:EnsureRotation(iIndex);
+        g:argBorderLShape:tl = util:Rotate(g:argBorderLShape:bl);
+        g:argBorderLShape:tr = util:Rotate(g:argBorderLShape:tl);
+        g:argBorderLShape:br = util:Rotate(g:argBorderLShape:tr);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetTShape(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < top or iOrientation > left)
+            error("Border.SetTShape(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be top, right, bottom or left.");
+        end
+    end
+//
+
+    if (iOrientation == top)
+        g:argBorderTShape:t = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == right)
+        g:argBorderTShape:r = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == bottom)
+        g:argBorderTShape:b = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == left)
+        g:argBorderTShape:l = util:EnsureRotation(iIndex);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetTShapeFrom(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < top or iOrientation > left)
+            error("Border.SetTShapeFrom(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be top, right, bottom or left.");
+        end
+    end
+//
+
+    if (iOrientation == top)
+        g:argBorderTShape:t = util:EnsureRotation(iIndex);
+        g:argBorderTShape:r = util:Rotate(g:argBorderTShape:t);
+        g:argBorderTShape:b = util:Rotate(g:argBorderTShape:r);
+        g:argBorderTShape:l = util:Rotate(g:argBorderTShape:b);
+        return;
+    end
+    if (iOrientation == right)
+        g:argBorderTShape:r = util:EnsureRotation(iIndex);
+        g:argBorderTShape:b = util:Rotate(g:argBorderTShape:r);
+        g:argBorderTShape:l = util:Rotate(g:argBorderTShape:b);
+        g:argBorderTShape:t = util:Rotate(g:argBorderTShape:l);
+        return;
+    end
+    if (iOrientation == bottom)
+        g:argBorderTShape:b = util:EnsureRotation(iIndex);
+        g:argBorderTShape:l = util:Rotate(g:argBorderTShape:b);
+        g:argBorderTShape:t = util:Rotate(g:argBorderTShape:l);
+        g:argBorderTShape:r = util:Rotate(g:argBorderTShape:t);
+        return;
+    end
+    if (iOrientation == left)
+        g:argBorderTShape:l = util:EnsureRotation(iIndex);
+        g:argBorderTShape:t = util:Rotate(g:argBorderTShape:l);
+        g:argBorderTShape:r = util:Rotate(g:argBorderTShape:t);
+        g:argBorderTShape:b = util:Rotate(g:argBorderTShape:r);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetWallToIShape(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < top or iOrientation > left)
+            error("Border.SetWallToIShape(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be top, right, bottom or left.");
+        end
+    end
+//
+
+    if (iOrientation == top)
+        g:argBorderWallToIShape:t = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == right)
+        g:argBorderWallToIShape:r = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == bottom)
+        g:argBorderWallToIShape:b = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == left)
+        g:argBorderWallToIShape:l = util:EnsureRotation(iIndex);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetWallToIShapeFrom(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < top or iOrientation > left)
+            error("Border.SetWallToIShapeFrom(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be top, right, bottom or left.");
+        end
+    end
+//
+
+    if (iOrientation == top)
+        g:argBorderWallToIShape:t = util:EnsureRotation(iIndex);
+        g:argBorderWallToIShape:r = util:Rotate(g:argBorderWallToIShape:t);
+        g:argBorderWallToIShape:b = util:Rotate(g:argBorderWallToIShape:r);
+        g:argBorderWallToIShape:l = util:Rotate(g:argBorderWallToIShape:b);
+        return;
+    end
+    if (iOrientation == right)
+        g:argBorderWallToIShape:r = util:EnsureRotation(iIndex);
+        g:argBorderWallToIShape:b = util:Rotate(g:argBorderWallToIShape:r);
+        g:argBorderWallToIShape:l = util:Rotate(g:argBorderWallToIShape:b);
+        g:argBorderWallToIShape:t = util:Rotate(g:argBorderWallToIShape:l);
+        return;
+    end
+    if (iOrientation == bottom)
+        g:argBorderWallToIShape:b = util:EnsureRotation(iIndex);
+        g:argBorderWallToIShape:l = util:Rotate(g:argBorderWallToIShape:b);
+        g:argBorderWallToIShape:t = util:Rotate(g:argBorderWallToIShape:l);
+        g:argBorderWallToIShape:r = util:Rotate(g:argBorderWallToIShape:t);
+        return;
+    end
+    if (iOrientation == left)
+        g:argBorderWallToIShape:l = util:EnsureRotation(iIndex);
+        g:argBorderWallToIShape:t = util:Rotate(g:argBorderWallToIShape:l);
+        g:argBorderWallToIShape:r = util:Rotate(g:argBorderWallToIShape:t);
+        g:argBorderWallToIShape:b = util:Rotate(g:argBorderWallToIShape:r);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetOuterToIShape(int iIndex, int iOrientation, int iIShapeOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < topLeft or iOrientation > bottomLeft)
+            error("Border.SetOuterToIShape(int " + iIndex.name() + ", int " + iOrientation.name() + ", int " + iIShapeOrientation.name() + ") -> " + iOrientation.name() + " needs to be topLeft, topRight, bottomRight or bottomLeft.");
+        end
+        if (iIShapeOrientation != vertical and iIShapeOrientation != horizontal)
+            error("Border.SetOuterToIShape(int " + iIndex.name() + ", int " + iOrientation.name() + ", int " + iIShapeOrientation.name() + ") -> " + iIShapeOrientation.name() + " needs to be vertical or horizontal.");
+        end
+    end
+//
+
+    if (iIShapeOrientation == vertical)
+        if (iOrientation == topLeft)
+            g:argBorderOuterToIShape:tl:v = util:EnsureRotation(iIndex);
+            return;
+        end
+        if (iOrientation == topRight)
+            g:argBorderOuterToIShape:tr:v = util:EnsureRotation(iIndex);
+            return;
+        end
+        if (iOrientation == bottomRight)
+            g:argBorderOuterToIShape:br:v = util:EnsureRotation(iIndex);
+            return;
+        end
+        if (iOrientation == bottomLeft)
+            g:argBorderOuterToIShape:bl:v = util:EnsureRotation(iIndex);
+            return;
+        end
+    end
+    if (iIShapeOrientation == horizontal)
+        if (iOrientation == topLeft)
+            g:argBorderOuterToIShape:tl:h = util:EnsureRotation(iIndex);
+            return;
+        end
+        if (iOrientation == topRight)
+            g:argBorderOuterToIShape:tr:h = util:EnsureRotation(iIndex);
+            return;
+        end
+        if (iOrientation == bottomRight)
+            g:argBorderOuterToIShape:br:h = util:EnsureRotation(iIndex);
+            return;
+        end
+        if (iOrientation == bottomLeft)
+            g:argBorderOuterToIShape:bl:h = util:EnsureRotation(iIndex);
+            return;
+        end
+    end
+end
+
+
+
+nested function->null Border.SetOuterToIShapeFrom(int iIndex, int iOrientation, int iIShapeOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < topLeft or iOrientation > bottomLeft)
+            error("Border.SetOuterToIShapeFrom(int " + iIndex.name() + ", int " + iOrientation.name() + ", int " + iIShapeOrientation.name() + ") -> " + iOrientation.name() + " needs to be topLeft, topRight, bottomRight or bottomLeft.");
+        end
+        if (iIShapeOrientation != vertical and iIShapeOrientation != horizontal)
+            error("Border.SetOuterToIShapeFrom(int " + iIndex.name() + ", int " + iOrientation.name() + ", int " + iIShapeOrientation.name() + ") -> " + iIShapeOrientation.name() + " needs to be vertical or horizontal.");
+        end
+    end
+//
+
+    if (iIShapeOrientation == vertical)
+        if (iOrientation == topLeft)
+            g:argBorderOuterToIShape:tl:v = util:EnsureRotation(iIndex);
+            g:argBorderOuterToIShape:tr:v = util:MirrorV(g:argBorderOuterToIShape:tl:v);
+            g:argBorderOuterToIShape:br:v = util:MirrorH(g:argBorderOuterToIShape:tr:v);
+            g:argBorderOuterToIShape:bl:v = util:MirrorV(g:argBorderOuterToIShape:br:v);
+            g:argBorderOuterToIShape:tl:h = util:Rotate(g:argBorderOuterToIShape:bl:v);
+            g:argBorderOuterToIShape:tr:h = util:MirrorV(g:argBorderOuterToIShape:tl:h);
+            g:argBorderOuterToIShape:br:h = util:MirrorH(g:argBorderOuterToIShape:tr:h);
+            g:argBorderOuterToIShape:bl:h = util:MirrorV(g:argBorderOuterToIShape:br:h);
+            return;
+        end
+        if (iOrientation == topRight)
+            g:argBorderOuterToIShape:tr:v = util:EnsureRotation(iIndex);
+            g:argBorderOuterToIShape:br:v = util:MirrorH(g:argBorderOuterToIShape:tr:v);
+            g:argBorderOuterToIShape:bl:v = util:MirrorV(g:argBorderOuterToIShape:br:v);
+            g:argBorderOuterToIShape:tl:h = util:Rotate(g:argBorderOuterToIShape:bl:v);
+            g:argBorderOuterToIShape:tr:h = util:MirrorV(g:argBorderOuterToIShape:tl:h);
+            g:argBorderOuterToIShape:br:h = util:MirrorH(g:argBorderOuterToIShape:tr:h);
+            g:argBorderOuterToIShape:bl:h = util:MirrorV(g:argBorderOuterToIShape:br:h);
+            g:argBorderOuterToIShape:tl:v = util:Rotate(g:argBorderOuterToIShape:bl:h);
+            return;
+        end
+        if (iOrientation == bottomRight)
+            g:argBorderOuterToIShape:br:v = util:EnsureRotation(iIndex);
+            g:argBorderOuterToIShape:bl:v = util:MirrorV(g:argBorderOuterToIShape:br:v);
+            g:argBorderOuterToIShape:tl:h = util:Rotate(g:argBorderOuterToIShape:bl:v);
+            g:argBorderOuterToIShape:tr:h = util:MirrorV(g:argBorderOuterToIShape:tl:h);
+            g:argBorderOuterToIShape:br:h = util:MirrorH(g:argBorderOuterToIShape:tr:h);
+            g:argBorderOuterToIShape:bl:h = util:MirrorV(g:argBorderOuterToIShape:br:h);
+            g:argBorderOuterToIShape:tl:v = util:Rotate(g:argBorderOuterToIShape:bl:h);
+            g:argBorderOuterToIShape:tr:v = util:MirrorV(g:argBorderOuterToIShape:tl:v);
+            return;
+        end
+        if (iOrientation == bottomLeft)
+            g:argBorderOuterToIShape:bl:v = util:EnsureRotation(iIndex);
+            g:argBorderOuterToIShape:tl:h = util:Rotate(g:argBorderOuterToIShape:bl:v);
+            g:argBorderOuterToIShape:tr:h = util:MirrorV(g:argBorderOuterToIShape:tl:h);
+            g:argBorderOuterToIShape:br:h = util:MirrorH(g:argBorderOuterToIShape:tr:h);
+            g:argBorderOuterToIShape:bl:h = util:MirrorV(g:argBorderOuterToIShape:br:h);
+            g:argBorderOuterToIShape:tl:v = util:Rotate(g:argBorderOuterToIShape:bl:h);
+            g:argBorderOuterToIShape:tr:v = util:MirrorV(g:argBorderOuterToIShape:tl:v);
+            g:argBorderOuterToIShape:br:v = util:MirrorH(g:argBorderOuterToIShape:tr:v);
+            return;
+        end
+    end
+    if (iIShapeOrientation == horizontal)
+        if (iOrientation == topLeft)
+            g:argBorderOuterToIShape:tl:h = util:EnsureRotation(iIndex);
+            g:argBorderOuterToIShape:tr:h = util:MirrorV(g:argBorderOuterToIShape:tl:h);
+            g:argBorderOuterToIShape:br:h = util:MirrorH(g:argBorderOuterToIShape:tr:h);
+            g:argBorderOuterToIShape:bl:h = util:MirrorV(g:argBorderOuterToIShape:br:h);
+            g:argBorderOuterToIShape:tl:v = util:Rotate(g:argBorderOuterToIShape:bl:h);
+            g:argBorderOuterToIShape:tr:v = util:MirrorV(g:argBorderOuterToIShape:tl:v);
+            g:argBorderOuterToIShape:br:v = util:MirrorH(g:argBorderOuterToIShape:tr:v);
+            g:argBorderOuterToIShape:bl:v = util:MirrorV(g:argBorderOuterToIShape:br:v);
+            return;
+        end
+        if (iOrientation == topRight)
+            g:argBorderOuterToIShape:tr:h = util:EnsureRotation(iIndex);
+            g:argBorderOuterToIShape:br:h = util:MirrorH(g:argBorderOuterToIShape:tr:h);
+            g:argBorderOuterToIShape:bl:h = util:MirrorV(g:argBorderOuterToIShape:br:h);
+            g:argBorderOuterToIShape:tl:v = util:Rotate(g:argBorderOuterToIShape:bl:h);
+            g:argBorderOuterToIShape:tr:v = util:MirrorV(g:argBorderOuterToIShape:tl:v);
+            g:argBorderOuterToIShape:br:v = util:MirrorH(g:argBorderOuterToIShape:tr:v);
+            g:argBorderOuterToIShape:bl:v = util:MirrorV(g:argBorderOuterToIShape:br:v);
+            g:argBorderOuterToIShape:tl:h = util:Rotate(g:argBorderOuterToIShape:bl:v);
+            return;
+        end
+        if (iOrientation == bottomRight)
+            g:argBorderOuterToIShape:br:h = util:EnsureRotation(iIndex);
+            g:argBorderOuterToIShape:bl:h = util:MirrorV(g:argBorderOuterToIShape:br:h);
+            g:argBorderOuterToIShape:tl:v = util:Rotate(g:argBorderOuterToIShape:bl:h);
+            g:argBorderOuterToIShape:tr:v = util:MirrorV(g:argBorderOuterToIShape:tl:v);
+            g:argBorderOuterToIShape:br:v = util:MirrorH(g:argBorderOuterToIShape:tr:v);
+            g:argBorderOuterToIShape:bl:v = util:MirrorV(g:argBorderOuterToIShape:br:v);
+            g:argBorderOuterToIShape:tl:h = util:Rotate(g:argBorderOuterToIShape:bl:v);
+            g:argBorderOuterToIShape:tr:h = util:MirrorV(g:argBorderOuterToIShape:tl:h);
+            return;
+        end
+        if (iOrientation == bottomLeft)
+            g:argBorderOuterToIShape:bl:h = util:EnsureRotation(iIndex);
+            g:argBorderOuterToIShape:tl:v = util:Rotate(g:argBorderOuterToIShape:bl:h);
+            g:argBorderOuterToIShape:tr:v = util:MirrorV(g:argBorderOuterToIShape:tl:v);
+            g:argBorderOuterToIShape:br:v = util:MirrorH(g:argBorderOuterToIShape:tr:v);
+            g:argBorderOuterToIShape:bl:v = util:MirrorV(g:argBorderOuterToIShape:br:v);
+            g:argBorderOuterToIShape:tl:h = util:Rotate(g:argBorderOuterToIShape:bl:v);
+            g:argBorderOuterToIShape:tr:h = util:MirrorV(g:argBorderOuterToIShape:tl:h);
+            g:argBorderOuterToIShape:br:h = util:MirrorH(g:argBorderOuterToIShape:tr:h);
+            return;
+        end
+    end
+end
+
+
+
+nested function->null Border.SetOuterToDoubleIShape(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < topLeft or iOrientation > bottomLeft)
+            error("Border.SetOuterToDoubleIShape(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be topLeft, topRight, bottomRight or bottomLeft.");
+        end
+    end
+//
+
+    if (iOrientation == topLeft)
+        g:argBorderOuterToDoubleIShape:tl = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == topRight)
+        g:argBorderOuterToDoubleIShape:tr = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == bottomRight)
+        g:argBorderOuterToDoubleIShape:br = util:EnsureRotation(iIndex);
+        return;
+    end
+    if (iOrientation == bottomLeft)
+        g:argBorderOuterToDoubleIShape:bl = util:EnsureRotation(iIndex);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetOuterToDoubleIShapeFrom(int iIndex, int iOrientation)
+
+//
+    if (s:debug)
+        if (iOrientation < topLeft or iOrientation > bottomLeft)
+            error("Border.SetOuterToDoubleIShapeFrom(int " + iIndex.name() + ", int " + iOrientation.name() + ") -> " + iOrientation.name() + " needs to be topLeft, topRight, bottomRight or bottomLeft.");
+        end
+    end
+//
+
+    if (iOrientation == topLeft)
+        g:argBorderOuterToDoubleIShape:tl = util:EnsureRotation(iIndex);
+        g:argBorderOuterToDoubleIShape:tr = util:Rotate(g:argBorderOuterToDoubleIShape:tl);
+        g:argBorderOuterToDoubleIShape:br = util:Rotate(g:argBorderOuterToDoubleIShape:tr);
+        g:argBorderOuterToDoubleIShape:bl = util:Rotate(g:argBorderOuterToDoubleIShape:br);
+        return;
+    end
+    if (iOrientation == topRight)
+        g:argBorderOuterToDoubleIShape:tr = util:EnsureRotation(iIndex);
+        g:argBorderOuterToDoubleIShape:br = util:Rotate(g:argBorderOuterToDoubleIShape:tr);
+        g:argBorderOuterToDoubleIShape:bl = util:Rotate(g:argBorderOuterToDoubleIShape:br);
+        g:argBorderOuterToDoubleIShape:tl = util:Rotate(g:argBorderOuterToDoubleIShape:bl);
+        return;
+    end
+    if (iOrientation == bottomRight)
+        g:argBorderOuterToDoubleIShape:br = util:EnsureRotation(iIndex);
+        g:argBorderOuterToDoubleIShape:bl = util:Rotate(g:argBorderOuterToDoubleIShape:br);
+        g:argBorderOuterToDoubleIShape:tl = util:Rotate(g:argBorderOuterToDoubleIShape:bl);
+        g:argBorderOuterToDoubleIShape:tr = util:Rotate(g:argBorderOuterToDoubleIShape:tl);
+        return;
+    end
+    if (iOrientation == bottomLeft)
+        g:argBorderOuterToDoubleIShape:bl = util:EnsureRotation(iIndex);
+        g:argBorderOuterToDoubleIShape:tl = util:Rotate(g:argBorderOuterToDoubleIShape:bl);
+        g:argBorderOuterToDoubleIShape:tr = util:Rotate(g:argBorderOuterToDoubleIShape:tl);
+        g:argBorderOuterToDoubleIShape:br = util:Rotate(g:argBorderOuterToDoubleIShape:tr);
+        return;
+    end
+end
+
+
+
+nested function->null Border.SetCross(int iIndex)
+
+    g:argBorderCross = util:EnsureRotation(iIndex);
+end
+
+
+
+nested function->null Border.SetDot(int iIndex)
+
+    g:argBorderDot = util:EnsureRotation(iIndex);
+end
+
+
+
+nested function->null Border.SetFill(int iIndex)
+
+    g:argBorderFill = iIndex;
+end
+
+
+
+nested function->null Border.SetTestIndices(array int aIndices)
+
+    g:argBorderTestIndices = aIndices;
+end
+
+
+
+
+
+///////////////////////////////////////
+//
 /******************************************************************************
 
 */
@@ -3653,7 +4943,8 @@ end
 */
 function->null Run()
     nested(
-        Filter, Checkerboard, FillObjects
+        Filter, Shift, Checkerboard, 
+        Border, FillObjects
     )
 
     invoke(nested);
@@ -3672,6 +4963,29 @@ nested function->null Run.Filter()
 
     NewRun();
     internal:ResetFilterArgs();
+end
+
+
+
+nested function->null Run.Shift()
+
+    NewRun();
+
+    coord cOffset = g:argShiftOffset;
+
+    for (i = 0 to g:argShiftIndices.last)
+        Insert(0).If(
+            IndexAt(0).Is(g:argShiftIndices[i])
+        );
+    end
+    for (i = 0 to g:argShiftIndices.last)
+        Insert(g:argShiftIndices[i]).If(
+            IndexAt(cOffset).Is(g:argShiftIndices[i])
+        ).NoDefaultPosRule();
+    end
+
+    NewRun();
+    internal:ResetShiftArgs();
 end
 
 
@@ -3709,6 +5023,283 @@ nested function->null Run.Checkerboard()
 
     NewRun();
     internal:ResetCheckerboardArgs();
+end
+
+
+
+nested function->null Run.Border()
+
+    NewRun();
+
+    if (g:argBorderWall:t != -1)
+        Insert(g:argBorderWall:t).If(
+            IndexAt(0).IsWall(top).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+        Insert(g:argBorderWall:t).If(
+            IndexAt(0).IsOuterCorner(topLeft).IsEdge(left).TestIndices(g:argBorderTestIndices)
+        );
+        Insert(g:argBorderWall:t).If(
+            IndexAt(0).IsOuterCorner(topRight).IsEdge(right).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderWall:r != -1)
+        Insert(g:argBorderWall:r).If(
+            IndexAt(0).IsWall(right).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+        Insert(g:argBorderWall:r).If(
+            IndexAt(0).IsOuterCorner(topRight).IsEdge(top).TestIndices(g:argBorderTestIndices)
+        );
+        Insert(g:argBorderWall:r).If(
+            IndexAt(0).IsOuterCorner(bottomRight).IsEdge(bottom).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderWall:b != -1)
+        Insert(g:argBorderWall:b).If(
+            IndexAt(0).IsWall(bottom).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+        Insert(g:argBorderWall:b).If(
+            IndexAt(0).IsOuterCorner(bottomLeft).IsEdge(left).TestIndices(g:argBorderTestIndices)
+        );
+        Insert(g:argBorderWall:b).If(
+            IndexAt(0).IsOuterCorner(bottomRight).IsEdge(right).TestIndices(g:argBorderTestIndices)
+        );    
+    end
+    if (g:argBorderWall:l != -1)
+        Insert(g:argBorderWall:l).If(
+            IndexAt(0).IsWall(left).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+        Insert(g:argBorderWall:l).If(
+            IndexAt(0).IsOuterCorner(topLeft).IsEdge(top).TestIndices(g:argBorderTestIndices)
+        );
+        Insert(g:argBorderWall:l).If(
+            IndexAt(0).IsOuterCorner(bottomLeft).IsEdge(bottom).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderOuter:tl != -1)
+        Insert(g:argBorderOuter:tl).If(
+            IndexAt(0).IsOuterCorner(topLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderOuter:tr != -1)
+        Insert(g:argBorderOuter:tr).If(
+            IndexAt(0).IsOuterCorner(topRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderOuter:br != -1)
+        Insert(g:argBorderOuter:br).If(
+            IndexAt(0).IsOuterCorner(bottomRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderOuter:bl != -1)
+        Insert(g:argBorderOuter:bl).If(
+            IndexAt(0).IsOuterCorner(bottomLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderInner:tl != -1)
+        Insert(g:argBorderInner:tl).If(
+            IndexAt(0).IsInnerCorner(topLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderInner:tr != -1)
+        Insert(g:argBorderInner:tr).If(
+            IndexAt(0).IsInnerCorner(topRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderInner:br != -1)
+        Insert(g:argBorderInner:br).If(
+            IndexAt(0).IsInnerCorner(bottomRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderInner:bl != -1)
+        Insert(g:argBorderInner:bl).If(
+            IndexAt(0).IsInnerCorner(bottomLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderDiagonal:tl != -1)
+        Insert(g:argBorderDiagonal:tl).If(
+            IndexAt(0).IsInnerCorner(topLeft, bottomRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderDiagonal:tr != -1)
+        Insert(g:argBorderDiagonal:tr).If(
+            IndexAt(0).IsInnerCorner(topRight, bottomLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderIShape:v != -1)
+        Insert(g:argBorderIShape:v).If(
+            IndexAt(0).IsWall(left, right).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+        Insert(g:argBorderIShape:v).If(
+            IndexAt(0).IsOuterCorner(topLeft, topRight).IsEdge(top).TestIndices(g:argBorderTestIndices)
+        );
+        Insert(g:argBorderIShape:v).If(
+            IndexAt(0).IsOuterCorner(bottomLeft, bottomRight).IsEdge(bottom).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderIShape:h != -1)
+        Insert(g:argBorderIShape:h).If(
+            IndexAt(0).IsWall(top, bottom).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+        Insert(g:argBorderIShape:h).If(
+            IndexAt(0).IsOuterCorner(topLeft, bottomLeft).IsEdge(left).TestIndices(g:argBorderTestIndices)
+        );
+        Insert(g:argBorderIShape:h).If(
+            IndexAt(0).IsOuterCorner(topRight, bottomRight).IsEdge(right).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderUShape:t != -1)
+        Insert(g:argBorderUShape:t).If(
+            IndexAt(0).IsOuterCorner(topLeft, topRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderUShape:r != -1)
+        Insert(g:argBorderUShape:r).If(
+            IndexAt(0).IsOuterCorner(topRight, bottomRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderUShape:b != -1)
+        Insert(g:argBorderUShape:b).If(
+            IndexAt(0).IsOuterCorner(bottomRight, bottomLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderUShape:l != -1)
+        Insert(g:argBorderUShape:l).If(
+            IndexAt(0).IsOuterCorner(bottomLeft, topLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderLShape:tl != -1)
+        Insert(g:argBorderLShape:tl).If(
+            IndexAt(0).IsOuterCorner(topLeft).IsInnerCorner(bottomRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderLShape:tr != -1)
+        Insert(g:argBorderLShape:tr).If(
+            IndexAt(0).IsOuterCorner(topRight).IsInnerCorner(bottomLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderLShape:br != -1)
+        Insert(g:argBorderLShape:br).If(
+            IndexAt(0).IsOuterCorner(bottomRight).IsInnerCorner(topLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderLShape:bl != -1)
+        Insert(g:argBorderLShape:bl).If(
+            IndexAt(0).IsOuterCorner(bottomLeft).IsInnerCorner(topRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderTShape:t != -1)
+        Insert(g:argBorderTShape:t).If(
+            IndexAt(0).IsWall(top).IsInnerCorner(bottomRight, bottomLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderTShape:r != -1)
+        Insert(g:argBorderTShape:r).If(
+            IndexAt(0).IsWall(right).IsInnerCorner(bottomLeft, topLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderTShape:b != -1)
+        Insert(g:argBorderTShape:b).If(
+            IndexAt(0).IsWall(bottom).IsInnerCorner(topLeft, topRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderTShape:l != -1)
+        Insert(g:argBorderTShape:l).If(
+            IndexAt(0).IsWall(left).IsInnerCorner(topRight, bottomRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderWallToIShape:t != -1)
+        Insert(g:argBorderWallToIShape:t).If(
+            IndexAt(0).IsInnerCorner(topLeft, topRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderWallToIShape:r != -1)
+        Insert(g:argBorderWallToIShape:r).If(
+            IndexAt(0).IsInnerCorner(topRight, bottomRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderWallToIShape:b != -1)
+        Insert(g:argBorderWallToIShape:b).If(
+            IndexAt(0).IsInnerCorner(bottomRight, bottomLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderWallToIShape:l != -1)
+        Insert(g:argBorderWallToIShape:l).If(
+            IndexAt(0).IsInnerCorner(bottomLeft, topLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderOuterToIShape:tl:v != -1)
+        Insert(g:argBorderOuterToIShape:tl:v).If(
+            IndexAt(0).IsWall(left).IsInnerCorner(topRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderOuterToIShape:tr:v != -1)
+        Insert(g:argBorderOuterToIShape:tr:v).If(
+            IndexAt(0).IsWall(right).IsInnerCorner(topLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderOuterToIShape:br:v != -1)
+        Insert(g:argBorderOuterToIShape:br:v).If(
+            IndexAt(0).IsWall(right).IsInnerCorner(bottomLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderOuterToIShape:bl:v != -1)
+        Insert(g:argBorderOuterToIShape:bl:v).If(
+            IndexAt(0).IsWall(left).IsInnerCorner(bottomRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderOuterToIShape:tl:h != -1)
+        Insert(g:argBorderOuterToIShape:tl:h).If(
+            IndexAt(0).IsWall(top).IsInnerCorner(bottomLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderOuterToIShape:tr:h != -1)
+        Insert(g:argBorderOuterToIShape:tr:h).If(
+            IndexAt(0).IsWall(top).IsInnerCorner(bottomRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderOuterToIShape:br:h != -1)
+        Insert(g:argBorderOuterToIShape:br:h).If(
+            IndexAt(0).IsWall(bottom).IsInnerCorner(topRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderOuterToIShape:bl:h != -1)
+        Insert(g:argBorderOuterToIShape:bl:h).If(
+            IndexAt(0).IsWall(bottom).IsInnerCorner(topLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end   
+    if (g:argBorderOuterToDoubleIShape:tl != -1)
+        Insert(g:argBorderOuterToDoubleIShape:tl).If(
+            IndexAt(0).IsInnerCorner(bottomLeft, topLeft, topRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderOuterToDoubleIShape:tr != -1)
+        Insert(g:argBorderOuterToDoubleIShape:tr).If(
+            IndexAt(0).IsInnerCorner(topLeft, topRight, bottomRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderOuterToDoubleIShape:br != -1)
+        Insert(g:argBorderOuterToDoubleIShape:br).If(
+            IndexAt(0).IsInnerCorner(topRight, bottomRight, bottomLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderOuterToDoubleIShape:bl != -1)
+        Insert(g:argBorderOuterToDoubleIShape:bl).If(
+            IndexAt(0).IsInnerCorner(bottomRight, bottomLeft, topLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderCross != -1)
+        Insert(g:argBorderCross).If(
+            IndexAt(0).IsInnerCorner(topLeft, topRight, bottomRight, bottomLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+    if (g:argBorderDot != -1)
+        Insert(g:argBorderDot).If(
+            IndexAt(0).IsOuterCorner(topLeft, topRight, bottomRight, bottomLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+        );
+    end
+
+    NewRun();
+    internal:ResetBorderArgs();
 end
 
 
