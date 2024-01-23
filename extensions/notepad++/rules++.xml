@@ -1295,6 +1295,24 @@
         
         
         
+        <!-- SetSpacing -->
+        <KeyWord name="SetSpacing" func="yes">
+            <Overload retVal="null">
+                <Param name="int iRadius" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
+        <!-- SetIncludeEdges -->
+        <KeyWord name="SetIncludeEdges" func="yes">
+            <Overload retVal="null">
+                <Param name="bool bValue" />
+            </Overload>
+        </KeyWord>
+        
+        
+        
         <!-- SetTestIndices -->
         <KeyWord name="SetTestIndices" func="yes">
             <Overload retVal="null">

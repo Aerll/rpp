@@ -29,6 +29,7 @@ int g:mask = 255;
 
 */
 bool s:debug = true;
+bool s:warn = true;
 
 
 
@@ -1026,7 +1027,9 @@ function->bool util:Is(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            warning("util:Is(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("util:Is(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
+            end
             return false;
         end
 
@@ -1070,7 +1073,9 @@ function->bool util:IsNot(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            warning("util:IsNot(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("util:IsNot(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
+            end
             return false;
         end
 
@@ -1568,7 +1573,9 @@ function->object Rect(int iTopLeft, int iBottomRight)
 //
     if (s:debug)
         if (cTopLeft.x > cBottomRight.x or cTopLeft.y > cBottomRight.y)
-            warning("Rect(int " + iTopLeft.name() + ", int " + iBottomRight.name() + ") -> " + iTopLeft.name() + " is not the top left corner of the rectangle.");
+            if (s:warn)
+                warning("Rect(int " + iTopLeft.name() + ", int " + iBottomRight.name() + ") -> " + iTopLeft.name() + " is not the top left corner of the rectangle.");
+            end
         end
     end
 //
@@ -1597,12 +1604,12 @@ function->array coord Area(coord cPos, coord cSize)
 //
 
     array coord aResult;
-    
+
     for (x = cPos.x to cPos.x + cSize.x - 1)
         for (y = cPos.y to cPos.y + cSize.y - 1)
             aResult.push([x, y]);
         end
-    end    
+    end
     return aResult;
 end
 
@@ -1624,7 +1631,7 @@ function->array coord Radius(coord cPos, int iRadius)
         for (y = util:Negate(iRadius) to iRadius)
             int iDiffX = cPos.x - x;
             int iDiffY = cPos.y - y;
-            
+
             if (iDiffX * iDiffX + iDiffY * iDiffY <= iRadius * iRadius)
                 aResult.push([x, y]);
             end
@@ -1738,7 +1745,9 @@ function->null Insert(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            warning("Insert(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("Insert(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
+            end
             return;
         end
 
@@ -1789,13 +1798,8 @@ nested function->null Insert.At(coord cPos)
 
 //
     if (s:debug)
-        if (cPos.x < 0)
-            warning("Insert.At(coord " + cPos.name() + ") -> " + cPos.name() + ".x was negative, function had no effect.");
-            return;
-        end
-        if (cPos.y < 0)
-            warning("Insert.At(coord " + cPos.name() + ") -> " + cPos.name() + ".y was negative, function had no effect.");
-            return;
+        if (cPos.x < 0 or cPos.y < 0)
+            error("Insert.At(coord " + cPos.name() + ") -> " + cPos.name() + " needs to be greater than or equal to 0.");
         end
     end
 //
@@ -1834,7 +1838,9 @@ nested function->null Insert.Chance(array float aProbabilities)
 //
     if (s:debug)
         if (aProbabilities.count == 0)
-            warning("Insert.Chance(array float " + aProbabilities.name() + ") -> " + aProbabilities.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("Insert.Chance(array float " + aProbabilities.name() + ") -> " + aProbabilities.name() + " was empty, function had no effect.");
+            end
             return;
         end
 
@@ -1958,7 +1964,9 @@ function->bool IndexAt(array coord aCoords)
 //
     if (s:debug)
         if (aCoords.count == 0)
-            warning("IndexAt(array coord " + aCoords.name() + ") -> " + aCoords.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("IndexAt(array coord " + aCoords.name() + ") -> " + aCoords.name() + " was empty, function had no effect.");
+            end
             return false;
         end
     end
@@ -1994,7 +2002,9 @@ nested function->bool IndexAt.TestIndices(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            warning("IndexAt.TestIndices(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("IndexAt.TestIndices(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
+            end
             return false;
         end
 
@@ -2024,7 +2034,9 @@ nested function->bool IndexAt.Is(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            warning("IndexAt.Is(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("IndexAt.Is(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
+            end
             return false;
         end
 
@@ -2057,7 +2069,9 @@ nested function->bool IndexAt.IsNot(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            warning("IndexAt.IsNot(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("IndexAt.IsNot(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
+            end
             return false;
         end
 
@@ -2103,7 +2117,9 @@ nested function->bool IndexAt.IsEmptyAt(array int aOrientations)
 //
     if (s:debug)
         if (aOrientations.count == 0)
-            warning("IndexAt.IsEmptyAt(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("IndexAt.IsEmptyAt(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
+            end
             return false;
         end
 
@@ -2181,7 +2197,9 @@ nested function->bool IndexAt.IsFullAt(array int aOrientations)
 //
     if (s:debug)
         if (aOrientations.count == 0)
-            warning("IndexAt.IsFullAt(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("IndexAt.IsFullAt(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
+            end
             return false;
         end
 
@@ -2284,16 +2302,16 @@ nested function->bool IndexAt.IsWithinArea(int iWidth, int iHeight)
 
     int iX = g:posIndexAt.x;
     int iY = g:posIndexAt.y;
-    
+
     for (x = iX to iX + iWidth - 1)
-        for (y = iY to iY + iHeight - 1)            
+        for (y = iY to iY + iHeight - 1)
             insert.rule.pos = [x, y];
             internal:TestIndicesFull();
             insert.rule.pos.operator = g:or;
             insert.rule.pos.group = g:group;
         end
     end
-    
+
     g:group = g:group + 1;
     return true;
 end
@@ -2319,9 +2337,9 @@ nested function->bool IndexAt.IsNotWithinArea(int iWidth, int iHeight)
 
     int iX = g:posIndexAt.x;
     int iY = g:posIndexAt.y;
-    
+
     for (x = iX to iX + iWidth - 1)
-        for (y = iY to iY + iHeight - 1)            
+        for (y = iY to iY + iHeight - 1)
             insert.rule.pos = [x, y];
             internal:TestIndicesEmpty();
         end
@@ -2347,12 +2365,12 @@ nested function->bool IndexAt.IsWithinRadius(int iRadius)
 
     int iX = g:posIndexAt.x;
     int iY = g:posIndexAt.y;
-    
+
     for (x = util:Negate(iRadius) to iRadius)
         for (y = util:Negate(iRadius) to iRadius)
             int iDiffX = iX - x;
             int iDiffY = iY - y;
-            
+
             if (iDiffX * iDiffX + iDiffY * iDiffY <= iRadius * iRadius)
                 insert.rule.pos = [x, y];
                 internal:TestIndicesFull();
@@ -2361,7 +2379,7 @@ nested function->bool IndexAt.IsWithinRadius(int iRadius)
             end
         end
     end
-    
+
     g:group = g:group + 1;
     return true;
 end
@@ -2389,7 +2407,7 @@ nested function->bool IndexAt.IsNotWithinRadius(int iRadius)
         for (y = util:Negate(iRadius) to iRadius)
             int iDiffX = iX - x;
             int iDiffY = iY - y;
-            
+
             if (iDiffX * iDiffX + iDiffY * iDiffY <= iRadius * iRadius)
                 insert.rule.pos = [x, y];
                 internal:TestIndicesEmpty();
@@ -2406,7 +2424,7 @@ nested function->bool IndexAt.IsEdge(int iOrientation)
     if (g:initIndexAt)
         return false;
     end
-    
+
 //
     if (s:debug)
         if (iOrientation < top or iOrientation > bottomLeft)
@@ -2488,10 +2506,12 @@ nested function->bool IndexAt.IsNotEdge(array int aOrientations)
 //
     if (s:debug)
         if (aOrientations.count == 0)
-            warning("IndexAt.IsNotEdge(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("IndexAt.IsNotEdge(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
+            end
             return false;
         end
-        
+
         for (i = 0 to aOrientations.last)
             if ((aOrientations[i] < top or aOrientations[i] > left) and aOrientations[i] != all)
                 error("IndexAt.IsNotEdge(array int " + aOrientations.name() + ") -> values need to be top, right, bottom, left or all.");
@@ -2539,7 +2559,9 @@ nested function->bool IndexAt.IsNextTo(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            warning("IndexAt.IsNextTo(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("IndexAt.IsNextTo(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
+            end
             return false;
         end
 
@@ -2601,7 +2623,9 @@ nested function->bool IndexAt.IsNotNextTo(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            warning("IndexAt.IsNotNextTo(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("IndexAt.IsNotNextTo(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
+            end
             return false;
         end
 
@@ -2653,10 +2677,12 @@ nested function->bool IndexAt.IsWall(array int aOrientations)
 //
     if (s:debug)
         if (aOrientations.count == 0)
-            warning("IndexAt.IsWall(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("IndexAt.IsWall(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
+            end
             return false;
         end
-        
+
         for (i = 0 to aOrientations.last)
             if (aOrientations[i] < top or aOrientations[i] > left)
                 error("IndexAt.IsWall(array int " + aOrientations.name() + ") -> values need to be top, right, bottom or left.");
@@ -2704,7 +2730,9 @@ nested function->bool IndexAt.IsOuterCorner(array int aOrientations)
 //
     if (s:debug)
         if (aOrientations.count == 0)
-            warning("IndexAt.IsOuterCorner(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("IndexAt.IsOuterCorner(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
+            end
             return false;
         end
 
@@ -2763,7 +2791,9 @@ nested function->bool IndexAt.IsInnerCorner(array int aOrientations)
 //
     if (s:debug)
         if (aOrientations.count == 0)
-            warning("IndexAt.IsInnerCorner(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("IndexAt.IsInnerCorner(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
+            end
             return false;
         end
 
@@ -2806,7 +2836,9 @@ nested function->bool IndexAt.HasSpaceFor(object oObject)
 //
     if (s:debug)
         if (oObject.count == 0)
-            warning("IndexAt.HasSpaceFor(object " + oObject.name() + ") -> " + oObject.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("IndexAt.HasSpaceFor(object " + oObject.name() + ") -> " + oObject.name() + " was empty, function had no effect.");
+            end
             return false;
         end
     end
@@ -2835,7 +2867,9 @@ nested function->bool IndexAt.IsOverlapping(array object aObjects)
 //
     if (s:debug)
         if (aObjects.count == 0)
-            warning("IndexAt.IsOverlapping(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("IndexAt.IsOverlapping(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
+            end
             return false;
         end
     end
@@ -2873,7 +2907,9 @@ nested function->bool IndexAt.IsNotOverlapping(array object aObjects)
 //
     if (s:debug)
         if (aObjects.count == 0)
-            warning("IndexAt.IsNotOverlapping(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("IndexAt.IsNotOverlapping(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
+            end
             return false;
         end
     end
@@ -3001,7 +3037,9 @@ function->null InsertObject(array object aObjects)
 //
     if (s:debug)
         if (aObjects.count == 0)
-            warning("InsertObject(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("InsertObject(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
+            end
             return;
         end
     end
@@ -3051,13 +3089,8 @@ nested function->null InsertObject.At(coord cPos)
 
 //
     if (s:debug)
-        if (cPos.x < 0)
-            warning("InsertObject.At(coord " + cPos.name() + ") -> " + cPos.name() + ".x was negative, function had no effect.");
-            return;
-        end
-        if (cPos.y < 0)
-            warning("InsertObject.At(coord " + cPos.name() + ") -> " + cPos.name() + ".y was negative, function had no effect.");
-            return;
+        if (cPos.x < 0 or cPos.y < 0)
+            error("InsertObject.At(coord " + cPos.name() + ") -> " + cPos.name() + " needs to be greater than or equal to 0.");
         end
     end
 //
@@ -3096,7 +3129,9 @@ nested function->null InsertObject.Chance(array float aProbabilities)
 //
     if (s:debug)
         if (aProbabilities.count == 0)
-            warning("InsertObject.Chance(array float " + aProbabilities.name() + ") -> " + aProbabilities.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("InsertObject.Chance(array float " + aProbabilities.name() + ") -> " + aProbabilities.name() + " was empty, function had no effect.");
+            end
             return;
         end
 
@@ -3192,7 +3227,9 @@ nested function->bool Object.TestIndices(array int aIndices)
 //
     if (s:debug)
         if (aIndices.count == 0)
-            warning("InsertObject.TestIndices(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("InsertObject.TestIndices(array int " + aIndices.name() + ") -> " + aIndices.name() + " was empty, function had no effect.");
+            end
             return false;
         end
 
@@ -3289,7 +3326,9 @@ nested function->bool Object.IsOver(array object aObjects)
 //
     if (s:debug)
         if (aObjects.count == 0)
-            warning("Object.IsOver(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("Object.IsOver(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
+            end
             return false;
         end
     end
@@ -3314,7 +3353,9 @@ nested function->bool Object.IsTouchingObjectAt(object oObject, int iSide)
 //
     if (s:debug)
         if (oObject.count == 0)
-            warning("Object.IsTouchingObjectAt(object " + oObject.name() + ", int " + iSide.name() + ") -> " + oObject.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("Object.IsTouchingObjectAt(object " + oObject.name() + ", int " + iSide.name() + ") -> " + oObject.name() + " was empty, function had no effect.");
+            end
             return false;
         end
         if (iSide < top or iSide > left)
@@ -3353,7 +3394,7 @@ nested function->bool Object.IsTouchingObjectAt(object oObject, int iSide)
                 aOtherDistanceY.push(aOtherFootprintPos[j].y - aOtherFootprintPos[j - 1].y);
             end
         end
-        
+
         int iMatchIndex = 0;
         if (iSide == top or iSide == bottom)
             iMatchIndex = aOtherDistanceX.find(aDistanceX);
@@ -3383,7 +3424,7 @@ nested function->bool Object.IsTouchingObjectAt(object oObject, int iSide)
     end
 
 //
-    if (s:debug)
+    if (s:debug and s:warn)
         warning("Object.IsTouchingObjectAt(object " + oObject.name() + ", int " + iSide.name() + ") -> matching footprint was not found, function had no effect.");
     end
 //
@@ -3397,7 +3438,7 @@ nested function->bool Object.IsTouchingWallAt(int iSide)
     if (g:initObject)
         return false;
     end
-    
+
 //
     if (s:debug)
         if (iSide < top or iSide > left)
@@ -3423,7 +3464,7 @@ nested function->bool Object.IsEdge(int iOrientation)
     if (g:initObject)
         return false;
     end
-    
+
 //
     if (s:debug)
         if (iOrientation < top or iOrientation > bottomLeft)
@@ -3518,10 +3559,12 @@ nested function->bool Object.IsNotEdge(array int aOrientations)
 //
     if (s:debug)
         if (aOrientations.count == 0)
-            warning("Object.IsNotEdge(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("Object.IsNotEdge(array int " + aOrientations.name() + ") -> " + aOrientations.name() + " was empty, function had no effect.");
+            end
             return false;
         end
-        
+
         for (i = 0 to aOrientations.last)
             if ((aOrientations[i] < top or aOrientations[i] > left) and aOrientations[i] != all)
                 error("Object.IsNotEdge(array int " + aOrientations.name() + ") -> values need to be top, right, bottom, left or all.");
@@ -3566,7 +3609,9 @@ nested function->bool Object.IsNextTo(array object aObjects)
 //
     if (s:debug)
         if (aObjects.count == 0)
-            warning("Object.IsNextTo(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("Object.IsNextTo(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
+            end
             return false;
         end
     end
@@ -3652,7 +3697,9 @@ nested function->bool Object.IsNotNextTo(array object aObjects)
 //
     if (s:debug)
         if (aObjects.count == 0)
-            warning("Object.IsNotNextTo(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("Object.IsNotNextTo(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
+            end
             return false;
         end
     end
@@ -3712,7 +3759,9 @@ nested function->bool Object.IsOverlapping(array object aObjects)
 //
     if (s:debug)
         if (aObjects.count == 0)
-            warning("Object.IsOverlapping(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("Object.IsOverlapping(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
+            end
             return false;
         end
     end
@@ -3756,7 +3805,9 @@ nested function->bool Object.IsNotOverlapping(array object aObjects)
 //
     if (s:debug)
         if (aObjects.count == 0)
-            warning("Object.IsNotOverlapping(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
+            if (s:warn)
+                warning("Object.IsNotOverlapping(array object " + aObjects.name() + ") -> " + aObjects.name() + " was empty, function had no effect.");
+            end
             return false;
         end
     end
@@ -3828,6 +3879,92 @@ end
 
 ///////////////////////////////////////
 //
+int g:argRandomizeFill = g:mask.N;
+int g:argRandomizeSpacing = 0;
+bool g:argRandomizeIncludeEdges = true;
+array int g:argRandomizeIndices;
+array int g:argRandomizeTestIndices;
+array float g:argRandomizeProbabilities;
+/******************************************************************************
+
+*/
+function->null internal:ResetRandomizeArgs()
+
+    g:argRandomizeFill = g:mask.N;
+    g:argRandomizeSpacing = 0;
+    g:argRandomizeIncludeEdges = true;
+    if (true)
+        array int aEmpty;
+        g:argRandomizeIndices = aEmpty;
+        g:argRandomizeTestIndices = aEmpty;
+    end
+    if (true)
+        array float aEmpty;
+        g:argRandomizeProbabilities = aEmpty;
+    end
+end
+
+
+
+function->null Randomize()
+    nested(
+        SetIndices, SetFill, 
+        SetSpacing, SetIncludeEdges,
+        SetTestIndices, 
+        SetChance
+    )
+
+    invoke(nested);
+end
+
+
+
+nested function->null Randomize.SetIndices(array int aIndices)
+
+    g:argRandomizeIndices = aIndices;
+end
+
+
+
+nested function->null Randomize.SetFill(int iIndex)
+
+    g:argRandomizeFill = util:EnsureRotation(iIndex);
+end
+
+
+
+nested function->null Randomize.SetSpacing(int iRadius)
+
+    g:argRandomizeSpacing = iRadius;
+end
+
+
+
+nested function->null Randomize.SetIncludeEdges(bool bValue)
+
+    g:argRandomizeIncludeEdges = bValue;
+end
+
+
+
+nested function->null Randomize.SetTestIndices(array int aIndices)
+
+    g:argRandomizeTestIndices = aIndices;
+end
+
+
+
+nested function->null Randomize.SetChance(array float aProbabilities)
+
+    g:argRandomizeProbabilities = aProbabilities;
+end
+
+
+
+
+
+///////////////////////////////////////
+//
 array int g:argShiftIndices;
 coord g:argShiftOffset = [0, 0];
 /******************************************************************************
@@ -3860,7 +3997,7 @@ end
 
 nested function->null Shift.SetOffset(coord cOffset)
 
-    g:argShiftOffset = cOffset;
+    g:argShiftOffset = util:Negate(cOffset);
 end
 
 
@@ -4052,7 +4189,7 @@ function->null Border()
         SetWallToIShape, SetWallToIShapeFrom,
         SetOuterToIShape, SetOuterToIShapeFrom,
         SetOuterToDoubleIShape, SetOuterToDoubleIShapeFrom,
-        SetCross, SetDot, SetFill, 
+        SetCross, SetDot, SetFill,
         SetTestIndices
     )
 
@@ -4943,7 +5080,8 @@ end
 */
 function->null Run()
     nested(
-        Filter, Shift, Checkerboard, 
+        Filter, Randomize,
+        Shift, Checkerboard,
         Border, FillObjects
     )
 
@@ -4967,17 +5105,62 @@ end
 
 
 
+nested function->null Run.Randomize()
+
+    NewRun();
+    OverrideLayer();
+
+    bool bWarn = s:warn;
+    s:warn = false;
+
+    int iFill = g:argRandomizeFill;
+    int iSpacing = g:argRandomizeSpacing;
+    array int aEdges;
+    if (not g:argRandomizeIncludeEdges)
+        aEdges.push(all);
+    end
+
+    Insert(iFill).If(
+        IndexAt(0).Is(g:argRandomizeTestIndices).IsNotEdge(aEdges)
+    );
+    
+    if (g:argRandomizeProbabilities.count == 0)
+        Insert(g:argRandomizeIndices).If(
+            IndexAt(0).Is(iFill).IsNotEdge(aEdges),
+            IndexAt(0).IsNotWithinRadius(iSpacing).TestIndices(g:argRandomizeIndices)
+        ).Roll();
+    end
+    if (g:argRandomizeProbabilities.count != 0)
+        Insert(g:argRandomizeIndices).If(
+            IndexAt(0).Is(iFill).IsNotEdge(aEdges),
+            IndexAt(0).IsNotWithinRadius(iSpacing).TestIndices(g:argRandomizeIndices)
+        ).Chance(g:argRandomizeProbabilities);
+    end
+
+    s:warn = bWarn;
+
+    NewRun();
+    internal:ResetRandomizeArgs();
+end
+
+
+
 nested function->null Run.Shift()
+
+    if (g:argShiftIndices.count == 0)
+        if (s:debug and s:warn)
+            warning("Run.Shift() -> no indices were set, function had no effect.");
+        end
+        return;
+    end
 
     NewRun();
 
     coord cOffset = g:argShiftOffset;
 
-    for (i = 0 to g:argShiftIndices.last)
-        Insert(0).If(
-            IndexAt(0).Is(g:argShiftIndices[i])
-        );
-    end
+    Insert(0).If(
+        IndexAt(0).Is(g:argShiftIndices)
+    );
     for (i = 0 to g:argShiftIndices.last)
         Insert(g:argShiftIndices[i]).If(
             IndexAt(cOffset).Is(g:argShiftIndices[i])
@@ -5031,49 +5214,71 @@ nested function->null Run.Border()
 
     NewRun();
 
+    bool bWarn = s:warn;
+    s:warn = false;
+
+    int iFill = g:argBorderFill;
+    array int aEdges;
+    if (g:argBorderTestIndices.count != 0)
+        aEdges.push(all);
+    end
+
+    if (iFill != -1)
+        Insert(iFill).If(
+            IndexAt(0).Is(g:argBorderTestIndices)
+        );
+    end
     if (g:argBorderWall:t != -1)
         Insert(g:argBorderWall:t).If(
-            IndexAt(0).IsWall(top).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+            IndexAt(0).IsWall(top).IsNotEdge(aEdges).TestIndices(g:argBorderTestIndices)
         );
-        Insert(g:argBorderWall:t).If(
-            IndexAt(0).IsOuterCorner(topLeft).IsEdge(left).TestIndices(g:argBorderTestIndices)
-        );
-        Insert(g:argBorderWall:t).If(
-            IndexAt(0).IsOuterCorner(topRight).IsEdge(right).TestIndices(g:argBorderTestIndices)
-        );
+        if (g:argBorderTestIndices.count != 0)
+            Insert(g:argBorderWall:t).If(
+                IndexAt(0).IsOuterCorner(topLeft).IsEdge(left).IsNotEdge(top, bottom).TestIndices(g:argBorderTestIndices)
+            );
+            Insert(g:argBorderWall:t).If(
+                IndexAt(0).IsOuterCorner(topRight).IsEdge(right).IsNotEdge(top, bottom).TestIndices(g:argBorderTestIndices)
+            );
+        end
     end
     if (g:argBorderWall:r != -1)
         Insert(g:argBorderWall:r).If(
-            IndexAt(0).IsWall(right).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+            IndexAt(0).IsWall(right).IsNotEdge(aEdges).TestIndices(g:argBorderTestIndices)
         );
-        Insert(g:argBorderWall:r).If(
-            IndexAt(0).IsOuterCorner(topRight).IsEdge(top).TestIndices(g:argBorderTestIndices)
-        );
-        Insert(g:argBorderWall:r).If(
-            IndexAt(0).IsOuterCorner(bottomRight).IsEdge(bottom).TestIndices(g:argBorderTestIndices)
-        );
+        if (g:argBorderTestIndices.count != 0)
+            Insert(g:argBorderWall:r).If(
+                IndexAt(0).IsOuterCorner(topRight).IsEdge(top).IsNotEdge(left, right).TestIndices(g:argBorderTestIndices)
+            );
+            Insert(g:argBorderWall:r).If(
+                IndexAt(0).IsOuterCorner(bottomRight).IsEdge(bottom).IsNotEdge(left, right).TestIndices(g:argBorderTestIndices)
+            );
+        end
     end
     if (g:argBorderWall:b != -1)
         Insert(g:argBorderWall:b).If(
-            IndexAt(0).IsWall(bottom).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+            IndexAt(0).IsWall(bottom).IsNotEdge(aEdges).TestIndices(g:argBorderTestIndices)
         );
-        Insert(g:argBorderWall:b).If(
-            IndexAt(0).IsOuterCorner(bottomLeft).IsEdge(left).TestIndices(g:argBorderTestIndices)
-        );
-        Insert(g:argBorderWall:b).If(
-            IndexAt(0).IsOuterCorner(bottomRight).IsEdge(right).TestIndices(g:argBorderTestIndices)
-        );    
+        if (g:argBorderTestIndices.count != 0)
+            Insert(g:argBorderWall:b).If(
+                IndexAt(0).IsOuterCorner(bottomLeft).IsEdge(left).IsNotEdge(top, bottom).TestIndices(g:argBorderTestIndices)
+            );
+            Insert(g:argBorderWall:b).If(
+                IndexAt(0).IsOuterCorner(bottomRight).IsEdge(right).IsNotEdge(top, bottom).TestIndices(g:argBorderTestIndices)
+            );
+        end
     end
     if (g:argBorderWall:l != -1)
         Insert(g:argBorderWall:l).If(
-            IndexAt(0).IsWall(left).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+            IndexAt(0).IsWall(left).IsNotEdge(aEdges).TestIndices(g:argBorderTestIndices)
         );
-        Insert(g:argBorderWall:l).If(
-            IndexAt(0).IsOuterCorner(topLeft).IsEdge(top).TestIndices(g:argBorderTestIndices)
-        );
-        Insert(g:argBorderWall:l).If(
-            IndexAt(0).IsOuterCorner(bottomLeft).IsEdge(bottom).TestIndices(g:argBorderTestIndices)
-        );
+        if (g:argBorderTestIndices.count != 0)
+            Insert(g:argBorderWall:l).If(
+                IndexAt(0).IsOuterCorner(topLeft).IsEdge(top).IsNotEdge(left, right).TestIndices(g:argBorderTestIndices)
+            );
+            Insert(g:argBorderWall:l).If(
+                IndexAt(0).IsOuterCorner(bottomLeft).IsEdge(bottom).IsNotEdge(left, right).TestIndices(g:argBorderTestIndices)
+            );
+        end
     end
     if (g:argBorderOuter:tl != -1)
         Insert(g:argBorderOuter:tl).If(
@@ -5127,25 +5332,29 @@ nested function->null Run.Border()
     end
     if (g:argBorderIShape:v != -1)
         Insert(g:argBorderIShape:v).If(
-            IndexAt(0).IsWall(left, right).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+            IndexAt(0).IsWall(left, right).IsNotEdge(aEdges).TestIndices(g:argBorderTestIndices)
         );
-        Insert(g:argBorderIShape:v).If(
-            IndexAt(0).IsOuterCorner(topLeft, topRight).IsEdge(top).TestIndices(g:argBorderTestIndices)
-        );
-        Insert(g:argBorderIShape:v).If(
-            IndexAt(0).IsOuterCorner(bottomLeft, bottomRight).IsEdge(bottom).TestIndices(g:argBorderTestIndices)
-        );
+        if (g:argBorderTestIndices.count != 0)
+            Insert(g:argBorderIShape:v).If(
+                IndexAt(0).IsOuterCorner(topLeft, topRight).IsEdge(top).IsNotEdge(left, right).TestIndices(g:argBorderTestIndices)
+            );
+            Insert(g:argBorderIShape:v).If(
+                IndexAt(0).IsOuterCorner(bottomLeft, bottomRight).IsEdge(bottom).IsNotEdge(left, right).TestIndices(g:argBorderTestIndices)
+            );
+        end
     end
     if (g:argBorderIShape:h != -1)
         Insert(g:argBorderIShape:h).If(
-            IndexAt(0).IsWall(top, bottom).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
+            IndexAt(0).IsWall(top, bottom).IsNotEdge(aEdges).TestIndices(g:argBorderTestIndices)
         );
-        Insert(g:argBorderIShape:h).If(
-            IndexAt(0).IsOuterCorner(topLeft, bottomLeft).IsEdge(left).TestIndices(g:argBorderTestIndices)
-        );
-        Insert(g:argBorderIShape:h).If(
-            IndexAt(0).IsOuterCorner(topRight, bottomRight).IsEdge(right).TestIndices(g:argBorderTestIndices)
-        );
+        if (g:argBorderTestIndices.count != 0)
+            Insert(g:argBorderIShape:h).If(
+                IndexAt(0).IsOuterCorner(topLeft, bottomLeft).IsEdge(left).IsNotEdge(top, bottom).TestIndices(g:argBorderTestIndices)
+            );
+            Insert(g:argBorderIShape:h).If(
+                IndexAt(0).IsOuterCorner(topRight, bottomRight).IsEdge(right).IsNotEdge(top, bottom).TestIndices(g:argBorderTestIndices)
+            );
+        end
     end
     if (g:argBorderUShape:t != -1)
         Insert(g:argBorderUShape:t).If(
@@ -5266,7 +5475,7 @@ nested function->null Run.Border()
         Insert(g:argBorderOuterToIShape:bl:h).If(
             IndexAt(0).IsWall(bottom).IsInnerCorner(topLeft).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
         );
-    end   
+    end
     if (g:argBorderOuterToDoubleIShape:tl != -1)
         Insert(g:argBorderOuterToDoubleIShape:tl).If(
             IndexAt(0).IsInnerCorner(bottomLeft, topLeft, topRight).IsNotEdge(all).TestIndices(g:argBorderTestIndices)
@@ -5298,6 +5507,8 @@ nested function->null Run.Border()
         );
     end
 
+    s:warn = bWarn;
+
     NewRun();
     internal:ResetBorderArgs();
 end
@@ -5309,7 +5520,9 @@ nested function->null Run.FillObjects()
 //
     if (s:debug)
         if (g:insertedObjects.count == 0)
-            warning("Run.FillObjects() -> No objects were inserted, function had no effect.");
+            if (s:warn)
+                warning("Run.FillObjects() -> no objects were inserted, function had no effect.");
+            end
             return;
         end
     end
