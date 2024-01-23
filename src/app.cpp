@@ -98,7 +98,7 @@ void operator delete[](void* data) noexcept {
 static void showHelp(const char* prog) {
     std::cout << "Usage: " << prog << "[options] file...\n"
               << "      --help               Display the help.\n"
-              << "  -o, --output <file>      Write to <file> (same as #tileset).\n"
+              << "  -o, --output <file>      Write to <file> (same as #output).\n"
               << "  -i, --include <file>     A file to include (same as #include).\n"
               << "  -m, --memory <megabytes> Memory limit in <megabytes> (same as #memory).\n"
               << "  -p, --no-pause           Do not pause after execution.\n"
@@ -234,7 +234,7 @@ int App::exec(int argc, char** argv) {
             pause();
         return 0;
     } catch (const std::overflow_error& error) {
-        std::cout << error.what() << '\n';
+        std::cerr << error.what() << '\n';
         pause();
         return 0;
     }

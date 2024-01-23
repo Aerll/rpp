@@ -50,7 +50,7 @@ std::vector<Token> ExternalResource::load(const std::filesystem::path& path, con
 }
 
 bool ExternalResource::isLoaded(const std::filesystem::path& path) const {
-    auto fileName = std::filesystem::canonical(path.filename()).string();
+    auto fileName = std::filesystem::canonical(path).string();
     return std::find_if(
                info().begin(), info().end(),
                [&](const Info& i) -> bool {

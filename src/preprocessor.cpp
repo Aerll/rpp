@@ -41,7 +41,7 @@ void Preprocessor::run(const std::filesystem::path& path, const CLI& cli) {
     errorOutput::print::stage("Preprocessing file", path.filename().string());
 
     ExternalResource::Info info;
-    info.fileName  = std::filesystem::canonical(path.filename()).string();
+    info.fileName  = std::filesystem::canonical(path).string();
     info.lineCount = m_data.back().line;
     ExternalResource::get().addInfo(std::move(info));
 

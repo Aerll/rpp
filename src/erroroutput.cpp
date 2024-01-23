@@ -27,27 +27,27 @@
 namespace errorOutput::print {
 
 void string(std::string_view str, uint32_t width) {
-    std::cout << std::setw(width) << str << std::setw(0);
+    std::cerr << std::setw(width) << str << std::setw(0);
 }
 
 void stage(std::string_view stageName) {
-    std::cout << ">>> " << stageName << '\n';
+    std::cerr << ">>> " << stageName << '\n';
 }
 
 void stage(std::string_view stageName, const std::string& fileName) {
-    std::cout << ">>> " << stageName << ": '" << fileName << "'\n";
+    std::cerr << ">>> " << stageName << ": '" << fileName << "'\n";
 }
 
 void summary(uint32_t errorsCount, bool failed) {
     if (failed)
-        std::cout << ">>> failed - errors: " << errorsCount << '\n';
+        std::cerr << ">>> failed - errors: " << errorsCount << '\n';
     else
-        std::cout << "> \n";
+        std::cerr << "> \n";
 }
 
 void newLine(uint32_t count) {
     for (uint32_t i = 0; i < count; ++i)
-        std::cout << '\n';
+        std::cerr << '\n';
 }
 
 }
