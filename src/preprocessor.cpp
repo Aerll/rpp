@@ -38,7 +38,7 @@
     Preprocessor
 */
 void Preprocessor::run(const std::filesystem::path& path, const CLI& cli) {
-    errorOutput::print::stage("Preprocessing file", path.filename().string());
+    errorOutput::print::stage("Preprocessing file", path.relative_path().string());
 
     ExternalResource::Info info;
     info.fileName  = std::filesystem::canonical(path).string();
@@ -63,6 +63,14 @@ void Preprocessor::run(const std::filesystem::path& path, const CLI& cli) {
                     if (!std::filesystem::exists(m_output.parent_path()))
                         pushError(std::make_unique<ErrInvalidOutPath>(
                             m_output.parent_path().string(), line.at(3).line
+                        ));
+
+                    if (!m_output.has_extension())
+                        m_output.replace_extension(".rules");
+
+                    if (m_output.extension() != ".rules")
+                        pushError(std::make_unique<ErrInvalidOutExtension>(
+                            m_output.extension().string(), line.at(3).line
                         ));
                 }
                 else if (line.at(1).value == ID::Memory) {

@@ -42,6 +42,7 @@ protected:
     static std::string strIncorrectPath(const std::string& s);
     static std::string strFileNotFound(const std::string& s);
     static std::string strInvalidOutPath(const std::string& s);
+    static std::string strInvalidOutExtension(const std::string& s);
     static std::string strMissingExpression(const std::string& s);
     static std::string strMissingToken(std::string_view missing);
     static std::string strInvalidExpression(const std::string& s);
@@ -119,6 +120,11 @@ public:
 class ErrInvalidOutPath final : public Error {
 public:
     ErrInvalidOutPath(const std::string& path, uint32_t line);
+};
+
+class ErrInvalidOutExtension final : public Error {
+public:
+    ErrInvalidOutExtension(const std::string& extension, uint32_t line);
 };
 
 class ErrPreprocNotIdentifier final : public Error {

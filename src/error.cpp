@@ -109,6 +109,10 @@ std::string Error::strInvalidOutPath(const std::string& s) {
     return "Invalid output path: '" + s + "'.";
 }
 
+std::string Error::strInvalidOutExtension(const std::string& s) {
+    return "Invalid output extension: '" + s + "'. Expected '.rules'.";
+}
+
 std::string Error::strMissingExpression(const std::string& s) {
     return "Missing expression: '" + s + "'.";
 }
@@ -304,6 +308,14 @@ ErrFileNotFound::ErrFileNotFound(const std::string& path, uint32_t line) {
 ErrInvalidOutPath::ErrInvalidOutPath(const std::string& path, uint32_t line) {
     m_line = line;
     m_err  = strInvalidOutPath(path);
+}
+
+/*
+    ErrInvalidOutExtension
+*/
+ErrInvalidOutExtension::ErrInvalidOutExtension(const std::string& extension, uint32_t line) {
+    m_line = line;
+    m_err  = strInvalidOutExtension(extension);
 }
 
 /*
