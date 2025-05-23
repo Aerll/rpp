@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -32,7 +32,7 @@ class TokenH final {
 public:
     TokenH() = delete;
 
-    constexpr TokenH(const int32_t cat, const std::string_view& value)
+    constexpr TokenH(const i32 cat, const std::string_view& value)
         : value(value)
         , cat(cat) {}
 
@@ -49,7 +49,7 @@ public:
 
 public:
     const std::string_view& value;
-    const int cat;
+    const i32 cat;
 };
 
 namespace TH {

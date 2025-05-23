@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -91,36 +91,70 @@ bool Token::isPreprocIdentifier(const std::string& s) noexcept {
 }
 
 bool Token::isPunctuator(const std::string& s) noexcept {
-    if (s == PU::ArraySubscriptClose || s == PU::ArraySubscriptOpen ||
-        // s == PU::DecimalPoint ||
-        s == PU::FunctionCallClose || s == PU::FunctionCallOpen || s == PU::MemberAccess || s == PU::Percent || s == PU::Preproc || s == PU::Separator || s == PU::StatementEnd || s == PU::StringLiteral)
+    if (s == PU::ArraySubscriptClose
+        || s == PU::ArraySubscriptOpen
+        // || s == PU::DecimalPoint
+        || s == PU::FunctionCallClose
+        || s == PU::FunctionCallOpen
+        || s == PU::MemberAccess
+        || s == PU::Percent
+        || s == PU::Preproc
+        || s == PU::Separator
+        || s == PU::StatementEnd
+        || s == PU::StringLiteral)
         return true;
 
     return false;
 }
 
 bool Token::isPunctuator(char c) noexcept {
-    if (c == PU::CharArraySubscriptClose || c == PU::CharArraySubscriptOpen ||
-        // c == PU::CharDecimalPoint ||
-        c == PU::CharFunctionCallClose || c == PU::CharFunctionCallOpen || c == PU::CharMemberAccess || c == PU::CharPercent || c == PU::CharPreproc || c == PU::CharSeparator || c == PU::CharStatementEnd || c == PU::CharStringLiteral)
+    if (c == PU::CharArraySubscriptClose
+        || c == PU::CharArraySubscriptOpen
+        // || c == PU::CharDecimalPoint
+        || c == PU::CharFunctionCallClose
+        || c == PU::CharFunctionCallOpen
+        || c == PU::CharMemberAccess
+        || c == PU::CharPercent
+        || c == PU::CharPreproc
+        || c == PU::CharSeparator
+        || c == PU::CharStatementEnd
+        || c == PU::CharStringLiteral)
         return true;
 
     return false;
 }
 
 bool Token::isOperator(const std::string& s) noexcept {
-    if (s == OP::Addition || s == OP::Assignment || s == OP::Division || s == OP::Equal || s == OP::GreaterThan || s == OP::GreaterThanOrEqual || s == OP::LessThan || s == OP::LessThanOrEqual || s == OP::Multiplication || s == OP::NotEqual || s == OP::Range || s == OP::ReturnType ||
-        // s == OP::Subtraction ||
-        s == OP::UnaryNegation)
+    if (s == OP::Addition
+        || s == OP::Assignment
+        || s == OP::Division
+        || s == OP::Equal
+        || s == OP::GreaterThan
+        || s == OP::GreaterThanOrEqual
+        || s == OP::LessThan
+        || s == OP::LessThanOrEqual
+        || s == OP::Multiplication
+        || s == OP::NotEqual
+        || s == OP::Range
+        || s == OP::ReturnType
+        // || s == OP::Subtraction
+        || s == OP::UnaryNegation)
         return true;
 
     return false;
 }
 
 bool Token::isOperator(char c) noexcept {
-    if (c == OP::CharAddition || c == OP::CharAssignment || c == OP::CharDivision || c == OP::CharGreaterThan || c == OP::CharLessThan || c == OP::CharLogicalNot || c == OP::CharMultiplication || c == OP::CharRange ||
-        // c == OP::CharSubtraction ||
-        c == OP::CharUnaryNegation)
+    if (c == OP::CharAddition
+        || c == OP::CharAssignment
+        || c == OP::CharDivision
+        || c == OP::CharGreaterThan
+        || c == OP::CharLessThan
+        || c == OP::CharLogicalNot
+        || c == OP::CharMultiplication
+        || c == OP::CharRange
+        // || c == OP::CharSubtraction
+        || c == OP::CharUnaryNegation)
         return true;
 
     return false;
@@ -207,13 +241,10 @@ bool Token::isVariadic(ValueType type, ValueType variadic) noexcept {
             return variadic == ValueType::ArrayInt || variadic == ValueType::ArrayCoord || variadic == ValueType::ArrayFloat;
         case ValueType::Range:
             return variadic == ValueType::ArrayRange || variadic == ValueType::ArrayInt || variadic == ValueType::ArrayObject;
-        case ValueType::Coord:
-            return variadic == ValueType::ArrayCoord || variadic == ValueType::ArrayInt;
-        case ValueType::Float:
-            return variadic == ValueType::ArrayFloat || variadic == ValueType::ArrayInt;
-        case ValueType::String: return variadic == ValueType::ArrayString;
-        case ValueType::Object:
-            return variadic == ValueType::ArrayObject || variadic == ValueType::ArrayInt;
+        case ValueType::Coord:    return variadic == ValueType::ArrayCoord || variadic == ValueType::ArrayInt;
+        case ValueType::Float:    return variadic == ValueType::ArrayFloat || variadic == ValueType::ArrayInt;
+        case ValueType::String:   return variadic == ValueType::ArrayString;
+        case ValueType::Object:   return variadic == ValueType::ArrayObject || variadic == ValueType::ArrayInt;
         case ValueType::ArrayInt: return variadic == ValueType::ArrayObject;
     }
     return false;

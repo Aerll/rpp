@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -70,9 +70,9 @@ ParseTree::ptr_stat ParseTree::getStatementNode(TokenStream& tokenStream, Statem
 }
 
 ParseTree::ptr_stat ParseTree::getExprStatementNode(TokenStream& tokenStream) const {
-    uint32_t end       = findEnd(tokenStream, tokenStream.currentIndex(), TH::StatementEnd);
-    uint32_t scope_end = findEnd(tokenStream, tokenStream.currentIndex(), TH::End);
-    uint32_t offset    = end - tokenStream.currentIndex();
+    u32 end       = findEnd(tokenStream, tokenStream.currentIndex(), TH::StatementEnd);
+    u32 scope_end = findEnd(tokenStream, tokenStream.currentIndex(), TH::End);
+    u32 offset    = end - tokenStream.currentIndex();
 
     PTExprStatement stat;
     stat.set<1>(getExpressionNode(tokenStream, 0, offset));
@@ -85,20 +85,22 @@ ParseTree::ptr_stat ParseTree::getExprStatementNode(TokenStream& tokenStream) co
 }
 
 ParseTree::ptr_stat ParseTree::getForStatementNode(TokenStream& tokenStream) const {
-    uint32_t end    = findEnd(tokenStream, tokenStream.currentIndex() + 1, TH::End);
-    uint32_t offset = end - tokenStream.currentIndex();
-    uint32_t curr   = 0;
+    u32 end    = findEnd(tokenStream, tokenStream.currentIndex() + 1, TH::End);
+    u32 offset = end - tokenStream.currentIndex();
+    u32 curr   = 0;
 
     PTForStatement stat;
     stat.set<1>(&tokenStream.current(curr++));
     if (tokenStream.current(offset) != TH::InvalidNull)
         stat.set<6>(&tokenStream.current(offset));
 
-    if (tokenStream.current(1) == TH::FunctionCallOpen || tokenStream.current(1).cat == TPunctuator
-        || tokenStream.current(1).cat == TOperator || tokenStream.current(1).cat == TInvalid)
+    if (tokenStream.current(1) == TH::FunctionCallOpen
+        || tokenStream.current(1).cat == TPunctuator
+        || tokenStream.current(1).cat == TOperator
+        || tokenStream.current(1).cat == TInvalid)
         stat.set<2>(&tokenStream.current(curr++));
 
-    uint32_t found = findRange(tokenStream, curr, offset, { TH::FunctionCallClose });
+    u32 found = findRange(tokenStream, curr, offset, { TH::FunctionCallClose });
     if (found != offset)
         stat.set<4>(&tokenStream.current(found));
 
@@ -113,20 +115,22 @@ ParseTree::ptr_stat ParseTree::getForStatementNode(TokenStream& tokenStream) con
 }
 
 ParseTree::ptr_stat ParseTree::getIfStatementNode(TokenStream& tokenStream) const {
-    uint32_t end    = findEnd(tokenStream, tokenStream.currentIndex() + 1, TH::End);
-    uint32_t offset = end - tokenStream.currentIndex();
-    uint32_t curr   = 0;
+    u32 end    = findEnd(tokenStream, tokenStream.currentIndex() + 1, TH::End);
+    u32 offset = end - tokenStream.currentIndex();
+    u32 curr   = 0;
 
     PTIfStatement stat;
     stat.set<1>(&tokenStream.current(curr++));
     if (tokenStream.current(offset) != TH::InvalidNull)
         stat.set<6>(&tokenStream.current(offset));
 
-    if (tokenStream.current(1) == TH::FunctionCallOpen || tokenStream.current(1).cat == TPunctuator
-        || tokenStream.current(1).cat == TOperator || tokenStream.current(1).cat == TInvalid)
+    if (tokenStream.current(1) == TH::FunctionCallOpen
+        || tokenStream.current(1).cat == TPunctuator
+        || tokenStream.current(1).cat == TOperator
+        || tokenStream.current(1).cat == TInvalid)
         stat.set<2>(&tokenStream.current(curr++));
 
-    uint32_t found = findRange(tokenStream, curr, offset, { TH::FunctionCallClose });
+    u32 found = findRange(tokenStream, curr, offset, { TH::FunctionCallClose });
     if (found != offset)
         stat.set<4>(&tokenStream.current(found));
 
@@ -141,9 +145,9 @@ ParseTree::ptr_stat ParseTree::getIfStatementNode(TokenStream& tokenStream) cons
 }
 
 ParseTree::ptr_stat ParseTree::getDeclStatementNode(TokenStream& tokenStream) const {
-    uint32_t end       = findEnd(tokenStream, tokenStream.currentIndex() + 1, TH::StatementEnd);
-    uint32_t scope_end = findEnd(tokenStream, tokenStream.currentIndex(), TH::End);
-    uint32_t offset    = end - tokenStream.currentIndex();
+    u32 end       = findEnd(tokenStream, tokenStream.currentIndex() + 1, TH::StatementEnd);
+    u32 scope_end = findEnd(tokenStream, tokenStream.currentIndex(), TH::End);
+    u32 offset    = end - tokenStream.currentIndex();
 
     PTDeclStatement stat;
     stat.set<1>(getExpressionNode(tokenStream, 0, offset));
@@ -155,14 +159,14 @@ ParseTree::ptr_stat ParseTree::getDeclStatementNode(TokenStream& tokenStream) co
 }
 
 ParseTree::ptr_stat ParseTree::getFunctionDefStatementNode(TokenStream& tokenStream) const {
-    uint32_t end    = findEnd(tokenStream, tokenStream.currentIndex() + 1, TH::End);
-    uint32_t offset = end - tokenStream.currentIndex();
+    u32 end    = findEnd(tokenStream, tokenStream.currentIndex() + 1, TH::End);
+    u32 offset = end - tokenStream.currentIndex();
 
     PTFunctionDefStatement stat;
     if (tokenStream.current(offset) != TH::InvalidNull)
         stat.set<5>(&tokenStream.current(offset));
 
-    uint32_t found = findRange(tokenStream, 0, offset, TIdentifier);
+    u32 found = findRange(tokenStream, 0, offset, TIdentifier);
     stat.set<1>(getExpressionNode(tokenStream, 0, found));
 
     tokenStream.skip(found);
@@ -184,16 +188,18 @@ ParseTree::ptr_stat ParseTree::getFunctionDefStatementNode(TokenStream& tokenStr
 }
 
 ParseTree::ptr_stat ParseTree::getFunctionDeclStatementNode(TokenStream& tokenStream) const {
-    uint32_t end    = findEnd(tokenStream, tokenStream.currentIndex() + 1, TH::FunctionCallClose);
-    uint32_t offset = end - tokenStream.currentIndex();
+    u32 end    = findEnd(tokenStream, tokenStream.currentIndex() + 1, TH::FunctionCallClose);
+    u32 offset = end - tokenStream.currentIndex();
 
     PTFunctionDeclStatement stat;
     if (tokenStream.current(offset) != TH::InvalidNull)
         stat.set<4>(&tokenStream.current(offset));
 
     stat.set<1>(&tokenStream.current());
-    if (tokenStream.current(1) == TH::FunctionCallOpen || tokenStream.current(1).cat == TPunctuator
-        || tokenStream.current(1).cat == TOperator || tokenStream.current(1).cat == TInvalid) {
+    if (tokenStream.current(1) == TH::FunctionCallOpen
+        || tokenStream.current(1).cat == TPunctuator
+        || tokenStream.current(1).cat == TOperator
+        || tokenStream.current(1).cat == TInvalid) {
         stat.set<2>(&tokenStream.current(1));
         stat.set<3>(getExpressionNode(tokenStream, 2, offset));
     }
@@ -203,15 +209,15 @@ ParseTree::ptr_stat ParseTree::getFunctionDeclStatementNode(TokenStream& tokenSt
 }
 
 ParseTree::ptr_stat ParseTree::getNestedFunctionDefStatementNode(TokenStream& tokenStream) const {
-    uint32_t end    = findEnd(tokenStream, tokenStream.currentIndex() + 1, TH::End);
-    uint32_t offset = end - tokenStream.currentIndex();
+    u32 end    = findEnd(tokenStream, tokenStream.currentIndex() + 1, TH::End);
+    u32 offset = end - tokenStream.currentIndex();
 
     PTNestedFunctionDefStatement stat;
     stat.set<1>(&tokenStream.current());
     if (tokenStream.current(offset) != TH::InvalidNull)
         stat.set<5>(&tokenStream.current(offset));
 
-    uint32_t found = findRange(tokenStream, 1, offset, TIdentifier);
+    u32 found = findRange(tokenStream, 1, offset, TIdentifier);
     stat.set<2>(getExpressionNode(tokenStream, 1, found));
 
     tokenStream.skip(found);
@@ -228,14 +234,14 @@ ParseTree::ptr_stat ParseTree::getNestedFunctionDefStatementNode(TokenStream& to
 }
 
 ParseTree::ptr_stat ParseTree::getNestedFunctionDeclStatementNode(TokenStream& tokenStream) const {
-    uint32_t end    = findEnd(tokenStream, tokenStream.currentIndex() + 1, TH::FunctionCallClose);
-    uint32_t offset = end - tokenStream.currentIndex();
+    u32 end    = findEnd(tokenStream, tokenStream.currentIndex() + 1, TH::FunctionCallClose);
+    u32 offset = end - tokenStream.currentIndex();
 
     PTNestedFunctionDeclStatement stat;
     if (tokenStream.current(offset) != TH::InvalidNull)
         stat.set<4>(&tokenStream.current(offset));
 
-    uint32_t found = findRange(tokenStream, 0, offset, { TH::FunctionCallOpen });
+    u32 found = findRange(tokenStream, 0, offset, { TH::FunctionCallOpen });
     stat.set<1>(getExpressionNode(tokenStream, 0, found));
 
     tokenStream.skip(found);
@@ -250,16 +256,18 @@ ParseTree::ptr_stat ParseTree::getNestedFunctionDeclStatementNode(TokenStream& t
 }
 
 ParseTree::ptr_stat ParseTree::getNestedDeclStatementNode(TokenStream& tokenStream) const {
-    uint32_t end    = findEnd(tokenStream, tokenStream.currentIndex() + 1, TH::FunctionCallClose);
-    uint32_t offset = end - tokenStream.currentIndex();
+    u32 end    = findEnd(tokenStream, tokenStream.currentIndex() + 1, TH::FunctionCallClose);
+    u32 offset = end - tokenStream.currentIndex();
 
     PTNestedDeclStatement stat;
     if (tokenStream.current(offset) != TH::InvalidNull)
         stat.set<4>(&tokenStream.current(offset));
 
     stat.set<1>(&tokenStream.current());
-    if (tokenStream.current(1) == TH::FunctionCallOpen || tokenStream.current(1).cat == TPunctuator
-        || tokenStream.current(1).cat == TOperator || tokenStream.current(1).cat == TInvalid) {
+    if (tokenStream.current(1) == TH::FunctionCallOpen
+        || tokenStream.current(1).cat == TPunctuator
+        || tokenStream.current(1).cat == TOperator
+        || tokenStream.current(1).cat == TInvalid) {
         stat.set<2>(&tokenStream.current(1));
         stat.set<3>(getExpressionNode(tokenStream, 2, offset));
     }
@@ -269,9 +277,9 @@ ParseTree::ptr_stat ParseTree::getNestedDeclStatementNode(TokenStream& tokenStre
 }
 
 ParseTree::ptr_stat ParseTree::getReturnStatementNode(TokenStream& tokenStream) const {
-    uint32_t end       = findEnd(tokenStream, tokenStream.currentIndex() + 1, TH::StatementEnd);
-    uint32_t scope_end = findEnd(tokenStream, tokenStream.currentIndex(), TH::End);
-    uint32_t offset    = end - tokenStream.currentIndex();
+    u32 end       = findEnd(tokenStream, tokenStream.currentIndex() + 1, TH::StatementEnd);
+    u32 scope_end = findEnd(tokenStream, tokenStream.currentIndex(), TH::End);
+    u32 offset    = end - tokenStream.currentIndex();
 
     PTReturnStatement stat;
     stat.set<1>(&tokenStream.current());
@@ -301,21 +309,19 @@ ParseTree::ptr_stat ParseTree::getContinueStatementNode(TokenStream& tokenStream
     return std::make_unique<PTContinueStatement>(std::move(stat));
 }
 
-ParseTree::ptr_expr ParseTree::getExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const {
+ParseTree::ptr_expr ParseTree::getExpressionNode(TokenStream& tokenStream, u32 beg, u32 end) const {
     if (beg == end)
         return std::make_unique<PTEmptyExpression>();
 
     if (end - beg == 1)
         switch (tokenStream.current(beg).cat) {
-            case TIdentifier:
-                return std::make_unique<PTIdentifierExpression>(&tokenStream.current(beg));
+            case TIdentifier: return std::make_unique<PTIdentifierExpression>(&tokenStream.current(beg));
 
             case TKeyword: return std::make_unique<PTKeywordExpression>(&tokenStream.current(beg));
 
             case TLiteral: return std::make_unique<PTLiteralExpression>(&tokenStream.current(beg));
 
-            default:
-                return std::make_unique<PTInvalidExpression>(std::vector<Token*>{ &tokenStream.current(beg) });
+            default: return std::make_unique<PTInvalidExpression>(std::vector<Token*>{ &tokenStream.current(beg) });
         }
 
     ptr_expr expr;
@@ -433,17 +439,17 @@ ParseTree::ptr_expr ParseTree::getExpressionNode(TokenStream& tokenStream, uint3
     // invalid
     std::vector<Token*> tokens;
     tokens.reserve(end - beg);
-    for (uint32_t i = beg; i < end; ++i)
+    for (u32 i = beg; i < end; ++i)
         tokens.push_back(&tokenStream.current(i));
 
     return std::make_unique<PTInvalidExpression>(std::move(tokens));
 }
 
-ParseTree::ptr_expr ParseTree::getArrayExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const {
+ParseTree::ptr_expr ParseTree::getArrayExpressionNode(TokenStream& tokenStream, u32 beg, u32 end) const {
     if (tokenStream.current(beg).cat != TIdentifier)
         return nullptr;
 
-    uint32_t found = findLastRange(tokenStream, beg + 1, end, { TH::ArraySubscriptOpen });
+    u32 found = findLastRange(tokenStream, beg + 1, end, { TH::ArraySubscriptOpen });
     if (found == end)
         return nullptr;
 
@@ -460,7 +466,7 @@ ParseTree::ptr_expr ParseTree::getArrayExpressionNode(TokenStream& tokenStream, 
     return std::make_unique<PTArraySubscriptExpression>(std::move(expr));
 }
 
-ParseTree::ptr_expr ParseTree::getFunctionCallExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const {
+ParseTree::ptr_expr ParseTree::getFunctionCallExpressionNode(TokenStream& tokenStream, u32 beg, u32 end) const {
     bool hasIdentifier = tokenStream.current(beg).cat == TIdentifier
                       || (tokenStream.current(beg).value == KW::Invoke && tokenStream.current(beg).cat == TKeyword);
 
@@ -469,7 +475,7 @@ ParseTree::ptr_expr ParseTree::getFunctionCallExpressionNode(TokenStream& tokenS
     if (hasIdentifier && tokenStream.current(beg + 1).value != PU::FunctionCallOpen)
         return nullptr;
 
-    uint32_t curr = beg;
+    u32 curr = beg;
 
     PTFunctionCallExpression expr;
     if (hasIdentifier)
@@ -477,7 +483,7 @@ ParseTree::ptr_expr ParseTree::getFunctionCallExpressionNode(TokenStream& tokenS
 
     expr.set<2>(&tokenStream.current(curr++));
 
-    uint32_t found = findLastRange(tokenStream, curr, end, { TH::FunctionCallClose });
+    u32 found = findLastRange(tokenStream, curr, end, { TH::FunctionCallClose });
     expr.set<3>(getExpressionNode(tokenStream, curr, found));
     if (found != end)
         expr.set<4>(&tokenStream.current(found));
@@ -485,8 +491,9 @@ ParseTree::ptr_expr ParseTree::getFunctionCallExpressionNode(TokenStream& tokenS
     return std::make_unique<PTFunctionCallExpression>(std::move(expr));
 }
 
-ParseTree::ptr_expr ParseTree::getPercentLiteralExpressionNode(TokenStream& tokenStream, uint32_t beg, [[maybe_unused]] uint32_t end) const {
-    if (tokenStream.current(beg).cat != TLiteral && tokenStream.current(beg).type != ValueType::Int
+ParseTree::ptr_expr ParseTree::getPercentLiteralExpressionNode(TokenStream& tokenStream, u32 beg, [[maybe_unused]] u32 end) const {
+    if (tokenStream.current(beg).cat != TLiteral
+        && tokenStream.current(beg).type != ValueType::Int
         && tokenStream.current(beg).type != ValueType::Float)
         return nullptr;
     if (tokenStream.current(beg + 1).value != PU::Percent)
@@ -499,7 +506,7 @@ ParseTree::ptr_expr ParseTree::getPercentLiteralExpressionNode(TokenStream& toke
     return std::make_unique<PTPercentLiteralExpression>(std::move(expr));
 }
 
-ParseTree::ptr_expr ParseTree::getCoordLiteralExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const {
+ParseTree::ptr_expr ParseTree::getCoordLiteralExpressionNode(TokenStream& tokenStream, u32 beg, u32 end) const {
     if (tokenStream.current(beg).value != PU::ArraySubscriptOpen)
         return nullptr;
     if (tokenStream.current(end - 1).value != PU::ArraySubscriptClose)
@@ -513,7 +520,7 @@ ParseTree::ptr_expr ParseTree::getCoordLiteralExpressionNode(TokenStream& tokenS
     return std::make_unique<PTCoordLiteralExpression>(std::move(expr));
 }
 
-ParseTree::ptr_expr ParseTree::getStringLiteralExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const {
+ParseTree::ptr_expr ParseTree::getStringLiteralExpressionNode(TokenStream& tokenStream, u32 beg, u32 end) const {
     if (tokenStream.current(beg) != TH::StringLiteral)
         return nullptr;
 
@@ -527,28 +534,30 @@ ParseTree::ptr_expr ParseTree::getStringLiteralExpressionNode(TokenStream& token
     return std::make_unique<PTStringLiteralExpression>(std::move(expr));
 }
 
-ParseTree::ptr_expr ParseTree::getReturnTypeExpressionNode(TokenStream& tokenStream, uint32_t beg, [[maybe_unused]] uint32_t end) const {
+ParseTree::ptr_expr ParseTree::getReturnTypeExpressionNode(TokenStream& tokenStream, u32 beg, [[maybe_unused]] u32 end) const {
     if (tokenStream.current(beg).value != KW::Function)
         return nullptr;
 
     PTReturnTypeExpression expr;
     expr.set<1>(&tokenStream.current(beg));
 
-    if (tokenStream.current(beg + 1) == TH::ReturnType || tokenStream.current(beg + 1).cat == TOperator
+    if (tokenStream.current(beg + 1) == TH::ReturnType
+        || tokenStream.current(beg + 1).cat == TOperator
         || tokenStream.current(beg + 1).cat == TPunctuator)
         expr.set<2>(&tokenStream.current(beg + 1));
 
     if (tokenStream.current(beg + 2) != TH::InvalidNull)
         expr.set<3>(&tokenStream.current(beg + 2));
 
-    if (tokenStream.current(beg + 3) != TH::InvalidNull && tokenStream.current(beg + 3).cat != TIdentifier
+    if (tokenStream.current(beg + 3) != TH::InvalidNull
+        && tokenStream.current(beg + 3).cat != TIdentifier
         && tokenStream.current(beg + 2) == TH::Array)
         expr.set<4>(&tokenStream.current(beg + 3));
 
     return std::make_unique<PTReturnTypeExpression>(std::move(expr));
 }
 
-ParseTree::ptr_expr ParseTree::getErrorExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const {
+ParseTree::ptr_expr ParseTree::getErrorExpressionNode(TokenStream& tokenStream, u32 beg, u32 end) const {
     if (tokenStream.current(beg).value != KW::Error)
         return nullptr;
 
@@ -566,7 +575,7 @@ ParseTree::ptr_expr ParseTree::getErrorExpressionNode(TokenStream& tokenStream, 
     return std::make_unique<PTErrorExpression>(std::move(expr));
 }
 
-ParseTree::ptr_expr ParseTree::getWarningExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const {
+ParseTree::ptr_expr ParseTree::getWarningExpressionNode(TokenStream& tokenStream, u32 beg, u32 end) const {
     if (tokenStream.current(beg).value != KW::Warning)
         return nullptr;
 
@@ -584,7 +593,7 @@ ParseTree::ptr_expr ParseTree::getWarningExpressionNode(TokenStream& tokenStream
     return std::make_unique<PTWarningExpression>(std::move(expr));
 }
 
-ParseTree::ptr_expr ParseTree::getAssertExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const {
+ParseTree::ptr_expr ParseTree::getAssertExpressionNode(TokenStream& tokenStream, u32 beg, u32 end) const {
     if (tokenStream.current(beg).value != KW::Assert)
         return nullptr;
 
@@ -602,14 +611,15 @@ ParseTree::ptr_expr ParseTree::getAssertExpressionNode(TokenStream& tokenStream,
     return std::make_unique<PTAssertExpression>(std::move(expr));
 }
 
-ParseTree::ptr_expr ParseTree::getDeclTypeExpressionNode(TokenStream& tokenStream, uint32_t beg, [[maybe_unused]] uint32_t end) const {
+ParseTree::ptr_expr ParseTree::getDeclTypeExpressionNode(TokenStream& tokenStream, u32 beg, [[maybe_unused]] u32 end) const {
     if (!Token::isType(tokenStream.current(beg).value))
         return nullptr;
 
     PTDeclTypeExpression expr;
     expr.set<1>(&tokenStream.current(beg));
 
-    if (tokenStream.current(beg) == TH::Array && tokenStream.current(beg + 1).cat != TOperator
+    if (tokenStream.current(beg) == TH::Array
+        && tokenStream.current(beg + 1).cat != TOperator
         && tokenStream.current(beg + 1).cat != TPunctuator) {
         expr.set<2>(&tokenStream.current(beg + 1));
 
@@ -622,9 +632,9 @@ ParseTree::ptr_expr ParseTree::getDeclTypeExpressionNode(TokenStream& tokenStrea
     return std::make_unique<PTDeclTypeExpression>(std::move(expr));
 }
 
-uint32_t ParseTree::findEnd(const TokenStream& tokenStream, uint32_t beg, const TokenH& t) const {
-    int32_t scope = 0;
-    for (uint32_t i = beg; i < tokenStream.data().size(); ++i) {
+u32 ParseTree::findEnd(const TokenStream& tokenStream, u32 beg, const TokenH& t) const {
+    i32 scope = 0;
+    for (u32 i = beg; i < tokenStream.data().size(); ++i) {
         const Token* curr = &tokenStream.data()[i];
         if (*curr == t && scope <= 0)
             return i;
@@ -633,10 +643,10 @@ uint32_t ParseTree::findEnd(const TokenStream& tokenStream, uint32_t beg, const 
         else if (*curr == TH::End)
             --scope;
     }
-    return static_cast<uint32_t>(tokenStream.data().size());
+    return static_cast<u32>(tokenStream.data().size());
 }
 
-uint32_t ParseTree::findRange(const TokenStream& tokenStream, uint32_t beg, uint32_t end, const std::vector<TokenH>& tokens) const {
+u32 ParseTree::findRange(const TokenStream& tokenStream, u32 beg, u32 end, const std::vector<TokenH>& tokens) const {
     bool has_funcCall = false;
     bool has_arraySub = false;
     for (const auto& t : tokens) {
@@ -646,9 +656,9 @@ uint32_t ParseTree::findRange(const TokenStream& tokenStream, uint32_t beg, uint
             has_arraySub = true;
     }
 
-    int32_t funcCall = 1;
-    int32_t arraySub = 1;
-    for (uint32_t i = beg; i < end; ++i) {
+    i32 funcCall = 1;
+    i32 arraySub = 1;
+    for (u32 i = beg; i < end; ++i) {
         const Token* curr = &tokenStream.current(i);
         for (const auto& t : tokens) {
             if (*curr == TH::FunctionCallOpen && t != TH::FunctionCallOpen)
@@ -677,17 +687,17 @@ uint32_t ParseTree::findRange(const TokenStream& tokenStream, uint32_t beg, uint
     return end;
 }
 
-uint32_t ParseTree::findRange(const TokenStream& tokenStream, uint32_t beg, uint32_t end, int32_t cat) const {
-    for (uint32_t i = beg; i < end; ++i)
+u32 ParseTree::findRange(const TokenStream& tokenStream, u32 beg, u32 end, i32 cat) const {
+    for (u32 i = beg; i < end; ++i)
         if (tokenStream.current(i).cat == cat)
             return i;
     return end;
 }
 
-uint32_t ParseTree::findLastRange(const TokenStream& tokenStream, int32_t beg, int32_t end, const std::vector<TokenH>& tokens) const {
-    int32_t funcCall = 0;
-    int32_t arraySub = 0;
-    for (int32_t i = end - 1; i >= beg; --i) {
+u32 ParseTree::findLastRange(const TokenStream& tokenStream, i32 beg, i32 end, const std::vector<TokenH>& tokens) const {
+    i32 funcCall = 0;
+    i32 arraySub = 0;
+    for (i32 i = end - 1; i >= beg; --i) {
         const Token* curr = &tokenStream.current(i);
         for (const auto& t : tokens) {
             if (*curr == TH::FunctionCallClose && t != TH::FunctionCallClose)

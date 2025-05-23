@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -29,12 +29,12 @@
 
 namespace errorOutput::print {
 
-void string(std::string_view str, uint32_t width = 0);
+void string(std::string_view str, u32 width = 0);
 void stage(std::string_view stageName);
 void stage(std::string_view stageName, const std::string& fileName);
-void summary(uint32_t errorsCount, bool failed);
-void newLine(uint32_t count = 1);
+void summary(u32 errorsCount, bool failed);
+void newLine(u32 count = 1);
 
-} // namespace errorOutput::print
+}
 
 #endif // RPP_ERROROUTPUT_HPP

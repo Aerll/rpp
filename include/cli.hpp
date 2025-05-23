@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -22,7 +22,8 @@
 #ifndef RPP_CLI_HPP
 #define RPP_CLI_HPP
 
-#include <cstdint>
+#include <aliases.hpp>
+
 #include <filesystem>
 #include <optional>
 #include <vector>
@@ -30,7 +31,7 @@
 struct CLI {
     std::vector<std::filesystem::path> inputFiles;
     std::optional<std::filesystem::path> output;
-    std::optional<int64_t> memory;
+    std::optional<isize> memory;
     std::vector<std::filesystem::path> includes;
     bool skipPreprocessor = false;
     bool pause            = true;

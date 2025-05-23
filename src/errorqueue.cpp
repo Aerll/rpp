@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -24,7 +24,7 @@
 /*
     ErrorQueue
 */
-void ErrorQueue::printErrors(uint32_t lineWidth) {
+void ErrorQueue::printErrors(u32 lineWidth) {
     while (hasErrors()) {
         errorOutput::print::string("> ");
         errorOutput::print::string(std::to_string(m_errors.front()->line()), lineWidth);

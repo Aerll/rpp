@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -42,23 +42,21 @@ public:
         m_data.push_back(T{});
     }
 
-    const T& current(int32_t offset = 0) const {
-        int32_t index = static_cast<int32_t>(m_current + offset);
-        return std::cmp_less(index, m_data.size()) && std::cmp_greater_equal(index, 0) ? m_data.at(index)
-                                                                                       : m_data.back();
+    const T& current(i32 offset = 0) const {
+        i32 index = static_cast<i32>(m_current + offset);
+        return std::cmp_less(index, m_data.size()) && std::cmp_greater_equal(index, 0) ? m_data.at(index) : m_data.back();
     }
 
-    T& current(int32_t offset = 0) {
-        int32_t index = static_cast<int32_t>(m_current + offset);
-        return std::cmp_less(index, m_data.size()) && std::cmp_greater_equal(index, 0) ? m_data.at(index)
-                                                                                       : m_data.back();
+    T& current(i32 offset = 0) {
+        i32 index = static_cast<i32>(m_current + offset);
+        return std::cmp_less(index, m_data.size()) && std::cmp_greater_equal(index, 0) ? m_data.at(index) : m_data.back();
     }
 
     T& next() {
         return m_current < m_data.size() ? m_data.at(m_current++) : m_data.back();
     }
 
-    void skip(uint32_t count = 1) noexcept {
+    void skip(u32 count = 1) noexcept {
         m_current += count;
     }
 
@@ -74,7 +72,7 @@ public:
         return m_data;
     }
 
-    uint32_t currentIndex() const noexcept {
+    u32 currentIndex() const noexcept {
         return m_current;
     }
 
@@ -84,7 +82,7 @@ public:
 
 protected:
     std::vector<T> m_data;
-    uint32_t m_current;
+    u32 m_current;
 };
 
 #endif // RPP_BASICSTREAM_HPP

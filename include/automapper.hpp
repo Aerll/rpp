@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -36,7 +36,7 @@ enum class PosRuleType {
 };
 
 struct IndexInfo {
-    int32_t tileID;
+    i32 tileID;
     Rotation rotation;
 
     friend bool operator==(const IndexInfo& lhs, const IndexInfo& rhs) {
@@ -49,12 +49,12 @@ struct IndexInfo {
 };
 
 struct PosRule {
-    int32_t x;
-    int32_t y;
+    i32 x;
+    i32 y;
     PosRuleType ruleType;
     std::vector<IndexInfo> indexInfos;
     Op op;
-    int32_t group;
+    i32 group;
 
     friend bool operator==(const PosRule& lhs, const PosRule& rhs) {
         return lhs.x == rhs.x && lhs.y == rhs.y && lhs.ruleType == rhs.ruleType && lhs.indexInfos == rhs.indexInfos;
@@ -64,7 +64,7 @@ struct PosRule {
 struct Rule {
     IndexInfo indexInfo;
     std::vector<PosRule> posRules;
-    float random;
+    f32 random;
     bool noDefaultRule;
 
     friend bool operator==(const Rule& lhs, const Rule& rhs) {
@@ -74,7 +74,7 @@ struct Rule {
 
 struct Run {
     std::vector<Rule> rules;
-    uint32_t copies;
+    u32 copies;
     bool overrideLayer;
 };
 

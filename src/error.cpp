@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -42,24 +42,22 @@ std::string Error::formatExpression(const std::vector<Token*>& tokens) {
         if ((t1->cat == TKeyword || t1->cat == TIdentifier || t1->cat == TLiteral) && (t2->cat == TKeyword || t2->cat == TIdentifier || t2->cat == TLiteral))
             s += ' ';
         // no space: '1_2' 'pos.x'
-        else if (
-            *t1 != TH::MemberAccess &&
-            *t2 != TH::MemberAccess &&
-            t1->value != PU::StringLiteral &&
-            t2->value != PU::StringLiteral &&
-            *t1 != TH::FunctionCallOpen &&
-            *t2 != TH::FunctionCallOpen &&
-            *t2 != TH::FunctionCallClose &&
-            *t1 != TH::ArraySubscriptOpen &&
-            *t2 != TH::ArraySubscriptOpen &&
-            *t2 != TH::ArraySubscriptClose &&
-            *t1 != TH::Range &&
-            *t2 != TH::Range &&
-            *t1 != TH::ReturnType &&
-            *t2 != TH::ReturnType &&
-        // following space: '1, 2'
-            t2->value != PU::Separator
-            )
+        else if (*t1 != TH::MemberAccess
+                 && *t2 != TH::MemberAccess
+                 && t1->value != PU::StringLiteral
+                 && t2->value != PU::StringLiteral
+                 && *t1 != TH::FunctionCallOpen
+                 && *t2 != TH::FunctionCallOpen
+                 && *t2 != TH::FunctionCallClose
+                 && *t1 != TH::ArraySubscriptOpen
+                 && *t2 != TH::ArraySubscriptOpen
+                 && *t2 != TH::ArraySubscriptClose
+                 && *t1 != TH::Range
+                 && *t2 != TH::Range
+                 && *t1 != TH::ReturnType
+                 && *t2 != TH::ReturnType
+                 // following space: '1, 2'
+                 && t2->value != PU::Separator)
             s += ' ';
         // following space when next is operator, keyword, identifier or literal: 'Pos() + 1'
         // 'Pos().x + 1'
@@ -202,30 +200,20 @@ std::string Error::strNoOperatorOverload(ValueType left, ValueType right, NodeID
     std::string rightStr = Token::typeToString(right);
 
     switch (op) {
-        case NodeID::OpAdd:
-            return "No operator + overload for types '" + leftStr + "' and '" + rightStr + "'.";
-        case NodeID::OpSubtract:
-            return "No operator - overload for types '" + leftStr + "' and '" + rightStr + "'.";
-        case NodeID::OpMultiply:
-            return "No operator * overload for types '" + leftStr + "' and '" + rightStr + "'.";
-        case NodeID::OpDivide:
-            return "No operator / overload for types '" + leftStr + "' and '" + rightStr + "'.";
-        case NodeID::OpEqual:
-            return "No operator == overload for types '" + leftStr + "' and '" + rightStr + "'.";
-        case NodeID::OpNotEqual:
-            return "No operator != overload for types '" + leftStr + "' and '" + rightStr + "'.";
-        case NodeID::OpGreaterThan:
-            return "No operator > overload for types '" + leftStr + "' and '" + rightStr + "'.";
+        case NodeID::OpAdd:         return "No operator + overload for types '" + leftStr + "' and '" + rightStr + "'.";
+        case NodeID::OpSubtract:    return "No operator - overload for types '" + leftStr + "' and '" + rightStr + "'.";
+        case NodeID::OpMultiply:    return "No operator * overload for types '" + leftStr + "' and '" + rightStr + "'.";
+        case NodeID::OpDivide:      return "No operator / overload for types '" + leftStr + "' and '" + rightStr + "'.";
+        case NodeID::OpEqual:       return "No operator == overload for types '" + leftStr + "' and '" + rightStr + "'.";
+        case NodeID::OpNotEqual:    return "No operator != overload for types '" + leftStr + "' and '" + rightStr + "'.";
+        case NodeID::OpGreaterThan: return "No operator > overload for types '" + leftStr + "' and '" + rightStr + "'.";
         case NodeID::OpGreaterThanOrEqual:
             return "No operator >= overload for types '" + leftStr + "' and '" + rightStr + "'.";
-        case NodeID::OpLessThan:
-            return "No operator < overload for types '" + leftStr + "' and '" + rightStr + "'.";
+        case NodeID::OpLessThan: return "No operator < overload for types '" + leftStr + "' and '" + rightStr + "'.";
         case NodeID::OpLessThanOrEqual:
             return "No operator <= overload for types '" + leftStr + "' and '" + rightStr + "'.";
-        case NodeID::OpAnd:
-            return "No operator 'and' overload for types '" + leftStr + "' and '" + rightStr + "'.";
-        case NodeID::OpOr:
-            return "No operator 'or' overload for types '" + leftStr + "' and '" + rightStr + "'.";
+        case NodeID::OpAnd: return "No operator 'and' overload for types '" + leftStr + "' and '" + rightStr + "'.";
+        case NodeID::OpOr:  return "No operator 'or' overload for types '" + leftStr + "' and '" + rightStr + "'.";
         case NodeID::OpNot: return "No operator 'not' overload for type '" + rightStr + "'.";
         default:            return "No operator overload for types '" + leftStr + "' and '" + rightStr + "'.";
     }
@@ -292,7 +280,7 @@ ErrFileNotFound::ErrFileNotFound(const Token& t) {
         m_err = strIncorrectPath(t.value);
 }
 
-ErrFileNotFound::ErrFileNotFound(const std::string& path, uint32_t line) {
+ErrFileNotFound::ErrFileNotFound(const std::string& path, u32 line) {
     m_line = line;
 
     std::filesystem::path file_path = path;
@@ -305,7 +293,7 @@ ErrFileNotFound::ErrFileNotFound(const std::string& path, uint32_t line) {
 /*
     ErrInvalidOutPath
 */
-ErrInvalidOutPath::ErrInvalidOutPath(const std::string& path, uint32_t line) {
+ErrInvalidOutPath::ErrInvalidOutPath(const std::string& path, u32 line) {
     m_line = line;
     m_err  = strInvalidOutPath(path);
 }
@@ -313,7 +301,7 @@ ErrInvalidOutPath::ErrInvalidOutPath(const std::string& path, uint32_t line) {
 /*
     ErrInvalidOutExtension
 */
-ErrInvalidOutExtension::ErrInvalidOutExtension(const std::string& extension, uint32_t line) {
+ErrInvalidOutExtension::ErrInvalidOutExtension(const std::string& extension, u32 line) {
     m_line = line;
     m_err  = strInvalidOutExtension(extension);
 }
@@ -360,22 +348,22 @@ ErrInvalidExpression::ErrInvalidExpression(const std::vector<Token*>& tokens) {
 /*
     ErrNotAMemberOf
 */
-ErrNotAMemberOf::ErrNotAMemberOf(const std::string& member, ValueType type, uint32_t line) {
+ErrNotAMemberOf::ErrNotAMemberOf(const std::string& member, ValueType type, u32 line) {
     m_line = line;
     m_err  = Error::strNotAMemberOf(member, type);
 }
 
-ErrNotAMemberOf::ErrNotAMemberOf(std::string_view member, ValueType type, uint32_t line) {
+ErrNotAMemberOf::ErrNotAMemberOf(std::string_view member, ValueType type, u32 line) {
     m_line = line;
     m_err  = Error::strNotAMemberOf(std::string{ member }, type);
 }
 
-ErrNotAMemberOf::ErrNotAMemberOf(const std::string& member, std::string_view name, uint32_t line) {
+ErrNotAMemberOf::ErrNotAMemberOf(const std::string& member, std::string_view name, u32 line) {
     m_line = line;
     m_err  = Error::strNotAMemberOf(member, std::string{ name });
 }
 
-ErrNotAMemberOf::ErrNotAMemberOf(std::string_view member, std::string_view name, uint32_t line) {
+ErrNotAMemberOf::ErrNotAMemberOf(std::string_view member, std::string_view name, u32 line) {
     m_line = line;
     m_err  = Error::strNotAMemberOf(std::string{ member }, std::string{ name });
 }
@@ -383,7 +371,7 @@ ErrNotAMemberOf::ErrNotAMemberOf(std::string_view member, std::string_view name,
 /*
     ErrNameCallNotVariable
 */
-ErrNameCallNotVariable::ErrNameCallNotVariable(uint32_t line) {
+ErrNameCallNotVariable::ErrNameCallNotVariable(u32 line) {
     m_line = line;
     m_err  = Error::strNameCallNotVariable();
 }
@@ -391,7 +379,7 @@ ErrNameCallNotVariable::ErrNameCallNotVariable(uint32_t line) {
 /*
     ErrRedeclaration
 */
-ErrRedeclaration::ErrRedeclaration(const std::string& name, uint32_t line) {
+ErrRedeclaration::ErrRedeclaration(const std::string& name, u32 line) {
     m_line = line;
     m_err  = Error::strRedeclaration(name);
 }
@@ -399,7 +387,7 @@ ErrRedeclaration::ErrRedeclaration(const std::string& name, uint32_t line) {
 /*
     ErrUndeclared
 */
-ErrUndeclared::ErrUndeclared(const std::string& name, uint32_t line) {
+ErrUndeclared::ErrUndeclared(const std::string& name, u32 line) {
     m_line = line;
     m_err  = Error::strUndeclared(name);
 }
@@ -407,7 +395,7 @@ ErrUndeclared::ErrUndeclared(const std::string& name, uint32_t line) {
 /*
     ErrUnassignedVariable
 */
-ErrUnassignedVariable::ErrUnassignedVariable(const std::string& name, uint32_t line) {
+ErrUnassignedVariable::ErrUnassignedVariable(const std::string& name, u32 line) {
     m_line = line;
     m_err  = Error::strUnassignedVariable(name);
 }
@@ -415,12 +403,12 @@ ErrUnassignedVariable::ErrUnassignedVariable(const std::string& name, uint32_t l
 /*
     ErrInvalidContext
 */
-ErrInvalidContext::ErrInvalidContext(std::string_view keyword, uint32_t line) {
+ErrInvalidContext::ErrInvalidContext(std::string_view keyword, u32 line) {
     m_line = line;
     m_err  = Error::strInvalidContext(std::string{ keyword });
 }
 
-ErrMissingValue::ErrMissingValue(std::string_view keyword, uint32_t line) {
+ErrMissingValue::ErrMissingValue(std::string_view keyword, u32 line) {
     m_line = line;
     m_err  = Error::strMissingValue(std::string{ keyword });
 }
@@ -428,7 +416,7 @@ ErrMissingValue::ErrMissingValue(std::string_view keyword, uint32_t line) {
 /*
     ErrFunctionSignatureNotFound
 */
-ErrFunctionSignatureNotFound::ErrFunctionSignatureNotFound(const std::string& name, uint32_t line) {
+ErrFunctionSignatureNotFound::ErrFunctionSignatureNotFound(const std::string& name, u32 line) {
     m_line = line;
     m_err  = Error::strFunctionSignatureNotFound(name);
 }
@@ -436,7 +424,7 @@ ErrFunctionSignatureNotFound::ErrFunctionSignatureNotFound(const std::string& na
 /*
     ErrNestedSignatureNotFound
 */
-ErrNestedSignatureNotFound::ErrNestedSignatureNotFound(const std::string& name, uint32_t line) {
+ErrNestedSignatureNotFound::ErrNestedSignatureNotFound(const std::string& name, u32 line) {
     m_line = line;
     m_err  = Error::strNestedSignatureNotFound(name);
 }
@@ -444,7 +432,7 @@ ErrNestedSignatureNotFound::ErrNestedSignatureNotFound(const std::string& name, 
 /*
     ErrNestedDifferentReturnType
 */
-ErrNestedDifferentReturnType::ErrNestedDifferentReturnType(const std::string& name, ValueType expected, uint32_t line) {
+ErrNestedDifferentReturnType::ErrNestedDifferentReturnType(const std::string& name, ValueType expected, u32 line) {
     m_line = line;
     m_err  = Error::strNestedDifferentReturnType(name, expected);
 }
@@ -452,7 +440,7 @@ ErrNestedDifferentReturnType::ErrNestedDifferentReturnType(const std::string& na
 /*
     ErrReturnInvalidContext
 */
-ErrReturnInvalidContext::ErrReturnInvalidContext(uint32_t line) {
+ErrReturnInvalidContext::ErrReturnInvalidContext(u32 line) {
     m_line = line;
     m_err  = Error::strReturnInvalidContext();
 }
@@ -460,7 +448,7 @@ ErrReturnInvalidContext::ErrReturnInvalidContext(uint32_t line) {
 /*
     ErrBreakInvalidContext
 */
-ErrBreakInvalidContext::ErrBreakInvalidContext(uint32_t line) {
+ErrBreakInvalidContext::ErrBreakInvalidContext(u32 line) {
     m_line = line;
     m_err  = Error::strBreakInvalidContext();
 }
@@ -468,7 +456,7 @@ ErrBreakInvalidContext::ErrBreakInvalidContext(uint32_t line) {
 /*
     ErrContinueInvalidContext
 */
-ErrContinueInvalidContext::ErrContinueInvalidContext(uint32_t line) {
+ErrContinueInvalidContext::ErrContinueInvalidContext(u32 line) {
     m_line = line;
     m_err  = Error::strContinueInvalidContext();
 }
@@ -476,7 +464,7 @@ ErrContinueInvalidContext::ErrContinueInvalidContext(uint32_t line) {
 /*
     ErrInvokeInvalidContext
 */
-ErrInvokeInvalidContext::ErrInvokeInvalidContext(uint32_t line) {
+ErrInvokeInvalidContext::ErrInvokeInvalidContext(u32 line) {
     m_line = line;
     m_err  = Error::strInvokeInvalidContext();
 }
@@ -484,7 +472,7 @@ ErrInvokeInvalidContext::ErrInvokeInvalidContext(uint32_t line) {
 /*
     ErrMissingProperty
 */
-ErrMissingProperty::ErrMissingProperty(std::string_view keyword, uint32_t line) {
+ErrMissingProperty::ErrMissingProperty(std::string_view keyword, u32 line) {
     m_line = line;
     m_err  = Error::strMissingProperty(std::string{ keyword });
 }
@@ -492,7 +480,7 @@ ErrMissingProperty::ErrMissingProperty(std::string_view keyword, uint32_t line) 
 /*
     ErrMissingReturn
 */
-ErrMissingReturn::ErrMissingReturn(const std::string& name, uint32_t line) {
+ErrMissingReturn::ErrMissingReturn(const std::string& name, u32 line) {
     m_line = line;
     m_err  = Error::strMissingReturn(name);
 }
@@ -500,7 +488,7 @@ ErrMissingReturn::ErrMissingReturn(const std::string& name, uint32_t line) {
 /*
     ErrIncorrectValueType
 */
-ErrIncorrectValueType::ErrIncorrectValueType(ValueType type, ValueType expected, uint32_t line) {
+ErrIncorrectValueType::ErrIncorrectValueType(ValueType type, ValueType expected, u32 line) {
     m_line = line;
     m_err  = Error::strIncorrectValueType(type, expected);
 }
@@ -508,7 +496,7 @@ ErrIncorrectValueType::ErrIncorrectValueType(ValueType type, ValueType expected,
 /*
     ErrNoOperatorOverload
 */
-ErrNoOperatorOverload::ErrNoOperatorOverload(ValueType left, ValueType right, NodeID op, uint32_t line) {
+ErrNoOperatorOverload::ErrNoOperatorOverload(ValueType left, ValueType right, NodeID op, u32 line) {
     m_line = line;
     m_err  = Error::strNoOperatorOverload(left, right, op);
 }
@@ -516,7 +504,7 @@ ErrNoOperatorOverload::ErrNoOperatorOverload(ValueType left, ValueType right, No
 /*
     ErrInvalidArguments
 */
-ErrInvalidArguments::ErrInvalidArguments(const std::string& name, uint32_t line) {
+ErrInvalidArguments::ErrInvalidArguments(const std::string& name, u32 line) {
     m_line = line;
     m_err  = Error::strInvalidArguments(name);
 }
@@ -524,7 +512,7 @@ ErrInvalidArguments::ErrInvalidArguments(const std::string& name, uint32_t line)
 /*
     ErrNoSubscriptOperator
 */
-ErrNoSubscriptOperator::ErrNoSubscriptOperator(ValueType type, uint32_t line) {
+ErrNoSubscriptOperator::ErrNoSubscriptOperator(ValueType type, u32 line) {
     m_line = line;
     m_err  = Error::strNoSubscriptOperator(type);
 }
@@ -532,7 +520,7 @@ ErrNoSubscriptOperator::ErrNoSubscriptOperator(ValueType type, uint32_t line) {
 /*
     ErrInvalidPosType
 */
-ErrInvalidPosType::ErrInvalidPosType(uint32_t line) {
+ErrInvalidPosType::ErrInvalidPosType(u32 line) {
     m_line = line;
     m_err  = Error::strInvalidPosType();
 }
@@ -540,7 +528,7 @@ ErrInvalidPosType::ErrInvalidPosType(uint32_t line) {
 /*
     ErrReadOnlyAssignment
 */
-ErrReadOnlyAssignment::ErrReadOnlyAssignment(uint32_t line) {
+ErrReadOnlyAssignment::ErrReadOnlyAssignment(u32 line) {
     m_line = line;
     m_err  = Error::strReadOnlyAssignment();
 }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -26,7 +26,7 @@
 
 namespace errorOutput::print {
 
-void string(std::string_view str, uint32_t width) {
+void string(std::string_view str, u32 width) {
     std::cerr << std::setw(width) << str << std::setw(0);
 }
 
@@ -38,15 +38,15 @@ void stage(std::string_view stageName, const std::string& fileName) {
     std::cerr << ">>> " << stageName << ": '" << fileName << "'\n";
 }
 
-void summary(uint32_t errorsCount, bool failed) {
+void summary(u32 errorsCount, bool failed) {
     if (failed)
         std::cerr << ">>> failed - errors: " << errorsCount << '\n';
     else
         std::cerr << "> \n";
 }
 
-void newLine(uint32_t count) {
-    for (uint32_t i = 0; i < count; ++i)
+void newLine(u32 count) {
+    for (u32 i = 0; i < count; ++i)
         std::cerr << '\n';
 }
 

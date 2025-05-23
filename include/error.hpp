@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -81,7 +81,7 @@ public:
 
     virtual ~Error() = default;
 
-    uint32_t line() const noexcept {
+    u32 line() const noexcept {
         return m_line;
     }
 
@@ -92,7 +92,7 @@ public:
 
 protected:
     std::string m_err;
-    uint32_t m_line;
+    u32 m_line;
 };
 
 class ErrUnexpectedEof final : public Error {
@@ -114,17 +114,17 @@ public:
 class ErrFileNotFound final : public Error {
 public:
     ErrFileNotFound(const Token& t);
-    ErrFileNotFound(const std::string& path, uint32_t line);
+    ErrFileNotFound(const std::string& path, u32 line);
 };
 
 class ErrInvalidOutPath final : public Error {
 public:
-    ErrInvalidOutPath(const std::string& path, uint32_t line);
+    ErrInvalidOutPath(const std::string& path, u32 line);
 };
 
 class ErrInvalidOutExtension final : public Error {
 public:
-    ErrInvalidOutExtension(const std::string& extension, uint32_t line);
+    ErrInvalidOutExtension(const std::string& extension, u32 line);
 };
 
 class ErrPreprocNotIdentifier final : public Error {
@@ -150,115 +150,115 @@ public:
 // AST
 class ErrNotAMemberOf final : public Error {
 public:
-    ErrNotAMemberOf(const std::string& member, ValueType type, uint32_t line);
-    ErrNotAMemberOf(std::string_view member, ValueType type, uint32_t line);
-    ErrNotAMemberOf(const std::string& member, std::string_view name, uint32_t line);
-    ErrNotAMemberOf(std::string_view member, std::string_view name, uint32_t line);
+    ErrNotAMemberOf(const std::string& member, ValueType type, u32 line);
+    ErrNotAMemberOf(std::string_view member, ValueType type, u32 line);
+    ErrNotAMemberOf(const std::string& member, std::string_view name, u32 line);
+    ErrNotAMemberOf(std::string_view member, std::string_view name, u32 line);
 };
 
 class ErrNameCallNotVariable final : public Error {
 public:
-    ErrNameCallNotVariable(uint32_t line);
+    ErrNameCallNotVariable(u32 line);
 };
 
 class ErrRedeclaration final : public Error {
 public:
-    ErrRedeclaration(const std::string& name, uint32_t line);
+    ErrRedeclaration(const std::string& name, u32 line);
 };
 
 class ErrUndeclared final : public Error {
 public:
-    ErrUndeclared(const std::string& name, uint32_t line);
+    ErrUndeclared(const std::string& name, u32 line);
 };
 
 class ErrUnassignedVariable final : public Error {
 public:
-    ErrUnassignedVariable(const std::string& name, uint32_t line);
+    ErrUnassignedVariable(const std::string& name, u32 line);
 };
 
 class ErrInvalidContext final : public Error {
 public:
-    ErrInvalidContext(std::string_view keyword, uint32_t line);
+    ErrInvalidContext(std::string_view keyword, u32 line);
 };
 
 class ErrMissingValue final : public Error {
 public:
-    ErrMissingValue(std::string_view keyword, uint32_t line);
+    ErrMissingValue(std::string_view keyword, u32 line);
 };
 
 class ErrFunctionSignatureNotFound final : public Error {
 public:
-    ErrFunctionSignatureNotFound(const std::string& name, uint32_t line);
+    ErrFunctionSignatureNotFound(const std::string& name, u32 line);
 };
 
 class ErrNestedSignatureNotFound final : public Error {
 public:
-    ErrNestedSignatureNotFound(const std::string& name, uint32_t line);
+    ErrNestedSignatureNotFound(const std::string& name, u32 line);
 };
 
 class ErrNestedDifferentReturnType final : public Error {
 public:
-    ErrNestedDifferentReturnType(const std::string& name, ValueType expected, uint32_t line);
+    ErrNestedDifferentReturnType(const std::string& name, ValueType expected, u32 line);
 };
 
 class ErrReturnInvalidContext final : public Error {
 public:
-    ErrReturnInvalidContext(uint32_t line);
+    ErrReturnInvalidContext(u32 line);
 };
 
 class ErrBreakInvalidContext final : public Error {
 public:
-    ErrBreakInvalidContext(uint32_t line);
+    ErrBreakInvalidContext(u32 line);
 };
 
 class ErrContinueInvalidContext final : public Error {
 public:
-    ErrContinueInvalidContext(uint32_t line);
+    ErrContinueInvalidContext(u32 line);
 };
 
 class ErrInvokeInvalidContext final : public Error {
 public:
-    ErrInvokeInvalidContext(uint32_t line);
+    ErrInvokeInvalidContext(u32 line);
 };
 
 class ErrMissingProperty final : public Error {
 public:
-    ErrMissingProperty(std::string_view keyword, uint32_t line);
+    ErrMissingProperty(std::string_view keyword, u32 line);
 };
 
 class ErrMissingReturn final : public Error {
 public:
-    ErrMissingReturn(const std::string& name, uint32_t line);
+    ErrMissingReturn(const std::string& name, u32 line);
 };
 
 class ErrIncorrectValueType final : public Error {
 public:
-    ErrIncorrectValueType(ValueType type, ValueType expected, uint32_t line);
+    ErrIncorrectValueType(ValueType type, ValueType expected, u32 line);
 };
 
 class ErrNoOperatorOverload final : public Error {
 public:
-    ErrNoOperatorOverload(ValueType left, ValueType right, NodeID op, uint32_t line);
+    ErrNoOperatorOverload(ValueType left, ValueType right, NodeID op, u32 line);
 };
 
 class ErrInvalidArguments final : public Error {
 public:
-    ErrInvalidArguments(const std::string& name, uint32_t line);
+    ErrInvalidArguments(const std::string& name, u32 line);
 };
 
 class ErrNoSubscriptOperator final : public Error {
 public:
-    ErrNoSubscriptOperator(ValueType type, uint32_t line);
+    ErrNoSubscriptOperator(ValueType type, u32 line);
 };
 
 class ErrInvalidPosType final : public Error {
 public:
-    ErrInvalidPosType(uint32_t line);
+    ErrInvalidPosType(u32 line);
 };
 
 class ErrReadOnlyAssignment final : public Error {
 public:
-    ErrReadOnlyAssignment(uint32_t line);
+    ErrReadOnlyAssignment(u32 line);
 };
 
 #endif // RPP_ERROR_HPP

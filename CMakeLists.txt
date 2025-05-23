@@ -5,6 +5,7 @@ project(rpp VERSION 1.0.0 LANGUAGES CXX)
 set(RPP_HEADER_FILES
     "include/abstractsyntaxtree.hpp"
     "include/abstractsyntaxtreevisitor.hpp"
+    "include/aliases.hpp"
     "include/app.hpp"
     "include/automapper.hpp"
     "include/basicstream.hpp"

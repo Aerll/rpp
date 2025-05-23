@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -22,9 +22,9 @@
 #ifndef RPP_APP_HPP
 #define RPP_APP_HPP
 
+#include <aliases.hpp>
 #include <cli.hpp>
 
-#include <cstdint>
 #include <filesystem>
 #include <optional>
 #include <string>
@@ -32,8 +32,8 @@
 
 class App final {
 public:
-    static CLI parseCLI(int argc, char** argv);
-    static int exec(int argc, char** argv);
+    static CLI parseCLI(i32 argc, char** argv);
+    static i32 exec(i32 argc, char** argv);
     static void pause();
 };
 

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -60,11 +60,11 @@ protected:
 public:
     virtual ~IPTExpressionNode() = default;
 
-    virtual bool hasNode(ExpressionID id) const = 0;
+    virtual bool hasNode(ExpressionID id) const                                                                    = 0;
     virtual bool hasOnlyNodes(const std::vector<ExpressionID>& ids, const std::vector<ExpressionID>& ignore) const = 0;
-    virtual bool hasKW(std::string_view kw_name) const = 0;
-    virtual std::vector<Token*> getTokens() const      = 0;
-    virtual Token* getLastToken() const                = 0;
+    virtual bool hasKW(std::string_view kw_name) const                                                             = 0;
+    virtual std::vector<Token*> getTokens() const                                                                  = 0;
+    virtual Token* getLastToken() const                                                                            = 0;
 
     virtual void accept(IPTExpressionNodeVisitor& visitor) = 0;
     virtual ExpressionID id() const noexcept               = 0;
@@ -261,25 +261,25 @@ public:
         return StatementID::Expr;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     ptr_expr&& get() noexcept {
         return std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return end;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(ptr_expr&& expr) noexcept {
         this->expr = std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* end) noexcept {
         this->end = end;
@@ -324,73 +324,73 @@ public:
         return StatementID::For;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_expr&& get() noexcept {
         return std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     Token* get() noexcept {
         return right;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 5)
     ptr_stat_v&& get() noexcept {
         return std::move(stats);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 6)
     Token* get() noexcept {
         return end;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* keyword) noexcept {
         this->keyword = keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* left) noexcept {
         this->left = left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_expr&& expr) noexcept {
         this->expr = std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     void set(Token* right) noexcept {
         this->right = right;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 5)
     void set(ptr_stat_v&& stats) noexcept {
         this->stats = std::move(stats);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 6)
     void set(Token* end) noexcept {
         this->end = end;
@@ -439,73 +439,73 @@ public:
         return StatementID::If;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_expr&& get() noexcept {
         return std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     Token* get() noexcept {
         return right;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 5)
     ptr_stat_v&& get() noexcept {
         return std::move(stats);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 6)
     Token* get() noexcept {
         return end;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* keyword) noexcept {
         this->keyword = keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* left) noexcept {
         this->left = left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_expr&& expr) noexcept {
         this->expr = std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     void set(Token* right) noexcept {
         this->right = right;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 5)
     void set(ptr_stat_v&& stats) noexcept {
         this->stats = std::move(stats);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 6)
     void set(Token* end) noexcept {
         this->end = end;
@@ -546,25 +546,25 @@ public:
         return StatementID::Decl;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     ptr_expr&& get() noexcept {
         return std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return end;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(ptr_expr&& expr) noexcept {
         this->expr = std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* end) noexcept {
         this->end = end;
@@ -607,61 +607,61 @@ public:
         return StatementID::FunctionDef;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     ptr_expr&& get() noexcept {
         return std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     ptr_stat&& get() noexcept {
         return std::move(stat);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_stat&& get() noexcept {
         return std::move(nested);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     ptr_stat_v&& get() noexcept {
         return std::move(stats);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 5)
     Token* get() noexcept {
         return end;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(ptr_expr&& expr) noexcept {
         this->expr = std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(ptr_stat&& stat) noexcept {
         this->stat = std::move(stat);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_stat&& nested) noexcept {
         this->nested = std::move(nested);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     void set(ptr_stat_v&& stats) noexcept {
         this->stats = std::move(stats);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 5)
     void set(Token* end) noexcept {
         this->end = end;
@@ -705,49 +705,49 @@ public:
         return StatementID::FunctionDecl;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return name;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_expr&& get() noexcept {
         return std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     Token* get() noexcept {
         return right;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* name) noexcept {
         this->name = name;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* left) noexcept {
         this->left = left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_expr&& expr) noexcept {
         this->expr = std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     void set(Token* right) noexcept {
         this->right = right;
@@ -792,61 +792,61 @@ public:
         return StatementID::NestedFunctionDef;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     ptr_expr&& get() noexcept {
         return std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_stat&& get() noexcept {
         return std::move(stat);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     ptr_stat_v&& get() noexcept {
         return std::move(stats);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 5)
     Token* get() noexcept {
         return end;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* keyword) noexcept {
         this->keyword = keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(ptr_expr&& expr) noexcept {
         this->expr = std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_stat&& stat) noexcept {
         this->stat = std::move(stat);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     void set(ptr_stat_v&& stats) noexcept {
         this->stats = std::move(stats);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 5)
     void set(Token* end) noexcept {
         this->end = end;
@@ -890,49 +890,49 @@ public:
         return StatementID::NestedFunctionDecl;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     ptr_expr&& get() noexcept {
         return std::move(name);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_expr&& get() noexcept {
         return std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     Token* get() noexcept {
         return right;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(ptr_expr&& name) noexcept {
         this->name = std::move(name);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* left) noexcept {
         this->left = left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_expr&& expr) noexcept {
         this->expr = std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     void set(Token* right) noexcept {
         this->right = right;
@@ -975,49 +975,49 @@ public:
         return StatementID::NestedDecl;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_expr&& get() noexcept {
         return std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     Token* get() noexcept {
         return right;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* keyword) noexcept {
         this->keyword = keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* left) noexcept {
         this->left = left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_expr&& expr) noexcept {
         this->expr = std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     void set(Token* right) noexcept {
         this->right = right;
@@ -1058,37 +1058,37 @@ public:
         return StatementID::Return;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     ptr_expr&& get() noexcept {
         return std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     Token* get() noexcept {
         return end;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* keyword) noexcept {
         this->keyword = keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(ptr_expr&& expr) noexcept {
         this->expr = std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(Token* end) noexcept {
         this->end = end;
@@ -1126,25 +1126,25 @@ public:
         return StatementID::Break;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return end;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* keyword) noexcept {
         this->keyword = keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* end) noexcept {
         this->end = end;
@@ -1181,25 +1181,25 @@ public:
         return StatementID::Continue;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return end;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* keyword) noexcept {
         this->keyword = keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* end) noexcept {
         this->end = end;
@@ -1241,13 +1241,13 @@ public:
         return ExpressionID::Invalid;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     std::vector<Token*>&& get() noexcept {
         return std::move(tokens);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(std::vector<Token*>&& tokens) noexcept {
         this->tokens = std::move(tokens);
@@ -1302,13 +1302,13 @@ public:
         return ExpressionID::Literal;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* token) noexcept {
         this->token = token;
@@ -1346,13 +1346,13 @@ public:
         return ExpressionID::Identifier;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* token) noexcept {
         this->token = token;
@@ -1390,13 +1390,13 @@ public:
         return ExpressionID::Keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* token) noexcept {
         this->token = token;
@@ -1438,37 +1438,37 @@ public:
         return ExpressionID::Assignment;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     ptr_expr&& get() noexcept {
         return std::move(left);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_expr&& get() noexcept {
         return std::move(right);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(ptr_expr&& left) noexcept {
         this->left = std::move(left);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* token) noexcept {
         this->token = token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_expr&& right) noexcept {
         this->right = std::move(right);
@@ -1512,37 +1512,37 @@ public:
         return ExpressionID::Arithmetic;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     ptr_expr&& get() noexcept {
         return std::move(left);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_expr&& get() noexcept {
         return std::move(right);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(ptr_expr&& left) noexcept {
         this->left = std::move(left);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* token) noexcept {
         this->token = token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_expr&& right) noexcept {
         this->right = std::move(right);
@@ -1586,37 +1586,37 @@ public:
         return ExpressionID::Comparison;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     ptr_expr&& get() noexcept {
         return std::move(left);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_expr&& get() noexcept {
         return std::move(right);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(ptr_expr&& left) noexcept {
         this->left = std::move(left);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* token) noexcept {
         this->token = token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_expr&& right) noexcept {
         this->right = std::move(right);
@@ -1660,37 +1660,37 @@ public:
         return ExpressionID::Logical;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     ptr_expr&& get() noexcept {
         return std::move(left);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_expr&& get() noexcept {
         return std::move(right);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(ptr_expr&& left) noexcept {
         this->left = std::move(left);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* token) noexcept {
         this->token = token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_expr&& right) noexcept {
         this->right = std::move(right);
@@ -1732,25 +1732,25 @@ public:
         return ExpressionID::UnaryLogical;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     ptr_expr&& get() noexcept {
         return std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* token) noexcept {
         this->token = token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(ptr_expr&& expr) noexcept {
         this->expr = std::move(expr);
@@ -1795,49 +1795,49 @@ public:
         return ExpressionID::ReturnType;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     Token* get() noexcept {
         return type;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     Token* get() noexcept {
         return subtype;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* left) noexcept {
         this->left = left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* token) noexcept {
         this->token = token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(Token* type) noexcept {
         this->type = type;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     void set(Token* subtype) noexcept {
         this->subtype = subtype;
@@ -1884,49 +1884,49 @@ public:
         return ExpressionID::FunctionCall;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return name;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_expr&& get() noexcept {
         return std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     Token* get() noexcept {
         return right;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* name) noexcept {
         this->name = name;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* left) noexcept {
         this->left = left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_expr&& expr) noexcept {
         this->expr = std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     void set(Token* right) noexcept {
         this->right = right;
@@ -1971,37 +1971,37 @@ public:
         return ExpressionID::ForRange;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     ptr_expr&& get() noexcept {
         return std::move(left);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_expr&& get() noexcept {
         return std::move(right);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(ptr_expr&& left) noexcept {
         this->left = std::move(left);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* token) noexcept {
         this->token = token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_expr&& right) noexcept {
         this->right = std::move(right);
@@ -2045,37 +2045,37 @@ public:
         return ExpressionID::MemberAccess;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     ptr_expr&& get() noexcept {
         return std::move(left);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_expr&& get() noexcept {
         return std::move(right);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(ptr_expr&& left) noexcept {
         this->left = std::move(left);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* token) noexcept {
         this->token = token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_expr&& right) noexcept {
         this->right = std::move(right);
@@ -2121,49 +2121,49 @@ public:
         return ExpressionID::Error;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_expr&& get() noexcept {
         return std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     Token* get() noexcept {
         return right;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* keyword) noexcept {
         this->keyword = keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* left) noexcept {
         this->left = left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_expr&& expr) noexcept {
         this->expr = std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     void set(Token* right) noexcept {
         this->right = right;
@@ -2210,49 +2210,49 @@ public:
         return ExpressionID::Warning;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_expr&& get() noexcept {
         return std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     Token* get() noexcept {
         return right;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* keyword) noexcept {
         this->keyword = keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* left) noexcept {
         this->left = left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_expr&& expr) noexcept {
         this->expr = std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     void set(Token* right) noexcept {
         this->right = right;
@@ -2299,49 +2299,49 @@ public:
         return ExpressionID::Assert;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_expr&& get() noexcept {
         return std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     Token* get() noexcept {
         return right;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* keyword) noexcept {
         this->keyword = keyword;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* left) noexcept {
         this->left = left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_expr&& expr) noexcept {
         this->expr = std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     void set(Token* right) noexcept {
         this->right = right;
@@ -2388,49 +2388,49 @@ public:
         return ExpressionID::ArraySubscript;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     ptr_expr&& get() noexcept {
         return std::move(array);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_expr&& get() noexcept {
         return std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     Token* get() noexcept {
         return right;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(ptr_expr&& array) noexcept {
         this->array = std::move(array);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* left) noexcept {
         this->left = left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_expr&& expr) noexcept {
         this->expr = std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 4)
     void set(Token* right) noexcept {
         this->right = right;
@@ -2473,25 +2473,25 @@ public:
         return ExpressionID::PercentLiteral;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return value;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return right;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* value) noexcept {
         this->value = value;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* right) noexcept {
         this->right = right;
@@ -2534,37 +2534,37 @@ public:
         return ExpressionID::StringLiteral;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return value;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     Token* get() noexcept {
         return right;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* left) noexcept {
         this->left = left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* value) noexcept {
         this->value = value;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(Token* right) noexcept {
         this->right = right;
@@ -2608,37 +2608,37 @@ public:
         return ExpressionID::RangeLiteral;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     ptr_expr&& get() noexcept {
         return std::move(left);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_expr&& get() noexcept {
         return std::move(right);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(ptr_expr&& left) noexcept {
         this->left = std::move(left);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* token) noexcept {
         this->token = token;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_expr&& right) noexcept {
         this->right = std::move(right);
@@ -2682,37 +2682,37 @@ public:
         return ExpressionID::CoordLiteral;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     ptr_expr&& get() noexcept {
         return std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     Token* get() noexcept {
         return right;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* left) noexcept {
         this->left = left;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(ptr_expr&& expr) noexcept {
         this->expr = std::move(expr);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(Token* right) noexcept {
         this->right = right;
@@ -2756,37 +2756,37 @@ public:
         return ExpressionID::Separator;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     ptr_expr&& get() noexcept {
         return std::move(left);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return sep;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     ptr_expr&& get() noexcept {
         return std::move(right);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(ptr_expr&& left) noexcept {
         this->left = std::move(left);
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* sep) noexcept {
         this->sep = sep;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(ptr_expr&& right) noexcept {
         this->right = std::move(right);
@@ -2830,37 +2830,37 @@ public:
         return ExpressionID::DeclType;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     Token* get() noexcept {
         return type;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     Token* get() noexcept {
         return subtype;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     Token* get() noexcept {
         return name;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 1)
     void set(Token* type) noexcept {
         this->type = type;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 2)
     void set(Token* subtype) noexcept {
         this->subtype = subtype;
     }
 
-    template <uint32_t I>
+    template <u32 I>
     requires (I == 3)
     void set(Token* name) noexcept {
         this->name = name;

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -53,7 +53,7 @@ private:
         --m_scope;
     }
 
-    int32_t getScope() const noexcept {
+    i32 getScope() const noexcept {
         return m_scope;
     }
 
@@ -114,34 +114,34 @@ private:
     ptr_node convertRight(PTMemberAccessExpression& expression, NodeID id = NodeID::Null);
 
     template <typename T>
-    ptr_node convert(uint32_t line);
+    ptr_node convert(u32 line);
 
     template <typename T>
-    ptr_node convertName(std::string_view name, uint32_t line);
+    ptr_node convertName(std::string_view name, u32 line);
     template <typename T, typename ValT>
-    ptr_node convertValue(ValT value, uint32_t line);
+    ptr_node convertValue(ValT value, u32 line);
 
     template <typename T>
-    ptr_node convertUnaryExpression(ptr_node&& expr, uint32_t line);
+    ptr_node convertUnaryExpression(ptr_node&& expr, u32 line);
     template <typename T>
-    ptr_node convertBinaryExpression(ptr_node&& left, ptr_node&& right, uint32_t line);
+    ptr_node convertBinaryExpression(ptr_node&& left, ptr_node&& right, u32 line);
 
 private:
     ptr_node m_tree;
 
     std::vector<IASTNode*> m_currentNode;
-    int32_t m_scope;
+    i32 m_scope;
 };
 
 template <typename T>
-inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convert(uint32_t line) {
+inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convert(u32 line) {
     auto node = std::make_unique<T>();
     node->setLine(line);
     return node;
 }
 
 template <typename T>
-inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertName(std::string_view name, uint32_t line) {
+inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertName(std::string_view name, u32 line) {
     auto node = std::make_unique<T>();
     if constexpr (std::is_same_v<T, ASTFunctionIdentifierNode> || std::is_same_v<T, ASTNestedIdentifierNode> || std::is_same_v<T, ASTVariableNode>)
         node->setName(name);
@@ -152,7 +152,7 @@ inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertName(std::string_
 }
 
 template <typename T, typename ValT>
-inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertValue(ValT value, uint32_t line) {
+inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertValue(ValT value, u32 line) {
     auto node = std::make_unique<T>();
     node->setValue(value);
     node->setLine(line);
@@ -160,7 +160,7 @@ inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertValue(ValT value,
 }
 
 template <typename T>
-inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertUnaryExpression(ptr_node&& expr, uint32_t line) {
+inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertUnaryExpression(ptr_node&& expr, u32 line) {
     auto node = std::make_unique<T>();
     node->setExpr(std::move(expr));
     node->setLine(line);
@@ -168,7 +168,7 @@ inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertUnaryExpression(p
 }
 
 template <typename T>
-inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertBinaryExpression(ptr_node&& left, ptr_node&& right, uint32_t line) {
+inline AbstractSyntaxTree::ptr_node AbstractSyntaxTree::convertBinaryExpression(ptr_node&& left, ptr_node&& right, u32 line) {
     auto node = std::make_unique<T>();
     node->setLeft(std::move(left));
     node->setRight(std::move(right));

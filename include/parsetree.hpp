@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -67,35 +67,35 @@ private:
     ptr_stat getBreakStatementNode(TokenStream& tokenStream) const;
     ptr_stat getContinueStatementNode(TokenStream& tokenStream) const;
 
-    ptr_expr getExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const;
-    ptr_expr getArrayExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const;
-    ptr_expr getFunctionCallExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const;
-    ptr_expr getPercentLiteralExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const;
-    ptr_expr getCoordLiteralExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const;
-    ptr_expr getStringLiteralExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const;
-    ptr_expr getReturnTypeExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const;
-    ptr_expr getErrorExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const;
-    ptr_expr getWarningExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const;
-    ptr_expr getAssertExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const;
-    ptr_expr getDeclTypeExpressionNode(TokenStream& tokenStream, uint32_t beg, uint32_t end) const;
+    ptr_expr getExpressionNode(TokenStream& tokenStream, u32 beg, u32 end) const;
+    ptr_expr getArrayExpressionNode(TokenStream& tokenStream, u32 beg, u32 end) const;
+    ptr_expr getFunctionCallExpressionNode(TokenStream& tokenStream, u32 beg, u32 end) const;
+    ptr_expr getPercentLiteralExpressionNode(TokenStream& tokenStream, u32 beg, u32 end) const;
+    ptr_expr getCoordLiteralExpressionNode(TokenStream& tokenStream, u32 beg, u32 end) const;
+    ptr_expr getStringLiteralExpressionNode(TokenStream& tokenStream, u32 beg, u32 end) const;
+    ptr_expr getReturnTypeExpressionNode(TokenStream& tokenStream, u32 beg, u32 end) const;
+    ptr_expr getErrorExpressionNode(TokenStream& tokenStream, u32 beg, u32 end) const;
+    ptr_expr getWarningExpressionNode(TokenStream& tokenStream, u32 beg, u32 end) const;
+    ptr_expr getAssertExpressionNode(TokenStream& tokenStream, u32 beg, u32 end) const;
+    ptr_expr getDeclTypeExpressionNode(TokenStream& tokenStream, u32 beg, u32 end) const;
 
     template <typename NodeType>
-    ptr_expr getUnaryExpressionNode(TokenStream& tokenStream, Order order, uint32_t beg, uint32_t end, const std::vector<TokenH>& tokens) const;
+    ptr_expr getUnaryExpressionNode(TokenStream& tokenStream, Order order, u32 beg, u32 end, const std::vector<TokenH>& tokens) const;
     template <typename NodeType>
-    ptr_expr getBinaryExpressionNode(TokenStream& tokenStream, Order order, uint32_t beg, uint32_t end, const std::vector<TokenH>& tokens) const;
+    ptr_expr getBinaryExpressionNode(TokenStream& tokenStream, Order order, u32 beg, u32 end, const std::vector<TokenH>& tokens) const;
 
-    uint32_t findEnd(const TokenStream& tokenStream, uint32_t beg, const TokenH& t) const;
-    uint32_t findRange(const TokenStream& tokenStream, uint32_t beg, uint32_t end, const std::vector<TokenH>& tokens) const;
-    uint32_t findRange(const TokenStream& tokenStream, uint32_t beg, uint32_t end, int32_t cat) const;
-    uint32_t findLastRange(const TokenStream& tokenStream, int32_t beg, int32_t end, const std::vector<TokenH>& tokens) const;
+    u32 findEnd(const TokenStream& tokenStream, u32 beg, const TokenH& t) const;
+    u32 findRange(const TokenStream& tokenStream, u32 beg, u32 end, const std::vector<TokenH>& tokens) const;
+    u32 findRange(const TokenStream& tokenStream, u32 beg, u32 end, i32 cat) const;
+    u32 findLastRange(const TokenStream& tokenStream, i32 beg, i32 end, const std::vector<TokenH>& tokens) const;
 
 private:
     ptr_stat_v m_statements;
 };
 
 template <typename NodeType>
-ParseTree::ptr_expr ParseTree::getUnaryExpressionNode(TokenStream& tokenStream, Order order, uint32_t beg, uint32_t end, const std::vector<TokenH>& tokens) const {
-    uint32_t found;
+ParseTree::ptr_expr ParseTree::getUnaryExpressionNode(TokenStream& tokenStream, Order order, u32 beg, u32 end, const std::vector<TokenH>& tokens) const {
+    u32 found;
     if (order == Order::RightToLeft)
         found = findRange(tokenStream, beg, end, tokens);
     else
@@ -111,8 +111,8 @@ ParseTree::ptr_expr ParseTree::getUnaryExpressionNode(TokenStream& tokenStream, 
 }
 
 template <typename NodeType>
-ParseTree::ptr_expr ParseTree::getBinaryExpressionNode(TokenStream& tokenStream, Order order, uint32_t beg, uint32_t end, const std::vector<TokenH>& tokens) const {
-    uint32_t found;
+ParseTree::ptr_expr ParseTree::getBinaryExpressionNode(TokenStream& tokenStream, Order order, u32 beg, u32 end, const std::vector<TokenH>& tokens) const {
+    u32 found;
     if (order == Order::RightToLeft)
         found = findRange(tokenStream, beg, end, tokens);
     else

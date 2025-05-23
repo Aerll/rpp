@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -19,8 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 //
-#include <abstractsyntaxtree.hpp>
 #include <app.hpp>
+#include <abstractsyntaxtree.hpp>
 #include <automapper.hpp>
 #include <externalresource.hpp>
 #include <inputstream.hpp>
@@ -35,8 +35,6 @@
 
 #include <algorithm>
 #include <chrono>
-#include <cstdint>
-#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -45,41 +43,45 @@
 
 namespace {
 
-int64_t memory     = 0;
-int64_t max_memory = 0; // in bytes
+isize memory     = 0;
+isize max_memory = 0; // in bytes
 
 }
 
-void* operator new(std::size_t size) {
-    if (max_memory != 0 && memory + size > max_memory) {
-        int64_t tmp_max_memory = max_memory;
-        max_memory             = 0; // allow allocating beyond max_memory for the error
-        auto err               = std::overflow_error("Memory overflow");
-        max_memory             = tmp_max_memory;
+void* operator new(usize size) {
+    if (max_memory != 0 && memory + isize(size) > max_memory) {
+        isize tmp_max_memory = max_memory;
+
+        max_memory = 0; // allow allocating beyond max_memory for the error
+        auto err   = std::overflow_error("Memory overflow");
+        max_memory = tmp_max_memory;
+
         throw err;
     }
     memory += size;
     return std::malloc(size);
 }
 
-void* operator new[](std::size_t size) {
-    if (max_memory != 0 && memory + size > max_memory) {
-        int64_t tmp_max_memory = max_memory;
-        max_memory             = 0; // allow allocating beyond max_memory for the error
-        auto err               = std::overflow_error("Memory overflow");
-        max_memory             = tmp_max_memory;
+void* operator new[](usize size) {
+    if (max_memory != 0 && memory + isize(size) > max_memory) {
+        isize tmp_max_memory = max_memory;
+
+        max_memory = 0; // allow allocating beyond max_memory for the error
+        auto err   = std::overflow_error("Memory overflow");
+        max_memory = tmp_max_memory;
+
         throw err;
     }
     memory += size;
     return std::malloc(size);
 }
 
-void operator delete(void* data, std::size_t size) noexcept {
+void operator delete(void* data, usize size) noexcept {
     memory -= size;
     std::free(data);
 }
 
-void operator delete[](void* data, std::size_t size) noexcept {
+void operator delete[](void* data, usize size) noexcept {
     memory -= size;
     std::free(data);
 }
@@ -96,13 +98,16 @@ void operator delete[](void* data) noexcept {
     App
 */
 static void showHelp(const char* prog) {
-    std::cout << "Usage: " << prog << "[options] file...\n"
-              << "      --help               Display the help.\n"
-              << "  -o, --output <file>      Write to <file> (same as #output).\n"
-              << "  -i, --include <file>     A file to include (same as #include).\n"
-              << "  -m, --memory <megabytes> Memory limit in <megabytes> (same as #memory).\n"
-              << "  -p, --no-pause           Do not pause after execution.\n"
-              << "Options -o, -i, -m disable preprocessor stage. All directives will be ignored.\n";
+    std::cout
+        << "Usage: "
+        << prog
+        << "[options] file...\n"
+        << "      --help               Display the help.\n"
+        << "  -o, --output <file>      Write to <file> (same as #output).\n"
+        << "  -i, --include <file>     A file to include (same as #include).\n"
+        << "  -m, --memory <megabytes> Memory limit in <megabytes> (same as #memory).\n"
+        << "  -p, --no-pause           Do not pause after execution.\n"
+        << "Options -o, -i, -m disable preprocessor stage. All directives will be ignored.\n";
 }
 
 static void exitWithError(const char* prog, const char* err) {
@@ -111,10 +116,10 @@ static void exitWithError(const char* prog, const char* err) {
     std::exit(1);
 }
 
-CLI App::parseCLI(int argc, char** argv) {
+CLI App::parseCLI(i32 argc, char** argv) {
     CLI cli = {};
 
-    for (int i = 1; i < argc; ++i) {
+    for (i32 i = 1; i < argc; ++i) {
         std::string_view arg = argv[i];
 
         if (arg[0] == '-') {
@@ -170,7 +175,7 @@ CLI App::parseCLI(int argc, char** argv) {
     return cli;
 }
 
-int App::exec(int argc, char** argv) {
+i32 App::exec(i32 argc, char** argv) {
     CLI cli = parseCLI(argc, argv);
 
     try {
@@ -225,7 +230,7 @@ int App::exec(int argc, char** argv) {
         }
 
         auto end  = high_resolution_clock::now();
-        auto time = duration_cast<duration<double>>(end - beg).count();
+        auto time = duration_cast<duration<f64>>(end - beg).count();
 
         std::cout << "\n\n";
         std::cout << "Finished in: " << time << "s\n";

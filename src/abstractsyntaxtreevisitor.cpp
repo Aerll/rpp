@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -19,8 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 //
-#include <abstractsyntaxtree.hpp>
 #include <abstractsyntaxtreevisitor.hpp>
+#include <abstractsyntaxtree.hpp>
 
 #include <algorithm>
 
@@ -192,8 +192,10 @@ void ASTNodeParser::parse(ASTInsertNode* node) {
     if (node->getNode() != nullptr) {
         node->getNode()->accept(*this);
         if (node->getControl() == InsertC::InsertRulePosType) {
-            if (node->getNode()->id() == NodeID::Empty || node->getNode()->id() == NodeID::Full
-                || node->getNode()->id() == NodeID::Index || node->getNode()->id() == NodeID::NotIndex) {} // valid
+            if (node->getNode()->id() == NodeID::Empty
+                || node->getNode()->id() == NodeID::Full
+                || node->getNode()->id() == NodeID::Index
+                || node->getNode()->id() == NodeID::NotIndex) {} // valid
             else
                 error = std::make_unique<ErrInvalidPosType>(node->getLine());
         }
@@ -235,8 +237,7 @@ void ASTNodeParser::parse(ASTOpAssignNode* node) {
 void ASTNodeParser::parse(ASTOpAddNode* node) {
     std::unique_ptr<Error> error;
     if (node->getNodeType() == ValueType::Null)
-        error =
-            std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpAdd, node->getLine());
+        error = std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpAdd, node->getLine());
 
     if (error != nullptr)
         errors().push(std::move(error));
@@ -248,8 +249,7 @@ void ASTNodeParser::parse(ASTOpAddNode* node) {
 void ASTNodeParser::parse(ASTOpSubtractNode* node) {
     std::unique_ptr<Error> error;
     if (node->getNodeType() == ValueType::Null)
-        error =
-            std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpSubtract, node->getLine());
+        error = std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpSubtract, node->getLine());
 
     if (error != nullptr)
         errors().push(std::move(error));
@@ -261,8 +261,7 @@ void ASTNodeParser::parse(ASTOpSubtractNode* node) {
 void ASTNodeParser::parse(ASTOpMultiplyNode* node) {
     std::unique_ptr<Error> error;
     if (node->getNodeType() == ValueType::Null)
-        error =
-            std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpMultiply, node->getLine());
+        error = std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpMultiply, node->getLine());
 
     if (error != nullptr)
         errors().push(std::move(error));
@@ -274,8 +273,7 @@ void ASTNodeParser::parse(ASTOpMultiplyNode* node) {
 void ASTNodeParser::parse(ASTOpDivideNode* node) {
     std::unique_ptr<Error> error;
     if (node->getNodeType() == ValueType::Null)
-        error =
-            std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpDivide, node->getLine());
+        error = std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpDivide, node->getLine());
 
     if (error != nullptr)
         errors().push(std::move(error));
@@ -287,8 +285,7 @@ void ASTNodeParser::parse(ASTOpDivideNode* node) {
 void ASTNodeParser::parse(ASTOpEqualNode* node) {
     std::unique_ptr<Error> error;
     if (node->getNodeType() == ValueType::Null)
-        error =
-            std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpEqual, node->getLine());
+        error = std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpEqual, node->getLine());
 
     if (error != nullptr)
         errors().push(std::move(error));
@@ -300,8 +297,7 @@ void ASTNodeParser::parse(ASTOpEqualNode* node) {
 void ASTNodeParser::parse(ASTOpNotEqualNode* node) {
     std::unique_ptr<Error> error;
     if (node->getNodeType() == ValueType::Null)
-        error =
-            std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpNotEqual, node->getLine());
+        error = std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpNotEqual, node->getLine());
 
     if (error != nullptr)
         errors().push(std::move(error));
@@ -313,8 +309,7 @@ void ASTNodeParser::parse(ASTOpNotEqualNode* node) {
 void ASTNodeParser::parse(ASTOpGreaterThanNode* node) {
     std::unique_ptr<Error> error;
     if (node->getNodeType() == ValueType::Null)
-        error =
-            std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpGreaterThan, node->getLine());
+        error = std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpGreaterThan, node->getLine());
 
     if (error != nullptr)
         errors().push(std::move(error));
@@ -326,8 +321,7 @@ void ASTNodeParser::parse(ASTOpGreaterThanNode* node) {
 void ASTNodeParser::parse(ASTOpGreaterThanOrEqualNode* node) {
     std::unique_ptr<Error> error;
     if (node->getNodeType() == ValueType::Null)
-        error =
-            std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpGreaterThanOrEqual, node->getLine());
+        error = std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpGreaterThanOrEqual, node->getLine());
 
     if (error != nullptr)
         errors().push(std::move(error));
@@ -339,8 +333,7 @@ void ASTNodeParser::parse(ASTOpGreaterThanOrEqualNode* node) {
 void ASTNodeParser::parse(ASTOpLessThanNode* node) {
     std::unique_ptr<Error> error;
     if (node->getNodeType() == ValueType::Null)
-        error =
-            std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpLessThan, node->getLine());
+        error = std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpLessThan, node->getLine());
 
     if (error != nullptr)
         errors().push(std::move(error));
@@ -352,8 +345,7 @@ void ASTNodeParser::parse(ASTOpLessThanNode* node) {
 void ASTNodeParser::parse(ASTOpLessThanOrEqualNode* node) {
     std::unique_ptr<Error> error;
     if (node->getNodeType() == ValueType::Null)
-        error =
-            std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpLessThanOrEqual, node->getLine());
+        error = std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpLessThanOrEqual, node->getLine());
 
     if (error != nullptr)
         errors().push(std::move(error));
@@ -365,8 +357,7 @@ void ASTNodeParser::parse(ASTOpLessThanOrEqualNode* node) {
 void ASTNodeParser::parse(ASTOpAndNode* node) {
     std::unique_ptr<Error> error;
     if (node->getNodeType() == ValueType::Null)
-        error =
-            std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpAnd, node->getLine());
+        error = std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpAnd, node->getLine());
 
     if (error != nullptr)
         errors().push(std::move(error));
@@ -378,8 +369,7 @@ void ASTNodeParser::parse(ASTOpAndNode* node) {
 void ASTNodeParser::parse(ASTOpOrNode* node) {
     std::unique_ptr<Error> error;
     if (node->getNodeType() == ValueType::Null)
-        error =
-            std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpOr, node->getLine());
+        error = std::make_unique<ErrNoOperatorOverload>(node->getLeft()->getNodeType(), node->getRight()->getNodeType(), NodeID::OpOr, node->getLine());
 
     if (error != nullptr)
         errors().push(std::move(error));
@@ -403,9 +393,7 @@ void ASTNodeParser::parse(ASTOpNotNode* node) {
 void ASTNodeParser::parse(ASTOpRangeNode* node) {
     std::unique_ptr<Error> error;
     if (node->getLeft()->getNodeType() != ValueType::Int)
-        error = std::make_unique<ErrIncorrectValueType>(
-            node->getLeft()->getNodeType(), ValueType::Int, node->getLeft()->getLine()
-        );
+        error = std::make_unique<ErrIncorrectValueType>(node->getLeft()->getNodeType(), ValueType::Int, node->getLeft()->getLine());
     else if (node->getRight()->getNodeType() != ValueType::Int)
         error = std::make_unique<ErrIncorrectValueType>(
             node->getRight()->getNodeType(), ValueType::Int, node->getRight()->getLine()
@@ -418,9 +406,7 @@ void ASTNodeParser::parse(ASTOpRangeNode* node) {
 void ASTNodeParser::parse(ASTOpCoordNode* node) {
     std::unique_ptr<Error> error;
     if (node->getLeft()->getNodeType() != ValueType::Int)
-        error = std::make_unique<ErrIncorrectValueType>(
-            node->getLeft()->getNodeType(), ValueType::Int, node->getLeft()->getLine()
-        );
+        error = std::make_unique<ErrIncorrectValueType>(node->getLeft()->getNodeType(), ValueType::Int, node->getLeft()->getLine());
     else if (node->getRight()->getNodeType() != ValueType::Int)
         error = std::make_unique<ErrIncorrectValueType>(
             node->getRight()->getNodeType(), ValueType::Int, node->getRight()->getLine()
@@ -507,13 +493,9 @@ void ASTNodeParser::parse(ASTForRangeNode* node) {
     std::unique_ptr<Error> error;
     auto identifier = node->getDeclaration()->as<ASTDeclarationNode*>()->getIdentifier()->as<ASTIdentifierNode*>();
     if (identifier->getValue()->type() != ValueType::Int)
-        error = std::make_unique<ErrIncorrectValueType>(
-            identifier->getNodeType(), ValueType::Int, identifier->getLine()
-        );
+        error = std::make_unique<ErrIncorrectValueType>(identifier->getNodeType(), ValueType::Int, identifier->getLine());
     else if (node->getTo()->getNodeType() != ValueType::Int)
-        error = std::make_unique<ErrIncorrectValueType>(
-            node->getTo()->getNodeType(), ValueType::Int, identifier->getLine()
-        );
+        error = std::make_unique<ErrIncorrectValueType>(node->getTo()->getNodeType(), ValueType::Int, identifier->getLine());
 
     if (error != nullptr)
         errors().push(std::move(error));
@@ -528,9 +510,7 @@ void ASTNodeParser::parse(ASTArraySubscriptNode* node) {
     std::unique_ptr<Error> error;
 
     if (!Token::isArrayOrObject(node->getArray()->getNodeType()))
-        error = std::make_unique<ErrNoSubscriptOperator>(
-            node->getArray()->getNodeType(), node->getArray()->getLine()
-        );
+        error = std::make_unique<ErrNoSubscriptOperator>(node->getArray()->getNodeType(), node->getArray()->getLine());
     else if (node->getIndex()->getNodeType() != ValueType::Int)
         error = std::make_unique<ErrIncorrectValueType>(
             node->getIndex()->getNodeType(), ValueType::Int, node->getIndex()->getLine()
@@ -635,9 +615,7 @@ void ASTNodeParser::parse(ASTFunctionIdentifierNode* node) {
 void ASTNodeParser::parse(ASTFunctionNode* node) {
     std::unique_ptr<Error> error;
     if (node->getNodeType() != ValueType::Null && !node->getBranch()->hasNode(NodeID::Return))
-        error = std::make_unique<ErrMissingReturn>(
-            node->getIdentifier()->as<ASTFunctionIdentifierNode*>()->getName(), node->getLine()
-        );
+        error = std::make_unique<ErrMissingReturn>(node->getIdentifier()->as<ASTFunctionIdentifierNode*>()->getName(), node->getLine());
     else if (node->getNestedIdentifiers().empty() && node->getBranch()->hasNode(NodeID::InvokeNested))
         error = std::make_unique<ErrInvokeInvalidContext>(
             node->getBranch()->findNode({ NodeID::InvokeNested }, {}, true)->getLine()
@@ -660,8 +638,7 @@ void ASTNodeParser::parse(ASTNestedIdentifierNode* node) {
 void ASTNodeParser::parse(ASTNestedFunctionNode* node) {
     std::unique_ptr<Error> error;
     if (node->getNodeType() != ValueType::Null && !node->getBranch()->hasNode(NodeID::Return))
-        error =
-            std::make_unique<ErrMissingReturn>(node->getIdentifier()->as<ASTNestedIdentifierNode*>()->getName(), node->getLine());
+        error = std::make_unique<ErrMissingReturn>(node->getIdentifier()->as<ASTNestedIdentifierNode*>()->getName(), node->getLine());
     else if (node->getBranch()->hasNode(NodeID::InvokeNested))
         error = std::make_unique<ErrInvokeInvalidContext>(
             node->getBranch()->findNode({ NodeID::InvokeNested }, {}, true)->getLine()
@@ -823,8 +800,7 @@ void ASTNodeLinker::link(ASTVariableNode* node) {
         error = std::make_unique<ErrUndeclared>(node->getName(), node->getLine());
     else {
         auto identifier = node->getIdentifier()->as<ASTIdentifierNode*>();
-        if ((identifier->getValue() == nullptr) && (identifier->getType() != ValueType::Object)
-            && (identifier->getType() & ValueType::Array) == ValueType::Null)
+        if ((identifier->getValue() == nullptr) && (identifier->getType() != ValueType::Object) && (identifier->getType() & ValueType::Array) == ValueType::Null)
             error = std::make_unique<ErrUnassignedVariable>(node->getName(), node->getLine());
     }
 
@@ -921,11 +897,11 @@ void ASTNodeLinker::link(ASTRotationNode* node) {
     node->getNode()->accept(*this);
 
     std::unique_ptr<Error> error;
-    if (node->getNode()->getNodeType() != ValueType::Int && node->getNode()->getNodeType() != ValueType::Range
-        && node->getNode()->getNodeType() != ValueType::Coord && node->getNode()->getNodeType() != ValueType::Object)
-        error = std::make_unique<ErrNotAMemberOf>(
-            Token::rotationToString(node->getRotation()), node->getNode()->getNodeType(), node->getLine()
-        );
+    if (node->getNode()->getNodeType() != ValueType::Int
+        && node->getNode()->getNodeType() != ValueType::Range
+        && node->getNode()->getNodeType() != ValueType::Coord
+        && node->getNode()->getNodeType() != ValueType::Object)
+        error = std::make_unique<ErrNotAMemberOf>(Token::rotationToString(node->getRotation()), node->getNode()->getNodeType(), node->getLine());
 
     if (error != nullptr)
         errors().push(std::move(error));
@@ -1254,9 +1230,7 @@ void ASTNodeLinker::link(ASTHasCallNode* node) {
     std::unique_ptr<Error> error;
     if ((node->getArguments().size() == 1
          && ((node->getVariable()->getNodeType() ^ ValueType::Array) == signature.getTypes().front()
-             || Token::isConvertible(
-                 node->getVariable()->getNodeType() ^ ValueType::Array, signature.getTypes().front()
-             )))) {} // valid
+             || Token::isConvertible(node->getVariable()->getNodeType() ^ ValueType::Array, signature.getTypes().front())))) {} // valid
     else if (!Token::isArray(node->getVariable()->getNodeType()))
         error = std::make_unique<ErrNotAMemberOf>(std::string_view{ "has" }, node->getVariable()->getNodeType(), node->getLine());
     else
@@ -1481,9 +1455,7 @@ void ASTNodeLinker::link(ASTFunctionNode* node) {
         if (!node->getArguments().empty()) {
             std::vector<std::string> arguments;
             for (auto&& arg : node->getArguments())
-                arguments.push_back(
-                    arg->as<ASTDeclarationNode*>()->getIdentifier()->as<ASTIdentifierNode*>()->getName()
-                );
+                arguments.push_back(arg->as<ASTDeclarationNode*>()->getIdentifier()->as<ASTIdentifierNode*>()->getName());
 
             std::sort(arguments.begin(), arguments.end());
             auto duplicate = std::adjacent_find(arguments.begin(), arguments.end());
@@ -1511,8 +1483,7 @@ void ASTNodeLinker::link(ASTFunctionNode* node) {
             auto duplicate = std::adjacent_find(nestedIdentifiers.begin(), nestedIdentifiers.end());
             if (duplicate != nestedIdentifiers.end())
                 error = std::make_unique<ErrRedeclaration>(
-                    *duplicate, node->getNestedIdentifiers()[std::distance(nestedIdentifiers.begin(), duplicate)]
-                                    ->getLine()
+                    *duplicate, node->getNestedIdentifiers()[std::distance(nestedIdentifiers.begin(), duplicate)]->getLine()
                 );
         }
     }
@@ -1562,16 +1533,13 @@ void ASTNodeLinker::link(ASTNestedFunctionNode* node) {
                 function->getNested(identifier->getName())->as<ASTNestedIdentifierNode*>()->setNestedFunction(node);
         }
         else
-            error =
-                std::make_unique<ErrUndeclared>(functionIdentifier->getName(), functionIdentifier->getLine());
+            error = std::make_unique<ErrUndeclared>(functionIdentifier->getName(), functionIdentifier->getLine());
 
         if (error == nullptr) {
             if (!node->getArguments().empty()) {
                 std::vector<std::string> arguments;
                 for (auto&& arg : node->getArguments())
-                    arguments.push_back(
-                        arg->as<ASTDeclarationNode*>()->getIdentifier()->as<ASTIdentifierNode*>()->getName()
-                    );
+                    arguments.push_back(arg->as<ASTDeclarationNode*>()->getIdentifier()->as<ASTIdentifierNode*>()->getName());
 
                 std::sort(arguments.begin(), arguments.end());
                 auto duplicate = std::adjacent_find(arguments.begin(), arguments.end());
@@ -1608,7 +1576,7 @@ void ASTNodeLinker::link(ASTInvokeNestedNode* node) {
         node->getNextNode()->accept(*this);
 }
 
-std::unique_ptr<Error> ASTNodeParser::parseType(ValueType left, ValueType right, uint32_t line) const {
+std::unique_ptr<Error> ASTNodeParser::parseType(ValueType left, ValueType right, u32 line) const {
     if (right == ValueType::Null)
         return std::make_unique<ErrIncorrectValueType>(right, left, line);
     else if (right != left && !Token::isConvertible(right, left))
@@ -2027,36 +1995,27 @@ Value* ASTNodeEvaluator::evaluate(ASTOpEqualNode* node) {
         if (rightType == ValueType::Int)
             result = std::make_unique<BoolValue>(*left->as<IntValue*>() == *right->as<IntValue*>());
         else if (rightType == ValueType::Float)
-            result = std::make_unique<BoolValue>(
-                *cast(left, ValueType::Float)->as<FloatValue*>() == *right->as<FloatValue*>()
-            );
+            result = std::make_unique<BoolValue>(*cast(left, ValueType::Float)->as<FloatValue*>() == *right->as<FloatValue*>());
         else
-            result =
-                std::make_unique<BoolValue>(*left->as<IntValue*>() == *cast(right, ValueType::Int)->as<IntValue*>());
+            result = std::make_unique<BoolValue>(*left->as<IntValue*>() == *cast(right, ValueType::Int)->as<IntValue*>());
     }
     else if (leftType == ValueType::Range) {
         if (rightType == ValueType::Range)
             result = std::make_unique<BoolValue>(*left->as<RangeValue*>() == *right->as<RangeValue*>());
         else
-            result = std::make_unique<BoolValue>(
-                *left->as<RangeValue*>() == *cast(right, ValueType::Range)->as<RangeValue*>()
-            );
+            result = std::make_unique<BoolValue>(*left->as<RangeValue*>() == *cast(right, ValueType::Range)->as<RangeValue*>());
     }
     else if (leftType == ValueType::Coord) {
         if (rightType == ValueType::Coord)
             result = std::make_unique<BoolValue>(*left->as<CoordValue*>() == *right->as<CoordValue*>());
         else
-            result = std::make_unique<BoolValue>(
-                *left->as<CoordValue*>() == *cast(right, ValueType::Coord)->as<CoordValue*>()
-            );
+            result = std::make_unique<BoolValue>(*left->as<CoordValue*>() == *cast(right, ValueType::Coord)->as<CoordValue*>());
     }
     else if (leftType == ValueType::Float) {
         if (rightType == ValueType::Float)
             result = std::make_unique<BoolValue>(*left->as<FloatValue*>() == *right->as<FloatValue*>());
         else
-            result = std::make_unique<BoolValue>(
-                *left->as<FloatValue*>() == *cast(right, ValueType::Float)->as<FloatValue*>()
-            );
+            result = std::make_unique<BoolValue>(*left->as<FloatValue*>() == *cast(right, ValueType::Float)->as<FloatValue*>());
     }
     else if (leftType == ValueType::String)
         result = std::make_unique<BoolValue>(*left->as<StringValue*>() == *right->as<StringValue*>());
@@ -2064,9 +2023,7 @@ Value* ASTNodeEvaluator::evaluate(ASTOpEqualNode* node) {
         if (rightType == ValueType::Object)
             result = std::make_unique<BoolValue>(*left->as<ObjectValue*>() == *right->as<ObjectValue*>());
         else
-            result = std::make_unique<BoolValue>(
-                *left->as<ObjectValue*>() == *cast(right, ValueType::Object)->as<ObjectValue*>()
-            );
+            result = std::make_unique<BoolValue>(*left->as<ObjectValue*>() == *cast(right, ValueType::Object)->as<ObjectValue*>());
     }
     else if (leftType == ValueType::ArrayBool)
         result = std::make_unique<BoolValue>(*left->as<ArrayValue<BoolValue>*>() == *right->as<ArrayValue<BoolValue>*>());
@@ -2107,36 +2064,27 @@ Value* ASTNodeEvaluator::evaluate(ASTOpNotEqualNode* node) {
         if (rightType == ValueType::Int)
             result = std::make_unique<BoolValue>(*left->as<IntValue*>() != *right->as<IntValue*>());
         else if (rightType == ValueType::Float)
-            result = std::make_unique<BoolValue>(
-                *cast(left, ValueType::Float)->as<FloatValue*>() != *right->as<FloatValue*>()
-            );
+            result = std::make_unique<BoolValue>(*cast(left, ValueType::Float)->as<FloatValue*>() != *right->as<FloatValue*>());
         else
-            result =
-                std::make_unique<BoolValue>(*left->as<IntValue*>() != *cast(right, ValueType::Int)->as<IntValue*>());
+            result = std::make_unique<BoolValue>(*left->as<IntValue*>() != *cast(right, ValueType::Int)->as<IntValue*>());
     }
     else if (leftType == ValueType::Range) {
         if (rightType == ValueType::Range)
             result = std::make_unique<BoolValue>(*left->as<RangeValue*>() != *right->as<RangeValue*>());
         else
-            result = std::make_unique<BoolValue>(
-                *left->as<RangeValue*>() != *cast(right, ValueType::Range)->as<RangeValue*>()
-            );
+            result = std::make_unique<BoolValue>(*left->as<RangeValue*>() != *cast(right, ValueType::Range)->as<RangeValue*>());
     }
     else if (leftType == ValueType::Coord) {
         if (rightType == ValueType::Coord)
             result = std::make_unique<BoolValue>(*left->as<CoordValue*>() != *right->as<CoordValue*>());
         else
-            result = std::make_unique<BoolValue>(
-                *left->as<CoordValue*>() != *cast(right, ValueType::Coord)->as<CoordValue*>()
-            );
+            result = std::make_unique<BoolValue>(*left->as<CoordValue*>() != *cast(right, ValueType::Coord)->as<CoordValue*>());
     }
     else if (leftType == ValueType::Float) {
         if (rightType == ValueType::Float)
             result = std::make_unique<BoolValue>(*left->as<FloatValue*>() != *right->as<FloatValue*>());
         else
-            result = std::make_unique<BoolValue>(
-                *left->as<FloatValue*>() != *cast(right, ValueType::Float)->as<FloatValue*>()
-            );
+            result = std::make_unique<BoolValue>(*left->as<FloatValue*>() != *cast(right, ValueType::Float)->as<FloatValue*>());
     }
     else if (leftType == ValueType::String)
         result = std::make_unique<BoolValue>(*left->as<StringValue*>() != *right->as<StringValue*>());
@@ -2144,9 +2092,7 @@ Value* ASTNodeEvaluator::evaluate(ASTOpNotEqualNode* node) {
         if (rightType == ValueType::Object)
             result = std::make_unique<BoolValue>(*left->as<ObjectValue*>() != *right->as<ObjectValue*>());
         else
-            result = std::make_unique<BoolValue>(
-                *left->as<ObjectValue*>() != *cast(right, ValueType::Object)->as<ObjectValue*>()
-            );
+            result = std::make_unique<BoolValue>(*left->as<ObjectValue*>() != *cast(right, ValueType::Object)->as<ObjectValue*>());
     }
     else if (leftType == ValueType::ArrayBool)
         result = std::make_unique<BoolValue>(*left->as<ArrayValue<BoolValue>*>() != *right->as<ArrayValue<BoolValue>*>());
@@ -2183,17 +2129,13 @@ Value* ASTNodeEvaluator::evaluate(ASTOpGreaterThanNode* node) {
         if (right->type() == ValueType::Int)
             result = std::make_unique<BoolValue>(*left->as<IntValue*>() > *right->as<IntValue*>());
         else
-            result = std::make_unique<BoolValue>(
-                *cast(left, ValueType::Float)->as<FloatValue*>() > *right->as<FloatValue*>()
-            );
+            result = std::make_unique<BoolValue>(*cast(left, ValueType::Float)->as<FloatValue*>() > *right->as<FloatValue*>());
     }
     else {
         if (right->type() == ValueType::Float)
             result = std::make_unique<BoolValue>(*left->as<FloatValue*>() > *right->as<FloatValue*>());
         else
-            result = std::make_unique<BoolValue>(
-                *left->as<FloatValue*>() > *cast(right, ValueType::Float)->as<FloatValue*>()
-            );
+            result = std::make_unique<BoolValue>(*left->as<FloatValue*>() > *cast(right, ValueType::Float)->as<FloatValue*>());
     }
     _StackPop;
 
@@ -2214,17 +2156,13 @@ Value* ASTNodeEvaluator::evaluate(ASTOpGreaterThanOrEqualNode* node) {
         if (right->type() == ValueType::Int)
             result = std::make_unique<BoolValue>(*left->as<IntValue*>() >= *right->as<IntValue*>());
         else
-            result = std::make_unique<BoolValue>(
-                *cast(left, ValueType::Float)->as<FloatValue*>() >= *right->as<FloatValue*>()
-            );
+            result = std::make_unique<BoolValue>(*cast(left, ValueType::Float)->as<FloatValue*>() >= *right->as<FloatValue*>());
     }
     else {
         if (right->type() == ValueType::Float)
             result = std::make_unique<BoolValue>(*left->as<FloatValue*>() >= *right->as<FloatValue*>());
         else
-            result = std::make_unique<BoolValue>(
-                *left->as<FloatValue*>() >= *cast(right, ValueType::Float)->as<FloatValue*>()
-            );
+            result = std::make_unique<BoolValue>(*left->as<FloatValue*>() >= *cast(right, ValueType::Float)->as<FloatValue*>());
     }
     _StackPop;
 
@@ -2245,17 +2183,13 @@ Value* ASTNodeEvaluator::evaluate(ASTOpLessThanNode* node) {
         if (right->type() == ValueType::Int)
             result = std::make_unique<BoolValue>(*left->as<IntValue*>() < *right->as<IntValue*>());
         else
-            result = std::make_unique<BoolValue>(
-                *cast(left, ValueType::Float)->as<FloatValue*>() < *right->as<FloatValue*>()
-            );
+            result = std::make_unique<BoolValue>(*cast(left, ValueType::Float)->as<FloatValue*>() < *right->as<FloatValue*>());
     }
     else {
         if (right->type() == ValueType::Float)
             result = std::make_unique<BoolValue>(*left->as<FloatValue*>() < *right->as<FloatValue*>());
         else
-            result = std::make_unique<BoolValue>(
-                *left->as<FloatValue*>() < *cast(right, ValueType::Float)->as<FloatValue*>()
-            );
+            result = std::make_unique<BoolValue>(*left->as<FloatValue*>() < *cast(right, ValueType::Float)->as<FloatValue*>());
     }
     _StackPop;
 
@@ -2276,17 +2210,13 @@ Value* ASTNodeEvaluator::evaluate(ASTOpLessThanOrEqualNode* node) {
         if (right->type() == ValueType::Int)
             result = std::make_unique<BoolValue>(*left->as<IntValue*>() <= *right->as<IntValue*>());
         else
-            result = std::make_unique<BoolValue>(
-                *cast(left, ValueType::Float)->as<FloatValue*>() <= *right->as<FloatValue*>()
-            );
+            result = std::make_unique<BoolValue>(*cast(left, ValueType::Float)->as<FloatValue*>() <= *right->as<FloatValue*>());
     }
     else {
         if (right->type() == ValueType::Float)
             result = std::make_unique<BoolValue>(*left->as<FloatValue*>() <= *right->as<FloatValue*>());
         else
-            result = std::make_unique<BoolValue>(
-                *left->as<FloatValue*>() <= *cast(right, ValueType::Float)->as<FloatValue*>()
-            );
+            result = std::make_unique<BoolValue>(*left->as<FloatValue*>() <= *cast(right, ValueType::Float)->as<FloatValue*>());
     }
     _StackPop;
 
@@ -2364,8 +2294,7 @@ Value* ASTNodeEvaluator::evaluate(ASTOpRangeNode* node) {
     _BreakIfFailed;
 
     _TryEvaluateNextNodeAndClearStack;
-    ptr_value result =
-        std::make_unique<RangeValue>(left->as<IntValue*>()->value, right->as<IntValue*>()->value);
+    ptr_value result = std::make_unique<RangeValue>(left->as<IntValue*>()->value, right->as<IntValue*>()->value);
     _StackPop;
 
     _StackPush(result);
@@ -2380,8 +2309,7 @@ Value* ASTNodeEvaluator::evaluate(ASTOpCoordNode* node) {
     _BreakIfFailed;
 
     _TryEvaluateNextNodeAndClearStack;
-    ptr_value result =
-        std::make_unique<CoordValue>(left->as<IntValue*>()->value, right->as<IntValue*>()->value);
+    ptr_value result = std::make_unique<CoordValue>(left->as<IntValue*>()->value, right->as<IntValue*>()->value);
     _StackPop;
 
     _StackPush(result);
@@ -2456,13 +2384,11 @@ Value* ASTNodeEvaluator::evaluate(ASTForRangeNode* node) {
     node->getDeclaration()->accept(*this);
     _BreakIfFailed;
 
-    Value* forFrom =
-        node->getDeclaration()->as<ASTDeclarationNode*>()->getIdentifier()->as<ASTIdentifierNode*>()->getValue();
+    Value* forFrom = node->getDeclaration()->as<ASTDeclarationNode*>()->getIdentifier()->as<ASTIdentifierNode*>()->getValue();
     Value* forTo = node->getTo()->accept(*this);
     _BreakIfFailed;
 
-    ptr_value result =
-        std::make_unique<RangeValue>(forFrom->as<IntValue*>()->value, forTo->as<IntValue*>()->value);
+    ptr_value result = std::make_unique<RangeValue>(forFrom->as<IntValue*>()->value, forTo->as<IntValue*>()->value);
     _StackPop;
 
     _StackPush(result);
@@ -2482,7 +2408,7 @@ Value* ASTNodeEvaluator::evaluate(ASTArraySubscriptNode* node) {
 
 Value* ASTNodeEvaluator::evaluate(ASTPushCallNode* node) {
     _StackInit;
-    auto identifier = node->getVariable()->as<ASTVariableNode*>()->getIdentifier()->as<ASTIdentifierNode*>();
+    auto identifier     = node->getVariable()->as<ASTVariableNode*>()->getIdentifier()->as<ASTIdentifierNode*>();
     auto tempIdentifier = std::make_unique<ASTIdentifierNode>();
     tempIdentifier->setType(identifier->getType());
     tempIdentifier->setValue(identifier->getValue()->makeNew());
@@ -2513,8 +2439,7 @@ Value* ASTNodeEvaluator::evaluate(ASTPushCallNode* node) {
 
 Value* ASTNodeEvaluator::evaluate(ASTHasCallNode* node) {
     _StackInit;
-    auto identifierValue =
-        node->getVariable()->as<ASTVariableNode*>()->getIdentifier()->as<ASTIdentifierNode*>()->getValue();
+    auto identifierValue = node->getVariable()->as<ASTVariableNode*>()->getIdentifier()->as<ASTIdentifierNode*>()->getValue();
     auto value = node->getArguments().front()->accept(*this);
     _BreakIfFailed;
 
@@ -2524,26 +2449,19 @@ Value* ASTNodeEvaluator::evaluate(ASTHasCallNode* node) {
 
     ptr_value result;
     if (type == ValueType::ArrayBool)
-        result =
-            std::make_unique<BoolValue>(identifierValue->as<ArrayValue<BoolValue>*>()->has(*value->as<BoolValue*>()));
+        result = std::make_unique<BoolValue>(identifierValue->as<ArrayValue<BoolValue>*>()->has(*value->as<BoolValue*>()));
     else if (type == ValueType::ArrayInt)
-        result =
-            std::make_unique<BoolValue>(identifierValue->as<ArrayValue<IntValue>*>()->has(*value->as<IntValue*>()));
+        result = std::make_unique<BoolValue>(identifierValue->as<ArrayValue<IntValue>*>()->has(*value->as<IntValue*>()));
     else if (type == ValueType::ArrayRange)
-        result =
-            std::make_unique<BoolValue>(identifierValue->as<ArrayValue<RangeValue>*>()->has(*value->as<RangeValue*>()));
+        result = std::make_unique<BoolValue>(identifierValue->as<ArrayValue<RangeValue>*>()->has(*value->as<RangeValue*>()));
     else if (type == ValueType::ArrayCoord)
-        result =
-            std::make_unique<BoolValue>(identifierValue->as<ArrayValue<CoordValue>*>()->has(*value->as<CoordValue*>()));
+        result = std::make_unique<BoolValue>(identifierValue->as<ArrayValue<CoordValue>*>()->has(*value->as<CoordValue*>()));
     else if (type == ValueType::ArrayFloat)
-        result =
-            std::make_unique<BoolValue>(identifierValue->as<ArrayValue<FloatValue>*>()->has(*value->as<FloatValue*>()));
+        result = std::make_unique<BoolValue>(identifierValue->as<ArrayValue<FloatValue>*>()->has(*value->as<FloatValue*>()));
     else if (type == ValueType::ArrayString)
-        result =
-            std::make_unique<BoolValue>(identifierValue->as<ArrayValue<StringValue>*>()->has(*value->as<StringValue*>()));
+        result = std::make_unique<BoolValue>(identifierValue->as<ArrayValue<StringValue>*>()->has(*value->as<StringValue*>()));
     else
-        result =
-            std::make_unique<BoolValue>(identifierValue->as<ArrayValue<ObjectValue>*>()->has(*value->as<ObjectValue*>()));
+        result = std::make_unique<BoolValue>(identifierValue->as<ArrayValue<ObjectValue>*>()->has(*value->as<ObjectValue*>()));
 
     _StackPush(result);
     return _StackTop;
@@ -2586,7 +2504,7 @@ Value* ASTNodeEvaluator::evaluate(ASTNameCallNode* node) {
 
 Value* ASTNodeEvaluator::evaluate(ASTFindCallNode* node) {
     _StackInit;
-    auto identifier = node->getVariable()->as<ASTVariableNode*>()->getIdentifier()->as<ASTIdentifierNode*>();
+    auto identifier     = node->getVariable()->as<ASTVariableNode*>()->getIdentifier()->as<ASTIdentifierNode*>();
     auto tempIdentifier = std::make_unique<ASTIdentifierNode>();
     tempIdentifier->setType(identifier->getType());
     tempIdentifier->setValue(identifier->getValue()->makeNew());
@@ -2598,33 +2516,19 @@ Value* ASTNodeEvaluator::evaluate(ASTFindCallNode* node) {
     ptr_value result;
     ValueType type = value->type();
     if (type == ValueType::ArrayBool)
-        result = std::make_unique<IntValue>(
-            value->as<ArrayValue<BoolValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<BoolValue>*>())
-        );
+        result = std::make_unique<IntValue>(value->as<ArrayValue<BoolValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<BoolValue>*>()));
     else if (type == ValueType::ArrayInt)
-        result = std::make_unique<IntValue>(
-            value->as<ArrayValue<IntValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<IntValue>*>())
-        );
+        result = std::make_unique<IntValue>(value->as<ArrayValue<IntValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<IntValue>*>()));
     else if (type == ValueType::ArrayRange)
-        result = std::make_unique<IntValue>(
-            value->as<ArrayValue<RangeValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<RangeValue>*>())
-        );
+        result = std::make_unique<IntValue>(value->as<ArrayValue<RangeValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<RangeValue>*>()));
     else if (type == ValueType::ArrayCoord)
-        result = std::make_unique<IntValue>(
-            value->as<ArrayValue<CoordValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<CoordValue>*>())
-        );
+        result = std::make_unique<IntValue>(value->as<ArrayValue<CoordValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<CoordValue>*>()));
     else if (type == ValueType::ArrayFloat)
-        result = std::make_unique<IntValue>(
-            value->as<ArrayValue<FloatValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<FloatValue>*>())
-        );
+        result = std::make_unique<IntValue>(value->as<ArrayValue<FloatValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<FloatValue>*>()));
     else if (type == ValueType::ArrayString)
-        result = std::make_unique<IntValue>(
-            value->as<ArrayValue<StringValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<StringValue>*>())
-        );
+        result = std::make_unique<IntValue>(value->as<ArrayValue<StringValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<StringValue>*>()));
     else
-        result = std::make_unique<IntValue>(
-            value->as<ArrayValue<ObjectValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<ObjectValue>*>())
-        );
+        result = std::make_unique<IntValue>(value->as<ArrayValue<ObjectValue>*>()->find(tempIdentifier->getValue()->as<ArrayValue<ObjectValue>*>()));
 
     _TryEvaluateNextNodeAndClearStack;
 
@@ -2641,8 +2545,7 @@ Value* ASTNodeEvaluator::evaluate(ASTFunctionCallNode* node) {
 
     if (!function->getArguments().empty()) {
         if (function->getSignature()->isVariadic()) {
-            auto identifier =
-                function->getArguments().front()->as<ASTDeclarationNode*>()->getIdentifier()->as<ASTIdentifierNode*>();
+            auto identifier = function->getArguments().front()->as<ASTDeclarationNode*>()->getIdentifier()->as<ASTIdentifierNode*>();
             evaluateArgumentsVariadic(node->getArguments(), identifier);
             _BreakIfFailed;
         }
@@ -2673,8 +2576,7 @@ Value* ASTNodeEvaluator::evaluate(ASTNestedCallNode* node) {
 
     if (!nested->getArguments().empty()) {
         if (nested->getSignature()->isVariadic()) {
-            auto identifier =
-                nested->getArguments().front()->as<ASTDeclarationNode*>()->getIdentifier()->as<ASTIdentifierNode*>();
+            auto identifier = nested->getArguments().front()->as<ASTDeclarationNode*>()->getIdentifier()->as<ASTIdentifierNode*>();
             evaluateArgumentsVariadic(node->getArguments(), identifier);
             _BreakIfFailed;
         }
@@ -2700,12 +2602,12 @@ Value* ASTNodeEvaluator::evaluate(ASTForNode* node) {
     _StackInit;
     RangeValue* range = node->getRange()->accept(*this)->as<RangeValue*>();
     _BreakIfFailed;
-    int32_t from = range->from;
-    int32_t to   = range->to;
+    i32 from = range->from;
+    i32 to   = range->to;
 
     Value* result  = nullptr;
     bool increment = from <= to;
-    for (int32_t i = from; increment ? i <= to : i >= to;) {
+    for (i32 i = from; increment ? i <= to : i >= to;) {
         if (node->getBranch()->hasNextNode()) {
             result = node->getBranch()->getNextNode()->accept(*this);
             _BreakIfFailed;
@@ -2824,7 +2726,7 @@ ASTNodeEvaluator::ptr_value ASTNodeEvaluator::cast(Value* value, ValueType to) {
 }
 
 void ASTNodeEvaluator::evaluateArguments(const ptr_node_v& callArgs, ptr_node_v& defArgs) {
-    for (size_t i = 0; i < callArgs.size(); ++i) {
+    for (usize i = 0; i < callArgs.size(); ++i) {
         auto identifier = defArgs[i]->as<ASTDeclarationNode*>()->getIdentifier()->as<ASTIdentifierNode*>();
         identifier->setValue(cast(callArgs[i].get()->accept(*this), identifier->getNodeType()));
         _BreakIfFailedVoid;
@@ -2860,7 +2762,7 @@ void ASTNodeEvaluator::evaluateArgumentsVariadic(const ptr_node_v& callArgs, AST
                 RangeValue* range = value->as<RangeValue*>();
 
                 bool increment = range->from <= range->to;
-                for (int32_t i = range->from; increment ? i <= range->to : i >= range->to; increment ? ++i : --i)
+                for (i32 i = range->from; increment ? i <= range->to : i >= range->to; increment ? ++i : --i)
                     array->value.push_back({ i, range->rotation });
             }
             else if (value->type() == ValueType::Coord)
@@ -2992,7 +2894,7 @@ void ASTNodeEvaluator::rotate(Value* value, Rotation rotation) const {
     }
 }
 
-void ASTNodeEvaluator::insertPosType(uint32_t line, NodeID id) {
+void ASTNodeEvaluator::insertPosType(u32 line, NodeID id) {
     if (automappers().empty())
         printError("Cannot evaluate 'insert.rule.pos.type'. No automapper found.", line);
     else if (automappers().back().runs.empty())
@@ -3013,7 +2915,7 @@ void ASTNodeEvaluator::insertPosType(uint32_t line, NodeID id) {
     }
 }
 
-void ASTNodeEvaluator::insert(InsertC control, Value* value, uint32_t line) {
+void ASTNodeEvaluator::insert(InsertC control, Value* value, u32 line) {
     if (control == InsertC::InsertAutomapper) {
         AutoMapper automapper;
         automapper.name = value->as<StringValue*>()->value;
@@ -3067,8 +2969,7 @@ void ASTNodeEvaluator::insert(InsertC control, Value* value, uint32_t line) {
             if (value->type() == ValueType::Float)
                 automappers().back().runs.back().rules.back().random = value->as<FloatValue*>()->value;
             else
-                automappers().back().runs.back().rules.back().random =
-                    cast(value, ValueType::Float)->as<FloatValue*>()->value;
+                automappers().back().runs.back().rules.back().random = cast(value, ValueType::Float)->as<FloatValue*>()->value;
         }
     }
     else if (control == InsertC::InsertRulePos) {
@@ -3126,7 +3027,7 @@ void ASTNodeEvaluator::insert(InsertC control, Value* value, uint32_t line) {
         else if (automappers().back().runs.back().rules.back().posRules.empty())
             printError("Cannot evaluate 'insert.rule.pos.operator'. No posrule found.", line);
         else {
-            int32_t op = value->as<IntValue*>()->value;
+            i32 op = value->as<IntValue*>()->value;
             if (op != util::enum_i32(Op::And) && op != util::enum_i32(Op::Or))
                 printError("Invalid value for 'insert.rule.pos.operator', must be either 0 or 1.", line);
             else
@@ -3143,7 +3044,7 @@ void ASTNodeEvaluator::insert(InsertC control, Value* value, uint32_t line) {
         else if (automappers().back().runs.back().rules.back().posRules.empty())
             printError("Cannot evaluate 'insert.rule.pos.group'. No posrule found.", line);
         else {
-            int32_t group = value->as<IntValue*>()->value;
+            i32 group                                                       = value->as<IntValue*>()->value;
             automappers().back().runs.back().rules.back().posRules.back().group = group;
         }
     }
@@ -3174,7 +3075,7 @@ void ASTNodeEvaluator::insert(InsertC control, Value* value, uint32_t line) {
     }
 }
 
-void ASTNodeEvaluator::printError(std::string_view message, uint32_t line) {
+void ASTNodeEvaluator::printError(std::string_view message, u32 line) {
     m_failed = true;
     errorOutput::print::string("> ");
     errorOutput::print::string(std::to_string(line));
@@ -3185,7 +3086,7 @@ void ASTNodeEvaluator::printError(std::string_view message, uint32_t line) {
     errorOutput::print::newLine();
 }
 
-void ASTNodeEvaluator::printWarning(std::string_view message, uint32_t line) {
+void ASTNodeEvaluator::printWarning(std::string_view message, u32 line) {
     m_warnings = true;
     errorOutput::print::string("> ");
     errorOutput::print::string(std::to_string(line));
@@ -3194,7 +3095,7 @@ void ASTNodeEvaluator::printWarning(std::string_view message, uint32_t line) {
     errorOutput::print::newLine();
 }
 
-void ASTNodeEvaluator::printAssert(uint32_t line) {
+void ASTNodeEvaluator::printAssert(u32 line) {
     m_failed = true;
     errorOutput::print::string("> ");
     errorOutput::print::string(std::to_string(line));
@@ -3326,7 +3227,7 @@ IASTNode* ASTNullNode::getNodeByName(std::string_view name, NodeID id) {
         if (prev->id() == NodeID::For) {
             if (id == NodeID::Identifier) {
                 auto declaration = prev->as<ASTForNode*>()->getRange()->as<ASTForRangeNode*>()->getDeclaration();
-                auto node = declaration->getNodeByName(name, id);
+                auto node        = declaration->getNodeByName(name, id);
                 if (node != nullptr)
                     return node;
             }
@@ -4200,8 +4101,7 @@ bool ASTFunctionNode::isDeclared(std::string_view name, NodeID id, IASTNode* cal
         auto callerFunction = caller->as<ASTFunctionNode*>();
         if (identifier->getName() == name && getSignature()->isSame(signature))
             return true;
-        if (identifier->getName() == name && !getNestedIdentifiers().empty()
-            && !callerFunction->getNestedIdentifiers().empty())
+        if (identifier->getName() == name && !getNestedIdentifiers().empty() && !callerFunction->getNestedIdentifiers().empty())
             return true;
     }
 
@@ -4284,8 +4184,7 @@ IASTNode* ASTFunctionNode::getConvertibleNodeBySignature(std::string_view name, 
 IASTNode* ASTFunctionNode::getVariadicConvertibleNodeBySignature(std::string_view name, NodeID id, const Signature& signature, std::string_view functionName) {
     if (id == NodeID::Function) {
         auto functionSignature = getSignature();
-        if (functionSignature->getTypes().size() == 1
-            && Token::isArray(functionSignature->getTypes().front())) {
+        if (functionSignature->getTypes().size() == 1 && Token::isArray(functionSignature->getTypes().front())) {
             auto identifier = static_cast<ASTFunctionIdentifierNode*>(getIdentifier());
             if (identifier->getName() == name && functionSignature->isVariadicConvertible(signature))
                 return this;
@@ -4341,10 +4240,8 @@ bool ASTNestedFunctionNode::isDeclared(std::string_view name, NodeID id, IASTNod
     if (id == NodeID::NestedFunction && this != caller) {
         auto identifier         = static_cast<ASTNestedIdentifierNode*>(getIdentifier());
         auto functionIdentifier = static_cast<ASTFunctionIdentifierNode*>(getFunctionIdentifier());
-        auto callerFunctionIdentifier =
-            caller->as<ASTNestedFunctionNode*>()->getFunctionIdentifier()->as<ASTFunctionIdentifierNode*>();
-        if (identifier->getName() == name
-            && functionIdentifier->getName() == callerFunctionIdentifier->getName())
+        auto callerFunctionIdentifier = caller->as<ASTNestedFunctionNode*>()->getFunctionIdentifier()->as<ASTFunctionIdentifierNode*>();
+        if (identifier->getName() == name && functionIdentifier->getName() == callerFunctionIdentifier->getName())
             return true;
     }
 
@@ -4404,8 +4301,7 @@ IASTNode* ASTNestedFunctionNode::getNodeBySignature(std::string_view name, NodeI
     if (id == NodeID::NestedFunction) {
         auto identifier         = static_cast<ASTNestedIdentifierNode*>(getIdentifier());
         auto functionIdentifier = static_cast<ASTFunctionIdentifierNode*>(getFunctionIdentifier());
-        if (identifier->getName() == name && functionIdentifier->getName() == functionName
-            && getSignature()->isSame(signature))
+        if (identifier->getName() == name && functionIdentifier->getName() == functionName && getSignature()->isSame(signature))
             return this;
     }
 
@@ -4418,8 +4314,7 @@ IASTNode* ASTNestedFunctionNode::getConvertibleNodeBySignature(std::string_view 
     if (id == NodeID::NestedFunction) {
         auto identifier         = static_cast<ASTNestedIdentifierNode*>(getIdentifier());
         auto functionIdentifier = static_cast<ASTFunctionIdentifierNode*>(getFunctionIdentifier());
-        if (identifier->getName() == name && functionIdentifier->getName() == functionName
-            && getSignature()->isConvertible(signature))
+        if (identifier->getName() == name && functionIdentifier->getName() == functionName && getSignature()->isConvertible(signature))
             return this;
     }
 
@@ -4432,10 +4327,9 @@ IASTNode* ASTNestedFunctionNode::getVariadicConvertibleNodeBySignature(std::stri
     if (id == NodeID::NestedFunction) {
         auto nestedSignature = getSignature();
         if (nestedSignature->getTypes().size() == 1 && Token::isArray(nestedSignature->getTypes().front())) {
-            auto identifier = static_cast<ASTNestedIdentifierNode*>(getIdentifier());
+            auto identifier         = static_cast<ASTNestedIdentifierNode*>(getIdentifier());
             auto functionIdentifier = static_cast<ASTFunctionIdentifierNode*>(getFunctionIdentifier());
-            if (identifier->getName() == name && functionIdentifier->getName() == functionName
-                && nestedSignature->isVariadicConvertible(signature))
+            if (identifier->getName() == name && functionIdentifier->getName() == functionName && nestedSignature->isVariadicConvertible(signature))
                 return this;
         }
     }

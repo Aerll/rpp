@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -52,7 +52,7 @@ enum class ValueType {
     Float  = 1 << 4,
     String = 1 << 5,
     Object = 1 << 6,
-    Array  = 1 << 7, // array needs to have subtype
+    Array  = 1 << 7, // array needs to have a subtype
 
     ArrayBool   = Array | Bool,
     ArrayInt    = Array | Int,

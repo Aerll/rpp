@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -30,8 +30,8 @@ bool Signature::isSame(const Signature& call) const {
 }
 
 bool Signature::isConvertible(const Signature& call) const {
-    uint32_t i = 0;
-    uint32_t j = 0;
+    u32 i = 0;
+    u32 j = 0;
 
     if (m_types.size() != call.m_types.size())
         return false;
@@ -52,8 +52,8 @@ bool Signature::isConvertible(const Signature& call) const {
 }
 
 bool Signature::isVariadicConvertible(const Signature& call) const {
-    uint32_t i = 0;
-    uint32_t j = 0;
+    u32 i = 0;
+    u32 j = 0;
 
     for (; i < m_types.size(); ++i) {
         if (j == call.m_types.size())

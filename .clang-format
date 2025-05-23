@@ -1,3 +1,4 @@
+# clang-format 20
 Language: Cpp
 
 AccessModifierOffset: -4
@@ -31,17 +32,17 @@ AlignTrailingComments:
     OverEmptyLines: 0
 AllowAllArgumentsOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
-# AllowBreakBeforeNoexceptSpecifier: OnlyWithParen # [clang-format 18.0]
+AllowBreakBeforeNoexceptSpecifier: Never
 AllowShortBlocksOnASingleLine: Empty
 AllowShortCaseLabelsOnASingleLine: true
+AllowShortCompoundRequirementOnASingleLine: true
 AllowShortEnumsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLambdasOnASingleLine: Empty
 AllowShortLoopsOnASingleLine: false
-AlwaysBreakAfterReturnType: None
+AllowShortNamespacesOnASingleLine: false
 AlwaysBreakBeforeMultilineStrings: false
-AlwaysBreakTemplateDeclarations: Yes
 AttributeMacros: []
 BinPackArguments: true
 BinPackParameters: true
@@ -65,16 +66,21 @@ BraceWrapping:
     SplitEmptyRecord: false
     SplitEmptyNamespace: false
 BracedInitializerIndentWidth: 4
+BreakAdjacentStringLiterals: false
 BreakAfterAttributes: Never
+BreakAfterReturnType: Automatic
 BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: Custom
 BreakBeforeConceptDeclarations: Always
 BreakBeforeInlineASMColon: OnlyMultiline
 BreakBeforeTernaryOperators: true
+BreakBinaryOperations: RespectPrecedence
 BreakConstructorInitializers: BeforeComma
+BreakFunctionDefinitionParameters: false
 BreakInheritanceList: BeforeComma
 BreakStringLiterals: false
-ColumnLimit: 100
+BreakTemplateDeclarations: Yes
+ColumnLimit: 120
 # CommentPragmas: []
 CompactNamespaces: false
 ConstructorInitializerIndentWidth: 4
@@ -88,17 +94,14 @@ ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: false
 ForEachMacros: []
 IfMacros: []
-IncludeBlocks: Regroup
-IncludeCategories:
-  - Regex: '<*.hpp'
-    Priority: 0
-  - Regex: '<*'
-    Priority: 1
+IncludeBlocks: Preserve
+# IncludeCategories:
 # IncludeIsMainRegex: 
 # IncludeIsMainSourceRegex: 
 IndentAccessModifiers: false
 IndentCaseBlocks: false
 IndentCaseLabels: true
+IndentExportBlock: false
 IndentExternBlock: NoIndent
 IndentGotoLabels: true
 IndentPPDirectives: BeforeHash
@@ -113,23 +116,29 @@ IntegerLiteralSeparator:
     Decimal: -1
     DecimalMinDigits: -1
     Hex: -1
-KeepEmptyLinesAtEOF: false
-KeepEmptyLinesAtTheStartOfBlocks: false
+KeepEmptyLines:
+    AtEndOfFile: true
+    AtStartOfBlock: false
+    AtStartOfFile: false
+KeepFormFeed: false
 LambdaBodyIndentation: Signature
 LineEnding: LF
 # MacroBlockBegin:
 # MacroBlockEnd:
 # Macros: []
+MainIncludeChar: AngleBracket
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None
 # NamespaceMacros: []
 PPIndentWidth: -1
 PackConstructorInitializers: Never
-PenaltyBreakAssignment: 0
+PenaltyBreakAssignment: 100
 PenaltyBreakBeforeFirstCallParameter: 0
+PenaltyBreakBeforeMemberAccess: 100
 PenaltyBreakComment: 0
 PenaltyBreakFirstLessLess: 0
 PenaltyBreakOpenParenthesis: 0
+PenaltyBreakScopeResolution: 100
 PenaltyBreakString: 0
 PenaltyBreakTemplateDeclaration: 0
 PenaltyExcessCharacter: 0
@@ -142,12 +151,14 @@ QualifierOrder: ['friend', 'static', 'inline', 'constexpr', 'const', 'volatile',
 ReferenceAlignment: Left
 ReflowComments: true
 RemoveBracesLLVM: false
+RemoveEmptyLinesInUnwrappedLines: true
 RemoveParentheses: Leave
 RemoveSemicolon: false
 RequiresClausePosition: OwnLine
 RequiresExpressionIndentation: OuterScope
 SeparateDefinitionBlocks: Always
 ShortNamespaceLines: 0
+SkipMacroDefinitionBody: false
 SortIncludes: CaseInsensitive
 SortUsingDeclarations: Lexicographic
 SpaceAfterCStyleCast: false
@@ -167,6 +178,7 @@ SpaceBeforeParensOptions:
     AfterFunctionDefinitionName: false
     AfterIfMacros: false
     AfterOverloadedOperator: false
+    AfterPlacementOperator: false
     AfterRequiresInClause: true
     AfterRequiresInExpression: true
     BeforeNonEmptyParentheses: false
@@ -190,7 +202,10 @@ Standard: c++20
 # StatementAttributeLikeMacros: []
 # StatementMacros: []
 TabWidth: 4
+# TemplateNames: []
 TypeNames: ['f32', 'f64', 'i8', 'i16', 'i32', 'i64', 'u8', 'u16', 'u32', 'u64', 'isize', 'usize', 'iptr', 'uptr']
 # TypenameMacros: []
 UseTab: Never
+# VariableTemplates: []
 # WhitespaceSensitiveMacros: []
+WrapNamespaceBodyWithEmptyLines: Always

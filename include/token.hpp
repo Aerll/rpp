@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -38,7 +38,7 @@ public:
     Token& operator=(const Token&) = default;
     Token& operator=(Token&&)      = default;
 
-    Token(int32_t cat, std::string_view value = {}, uint32_t line = {}, ValueType type = {})
+    Token(i32 cat, std::string_view value = {}, u32 line = {}, ValueType type = {})
         : value(value)
         , line(line)
         , type(type)
@@ -98,9 +98,9 @@ public:
 
 public:
     std::string value;
-    uint32_t line;
+    u32 line;
     ValueType type;
-    int32_t cat;
+    i32 cat;
 };
 
 #endif // RPP_TOKEN_HPP

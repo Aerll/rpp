@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -51,15 +51,15 @@ protected:
         m_count = 0;
     }
 
-    uint32_t totalCount() const noexcept {
+    u32 totalCount() const noexcept {
         return m_count;
     }
 
-    void printErrors(uint32_t lineWidth);
+    void printErrors(u32 lineWidth);
 
 protected:
     std::queue<std::unique_ptr<Error>> m_errors;
-    uint32_t m_count = 0;
+    u32 m_count = 0;
 };
 
 #endif // RPP_ERRORQUEUE_HPP

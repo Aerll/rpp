@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -22,7 +22,8 @@
 #ifndef RPP_RULESGEN_HPP
 #define RPP_RULESGEN_HPP
 
-#include <cstdint>
+#include <aliases.hpp>
+
 #include <filesystem>
 #include <fstream>
 #include <vector>
@@ -41,7 +42,7 @@ public:
         return m_fileSize;
     }
 
-    uint32_t lineCount() const noexcept {
+    u32 lineCount() const noexcept {
         return m_lineCount;
     }
 
@@ -55,7 +56,7 @@ private:
 
 private:
     std::streamoff m_fileSize = 0;
-    uint32_t m_lineCount      = 1;
+    u32 m_lineCount      = 1;
 };
 
 class Combinator final {

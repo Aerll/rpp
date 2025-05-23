@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -41,7 +41,7 @@ public:
     }
 
 private:
-    uint64_t numberOfPuncAndOp(InputStream& inputStream) const noexcept;
+    usize numberOfPuncAndOp(InputStream& inputStream) const noexcept;
 
     Token nextToken(InputStream& inputStream);
     Token getNewToken(InputStream& inputStream);
@@ -103,7 +103,7 @@ private:
 
 private:
     std::vector<Token> m_data;
-    uint32_t m_line;
+    u32 m_line;
     bool m_enclosed;    // if literal is enclosed
     bool m_subtraction; // if '-' should be treated as subtraction
     bool m_ignoreLine;

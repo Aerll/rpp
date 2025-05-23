@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -22,8 +22,9 @@
 #ifndef RPP_UTILITY_HPP
 #define RPP_UTILITY_HPP
 
+#include <aliases.hpp>
+
 #include <algorithm>
-#include <cstdint>
 #include <type_traits>
 
 enum class Rotation;
@@ -41,8 +42,8 @@ constexpr bool enum_b(EnumType val) noexcept {
 }
 
 template <_Enum EnumType>
-constexpr int32_t enum_i32(EnumType val) noexcept {
-    return static_cast<int32_t>(val);
+constexpr i32 enum_i32(EnumType val) noexcept {
+    return static_cast<i32>(val);
 }
 
 template <_Enum EnumType>
@@ -51,11 +52,11 @@ constexpr EnumType b_enum(bool val) noexcept {
 }
 
 template <_Enum EnumType>
-constexpr EnumType i32_enum(int32_t val) noexcept {
+constexpr EnumType i32_enum(i32 val) noexcept {
     return static_cast<EnumType>(val);
 }
 
-inline uint32_t digitsCount(uint32_t val) noexcept {
+inline u32 digitsCount(u32 val) noexcept {
     if (val < 10u)
         return 1;
     if (val < 100u)
@@ -75,7 +76,7 @@ inline uint32_t digitsCount(uint32_t val) noexcept {
     if (val < 1000000000u)
         return 9;
     else
-        return 10; // maximum value for an uint32_t is 2^32-1 = 4294967295 (10 digits)
+        return 10; // maximum value for u32 is 2^32-1 = 4294967295 (10 digits)
 }
 
 template <typename Iterator>
@@ -97,6 +98,6 @@ bool contains(Iterator first, Iterator last, const Type& value) {
     return std::find(first, last, value) != last;
 }
 
-} // namespace util
+}
 
 #endif // RPP_UTILITY_HPP

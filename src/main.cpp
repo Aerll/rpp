@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -21,6 +21,6 @@
 //
 #include <app.hpp>
 
-int main(int argc, char** argv) {
+i32 main(i32 argc, char** argv) {
     return App::exec(argc, argv);
 }

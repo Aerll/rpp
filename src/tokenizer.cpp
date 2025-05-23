@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -19,8 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 //
-#include <inputstream.hpp>
 #include <tokenizer.hpp>
+#include <inputstream.hpp>
 #include <tokenliterals.hpp>
 
 /*
@@ -53,8 +53,8 @@ void Tokenizer::run(InputStream& inputStream, bool ignoreLine) {
     }
 }
 
-uint64_t Tokenizer::numberOfPuncAndOp(InputStream& inputStream) const noexcept {
-    uint64_t count = 0;
+usize Tokenizer::numberOfPuncAndOp(InputStream& inputStream) const noexcept {
+    usize count = 0;
 
     bool oneLineComment   = false;
     bool multiLineComment = false;
@@ -204,13 +204,11 @@ void Tokenizer::setValue(InputStream& inputStream, Token& t) {
                 ensureValid(t);
                 m_subtraction = true;
             }
-            else if (
-                isOpReturnType(c, inputStream.current()) ||
-                isOpEqual(c, inputStream.current()) ||
-                isOpNotEqual(c, inputStream.current()) ||
-                isOpGreaterOrEqual(c, inputStream.current()) ||
-                isOpLessOrEqual(c, inputStream.current())
-                ) {
+            else if (isOpReturnType(c, inputStream.current())
+                     || isOpEqual(c, inputStream.current())
+                     || isOpNotEqual(c, inputStream.current())
+                     || isOpGreaterOrEqual(c, inputStream.current())
+                     || isOpLessOrEqual(c, inputStream.current())) {
                 t.value += inputStream.next();
                 m_subtraction = false;
             }

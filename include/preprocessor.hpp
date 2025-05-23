@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -58,7 +58,7 @@ public:
         return m_output;
     }
 
-    int64_t memory() const noexcept {
+    isize memory() const noexcept {
         return m_memory;
     }
 
@@ -71,7 +71,7 @@ private:
     iterator m_curr;
 
     std::filesystem::path m_output;
-    int64_t m_memory;
+    isize m_memory;
 };
 
 #endif // RPP_PREPROCESSOR_HPP

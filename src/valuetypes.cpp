@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -27,7 +27,7 @@
     IntValue
 */
 FloatValue IntValue::toFloat() const noexcept {
-    return { static_cast<float>(value) };
+    return { static_cast<f32>(value) };
 }
 
 CoordValue IntValue::toCoord() const noexcept {
@@ -40,7 +40,7 @@ CoordValue IntValue::toCoord() const noexcept {
 ObjectValue RangeValue::toObject() const {
     ObjectValue object;
     bool increment = from <= to;
-    for (int32_t i = from; increment ? i <= to : i >= to; increment ? ++i : --i)
+    for (i32 i = from; increment ? i <= to : i >= to; increment ? ++i : --i)
         object.value.push_back({ i, rotation });
     object.rotation = rotation == Rotation::Default ? Rotation::N : rotation;
     object.update();
@@ -58,7 +58,7 @@ IntValue CoordValue::toInt() const noexcept {
     FloatValue
 */
 IntValue FloatValue::toInt() const noexcept {
-    return { static_cast<int32_t>(value) };
+    return { static_cast<i32>(value) };
 }
 
 /*
@@ -78,8 +78,8 @@ void ObjectValue::update(bool sort) {
         value.erase(std::unique(value.begin(), value.end()), value.end());
     }
 
-    last.value  = static_cast<int32_t>(value.size()) - 1;
-    count.value = static_cast<int32_t>(value.size());
+    last.value  = static_cast<i32>(value.size()) - 1;
+    count.value = static_cast<i32>(value.size());
 
     for (auto& val : value)
         val.rotation = rotation;
@@ -119,7 +119,7 @@ void ObjectValue::update(bool sort) {
             }
         }
         else if (rotation == Rotation::R) {
-            int32_t first_col = std::numeric_limits<int32_t>::max();
+            i32 first_col = std::numeric_limits<i32>::max();
             for (auto index : value)
                 if (index.value % 16 < first_col)
                     first_col = index.value % 16;
@@ -132,7 +132,7 @@ void ObjectValue::update(bool sort) {
             }
         }
         else if (rotation == Rotation::VR || rotation == Rotation::XR) {
-            int32_t last_col = std::numeric_limits<int32_t>::min();
+            i32 last_col = std::numeric_limits<i32>::min();
             for (auto index : value)
                 if (index.value % 16 > last_col)
                     last_col = index.value % 16;
@@ -145,7 +145,7 @@ void ObjectValue::update(bool sort) {
             }
         }
         else if (rotation == Rotation::HR || rotation == Rotation::YR) {
-            int32_t first_col = std::numeric_limits<int32_t>::max();
+            i32 first_col = std::numeric_limits<i32>::max();
             for (auto index : value)
                 if (index.value % 16 < first_col)
                     first_col = index.value % 16;
@@ -158,7 +158,7 @@ void ObjectValue::update(bool sort) {
             }
         }
         else {
-            int32_t last_col = std::numeric_limits<int32_t>::min();
+            i32 last_col = std::numeric_limits<i32>::min();
             for (auto index : value)
                 if (index.value % 16 > last_col)
                     last_col = index.value % 16;

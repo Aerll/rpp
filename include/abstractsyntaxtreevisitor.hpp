@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -98,7 +98,7 @@ public:
         return m_next.get();
     }
 
-    uint32_t getLine() const noexcept {
+    u32 getLine() const noexcept {
         return m_line;
     }
 
@@ -110,7 +110,7 @@ public:
         m_next = std::move(next);
     }
 
-    void setLine(uint32_t line) noexcept {
+    void setLine(u32 line) noexcept {
         m_line = line;
     }
 
@@ -123,7 +123,7 @@ public:
 public:
     IASTNode* m_prev;
     ptr_node m_next;
-    uint32_t m_line;
+    u32 m_line;
 };
 
 class ASTNullNode;
@@ -3810,7 +3810,7 @@ public:
     void parse(ASTNestedFunctionNode* node) final;
     void parse(ASTInvokeNestedNode* node) final;
 
-    std::unique_ptr<Error> parseType(ValueType left, ValueType right, uint32_t line) const;
+    std::unique_ptr<Error> parseType(ValueType left, ValueType right, u32 line) const;
 };
 
 /*
@@ -4010,12 +4010,12 @@ public:
     bool hasRotation(Value* value, Rotation rotation) const;
     void rotate(Value* value, Rotation rotation) const;
 
-    void insertPosType(uint32_t line, NodeID id);
-    void insert(InsertC control, Value* value, uint32_t line);
+    void insertPosType(u32 line, NodeID id);
+    void insert(InsertC control, Value* value, u32 line);
 
-    void printError(std::string_view message, uint32_t line);
-    void printWarning(std::string_view message, uint32_t line);
-    void printAssert(uint32_t line);
+    void printError(std::string_view message, u32 line);
+    void printWarning(std::string_view message, u32 line);
+    void printAssert(u32 line);
 };
 
 #endif // RPP_ABSTRACTSYNTAXTREEVISITOR_HPP

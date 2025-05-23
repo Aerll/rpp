@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -113,7 +113,7 @@ public:
         : value(0)
         , rotation(Rotation::Default) {}
 
-    IntValue(int32_t value, Rotation rotation = Rotation::Default) noexcept
+    IntValue(i32 value, Rotation rotation = Rotation::Default) noexcept
         : value(value)
         , rotation(rotation) {}
 
@@ -185,7 +185,7 @@ public:
     CoordValue toCoord() const noexcept;
 
 public:
-    int32_t value;
+    i32 value;
     Rotation rotation;
 };
 
@@ -198,7 +198,7 @@ public:
         , to(0)
         , rotation(Rotation::Default) {}
 
-    RangeValue(int32_t from, int32_t to, Rotation rotation = Rotation::Default) noexcept
+    RangeValue(i32 from, i32 to, Rotation rotation = Rotation::Default) noexcept
         : from(from)
         , to(to)
         , rotation(rotation) {}
@@ -239,8 +239,8 @@ public:
     ObjectValue toObject() const;
 
 public:
-    int32_t from;
-    int32_t to;
+    i32 from;
+    i32 to;
     Rotation rotation;
 };
 
@@ -253,7 +253,7 @@ public:
         , y(0)
         , rotation(Rotation::Default) {}
 
-    CoordValue(int32_t x, int32_t y, Rotation rotation = Rotation::Default) noexcept
+    CoordValue(i32 x, i32 y, Rotation rotation = Rotation::Default) noexcept
         : x(x)
         , y(y)
         , rotation(rotation) {}
@@ -306,7 +306,7 @@ public:
     FloatValue() noexcept
         : value(0.0f) {}
 
-    FloatValue(float value) noexcept
+    FloatValue(f32 value) noexcept
         : value(value) {}
 
     friend FloatValue operator+(const FloatValue& lhs, const FloatValue& rhs) {
@@ -372,7 +372,7 @@ public:
     IntValue toInt() const noexcept;
 
 public:
-    float value;
+    f32 value;
 };
 
 class StringValue final : public Value {
@@ -431,7 +431,7 @@ public:
         : last(-1)
         , count(0) {}
 
-    virtual Value* at(size_t index) = 0;
+    virtual Value* at(usize index) = 0;
 
 public:
     IntValue last;
@@ -490,14 +490,14 @@ public:
         count.value = 0;
     }
 
-    Value* at(size_t index) final {
+    Value* at(usize index) final {
         return &value[index];
     }
 
     std::string str() const final {
         std::string result = "{";
-        int32_t int_anchor = anchor.toInt().value;
-        for (std::size_t i = 0; i < value.size(); ++i) {
+        i32 int_anchor = anchor.toInt().value;
+        for (usize i = 0; i < value.size(); ++i) {
             result += std::to_string(value[i].value);
             if (value[i].value == int_anchor)
                 result += "*";
@@ -589,7 +589,7 @@ public:
         count.value = 0;
     }
 
-    Value* at(size_t index) final {
+    Value* at(usize index) final {
         return &value[index];
     }
 
@@ -617,7 +617,7 @@ public:
 
     std::string str() const final {
         std::string result = "{";
-        for (std::size_t i = 0; i < value.size(); ++i) {
+        for (usize i = 0; i < value.size(); ++i) {
             result += value[i].str();
             if (i != value.size() - 1)
                 result += ", ";
@@ -626,17 +626,16 @@ public:
         return result;
     }
 
-    int32_t find(ArrayValue<T>* values) const {
-        int32_t index = static_cast<int32_t>(std::distance(
-            value.begin(),
-            std::search(value.begin(), value.end(), values->value.begin(), values->value.end())
-        ));
+    i32 find(ArrayValue<T>* values) const {
+        i32 index = static_cast<i32>(
+            std::distance(value.begin(), std::search(value.begin(), value.end(), values->value.begin(), values->value.end()))
+        );
         return index != count.value ? index : -1;
     }
 
     void update() {
-        last.value  = static_cast<int32_t>(value.size()) - 1;
-        count.value = static_cast<int32_t>(value.size());
+        last.value  = static_cast<i32>(value.size()) - 1;
+        count.value = static_cast<i32>(value.size());
     }
 
 public:

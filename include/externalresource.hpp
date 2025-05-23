@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -22,9 +22,9 @@
 #ifndef RPP_EXTERNALRESOURCE_HPP
 #define RPP_EXTERNALRESOURCE_HPP
 
+#include <aliases.hpp>
 #include <utility.hpp>
 
-#include <cstdint>
 #include <filesystem>
 #include <vector>
 
@@ -37,7 +37,7 @@ class ExternalResource final {
 public:
     struct Info {
         std::string fileName;
-        uint32_t lineCount;
+        u32 lineCount;
     };
 
     static ExternalResource& get();

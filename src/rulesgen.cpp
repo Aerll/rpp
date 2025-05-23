@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -19,9 +19,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 //
+#include <rulesgen.hpp>
 #include <automapper.hpp>
 #include <erroroutput.hpp>
-#include <rulesgen.hpp>
 
 /*
     RulesGen
@@ -45,11 +45,9 @@ void RulesGen::run(std::vector<AutoMapper>& automappers, const std::filesystem::
                 if (run.rules.empty())
                     continue;
 
-                run.rules.erase(
-                    util::removeDuplicates(run.rules.begin(), run.rules.end()), run.rules.end()
-                );
+                run.rules.erase(util::removeDuplicates(run.rules.begin(), run.rules.end()), run.rules.end());
 
-                for (uint32_t i = 0; i < run.copies; ++i) {
+                for (u32 i = 0; i < run.copies; ++i) {
                     rulesFile << "NewRun";
                     newLine(rulesFile);
                     if (run.overrideLayer) {
@@ -69,11 +67,9 @@ void RulesGen::run(std::vector<AutoMapper>& automappers, const std::filesystem::
 
                         do {
                             rulesFile << "Index " << rule.indexInfo.tileID;
-                            if ((rule.indexInfo.rotation & Rotation::V) != Rotation::Default
-                                || (rule.indexInfo.rotation & Rotation::X) != Rotation::Default)
+                            if ((rule.indexInfo.rotation & Rotation::V) != Rotation::Default || (rule.indexInfo.rotation & Rotation::X) != Rotation::Default)
                                 rulesFile << " XFLIP";
-                            if ((rule.indexInfo.rotation & Rotation::H) != Rotation::Default
-                                || (rule.indexInfo.rotation & Rotation::Y) != Rotation::Default)
+                            if ((rule.indexInfo.rotation & Rotation::H) != Rotation::Default || (rule.indexInfo.rotation & Rotation::Y) != Rotation::Default)
                                 rulesFile << " YFLIP";
                             if ((rule.indexInfo.rotation & Rotation::R) != Rotation::Default)
                                 rulesFile << " ROTATE";
@@ -154,8 +150,8 @@ void RulesGen::newLine(std::ofstream& rulesFile) {
 }
 
 void RulesGen::optimize(Rule& rule) const {
-    for (size_t i = 1; i < rule.posRules.size(); ++i) {
-        for (int64_t j = i - 1; j >= 0; --j) {
+    for (usize i = 1; i < rule.posRules.size(); ++i) {
+        for (isize j = i - 1; j >= 0; --j) {
             if (rule.posRules[i].ruleType == rule.posRules[j].ruleType
                 && rule.posRules[i].x == rule.posRules[j].x
                 && rule.posRules[i].y == rule.posRules[j].y
@@ -184,9 +180,7 @@ void RulesGen::optimize(Rule& rule) const {
 
 void RulesGen::optimize(PosRule& rule) const {
     std::sort(rule.indexInfos.begin(), rule.indexInfos.end());
-    rule.indexInfos.erase(
-        std::unique(rule.indexInfos.begin(), rule.indexInfos.end()), rule.indexInfos.end()
-    );
+    rule.indexInfos.erase(std::unique(rule.indexInfos.begin(), rule.indexInfos.end()), rule.indexInfos.end());
 }
 
 std::vector<std::vector<PosRule>> RulesGen::getOrPosRules(Rule& rule) const {
@@ -235,7 +229,7 @@ Combinator::Combinator(std::vector<std::vector<PosRule>>& vectors)
 }
 
 bool Combinator::next() {
-    for (int64_t i = m_vectors.size() - 1; i >= 0; --i) {
+    for (isize i = m_vectors.size() - 1; i >= 0; --i) {
         auto& v  = m_vectors[i];
         auto& it = m_combination[i];
 

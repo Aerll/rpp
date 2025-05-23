@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2020-2023 Aerll - aerlldev@gmail.com
+// Copyright (C) 2020-2025 Aerll - aerlldev@gmail.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this softwareand associated documentation files(the "Software"), to deal
@@ -19,15 +19,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 //
-#include <cli.hpp>
 #include <externalresource.hpp>
+#include <aliases.hpp>
+#include <cli.hpp>
 #include <inputstream.hpp>
 #include <io.hpp>
 #include <preprocessor.hpp>
 #include <tokenizer.hpp>
 
 #include <algorithm>
-#include <cstdint>
 #include <filesystem>
 
 /*
@@ -50,6 +50,9 @@ std::vector<Token> ExternalResource::load(const std::filesystem::path& path, con
 }
 
 bool ExternalResource::isLoaded(const std::filesystem::path& path) const {
+    if (!std::filesystem::exists(path))
+        return false;
+
     auto fileName = std::filesystem::canonical(path).string();
     return std::find_if(
                info().begin(), info().end(),
